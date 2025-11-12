@@ -10,7 +10,21 @@ CREATE TABLE movies (
     movie_id SERIAL PRIMARY KEY,
     movie_title VARCHAR(255) NOT NULL,
     movie_image VARCHAR(255),
-    movie_description TEXT
+    movie_description TEXT,
+    movie_certification VARCHAR(100)
+);
+
+CREATE TABLE genres (
+    genre_id SERIAL PRIMARY KEY,
+    genre_name VARCHAR(100) UNIQUE NOT NULL
+);
+
+CREATE TABLE movie_genres (
+    movie_id INT NOT NULL,
+    genre_id INT NOT NULL,
+    PRIMARY KEY (movie_id, genre_id),
+    FOREIGN KEY (movie_id) REFERENCES movies(movie_id) ON DELETE CASCADE,
+    FOREIGN KEY (genre_id) REFERENCES genres(genre_id) ON DELETE CASCADE
 );
 
 CREATE TABLE reviews (
@@ -66,3 +80,5 @@ CREATE INDEX idx_favorites_user ON favorites(user_id);
 CREATE INDEX idx_favorites_movie ON favorites(movie_id);
 CREATE INDEX idx_group_members_group ON "groupMembers"(group_id);
 CREATE INDEX idx_group_messages_group ON "groupMessages"(group_id);
+CREATE INDEX idx_movie_genres_movie ON movie_genres(movie_id);
+CREATE INDEX idx_movie_genres_genre ON movie_genres(genre_id);
