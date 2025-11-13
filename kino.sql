@@ -132,13 +132,13 @@ INSERT INTO groups (user_id, group_name, group_description) VALUES
 (1, 'Sci-Fi Lovers', 'Group for science fiction movie enthusiasts'),
 (2, 'Classic Movies', 'Discussing timeless cinema');
 
-INSERT INTO "groupMembers" (group_id, user_id, group_admin) VALUES
+INSERT INTO group_members (group_id, user_id, group_admin) VALUES
 (1, 1, true),
 (1, 2, false),
 (2, 2, true),
 (2, 3, false);
 
-INSERT INTO "groupMessages" (group_id, user_id, message) VALUES
+INSERT INTO group_messages (group_id, user_id, message) VALUES
 (1, 1, 'Welcome to Sci-Fi Lovers! What is your favorite sci-fi movie?'),
 (1, 2, 'I love The Matrix!'),
 (2, 2, 'Has anyone seen Casablanca?'),

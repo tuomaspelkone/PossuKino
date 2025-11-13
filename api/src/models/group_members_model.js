@@ -11,18 +11,24 @@ export async function getOne(id) {
 }
 
 export async function addOne(group_members) {
-  const result = await pool.query("INSERT INTO group_members (user_id, group_id, group_admin) VALUES($1,$2,$3)", [group_members.user_id, group_members.group_id, group_members.group_admin]);
+  const result = await pool.query(
+    "INSERT INTO group_members (user_id, group_id, group_admin) VALUES($1,$2,$3) RETURNING *",
+    [group_members.user_id, group_members.group_id, group_members.group_admin]
+  );
   return result.rows;
 }
 
 export async function updateOne(id,group_members) {
   console.log("update:"+id);
-  const result = await pool.query("UPDATE group_members SET user_id=$1, group_id=$2, group_admin=$3", [group_members.user_id, group_members.group_id, group_members.group_admin]);
+  const result = await pool.query(
+    "UPDATE group_members SET user_id=$1, group_id=$2, group_admin=$3 WHERE member_id=$4 RETURNING *",
+    [group_members.user_id, group_members.group_id, group_members.group_admin, id]
+  );
   return result.rows;
 }
 
 export async function deleteOne(id) {
   console.log("delete:"+id);
-  const result = await pool.query("DELETE FROM group_members WHERE member_id = $1", [id]);
+  const result = await pool.query("DELETE FROM group_members WHERE member_id = $1 RETURNING *", [id]);
   return result.rows;
 }
