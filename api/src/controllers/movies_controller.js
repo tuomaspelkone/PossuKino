@@ -11,7 +11,7 @@ export async function getMovies(req, res, next) {
 
 export async function getMovie(req, res, next) {
   try {
-    const movie = await getOne(req.params.movie_id);
+    const movie = await getOne(req.params.id);
     if (!movie) {
       return res.status(404).json({ error: "Movie not found" });
     }
@@ -34,7 +34,7 @@ export async function addMovie(req, res, next) {
 
 export async function updateMovie(req, res, next) {
   try {
-    const response = await updateOne(req.params.movie_id, req.body);
+    const response = await updateOne(req.params.id, req.body);
     res.json(response);
   } catch (err) {
     next(err);
@@ -43,7 +43,7 @@ export async function updateMovie(req, res, next) {
 
 export async function deleteMovie(req, res, next) {
   try {
-    const movie = await deleteOne(req.params.movie_id);
+    const movie = await deleteOne(req.params.id);
     if (!movie) {
       return res.status(404).json({ error: "Movie not found" });
     }

@@ -11,7 +11,7 @@ export async function getMovie_genres(req, res, next) {
 
 export async function getMovie_genre(req, res, next) {
   try {
-    const movie_genre = await getOne(req.params.movie_id);
+    const movie_genre = await getOne(req.params.id);
     if (!movie_genre) {
       return res.status(404).json({ error: "Movie_genre not found" });
     }
@@ -34,7 +34,7 @@ export async function addMovie_genre(req, res, next) {
 
 export async function updateMovie_genre(req, res, next) {
   try {
-    const response = await updateOne(req.params.movie_id, req.body);
+    const response = await updateOne(req.params.id, req.body);
     res.json(response);
   } catch (err) {
     next(err);
@@ -43,7 +43,7 @@ export async function updateMovie_genre(req, res, next) {
 
 export async function deleteMovie_genre(req, res, next) {
   try {
-    const movie_genre = await deleteOne(req.params.movie_id);
+    const movie_genre = await deleteOne(req.params.id);
     if (!movie_genre) {
       return res.status(404).json({ error: "Movie_genre not found" });
     }

@@ -11,7 +11,7 @@ export async function getReviews(req, res, next) {
 
 export async function getReview(req, res, next) {
   try {
-    const review = await getOne(req.params.review_id);
+    const review = await getOne(req.params.id);
     if (!review) {
       return res.status(404).json({ error: "Review not found" });
     }
@@ -34,7 +34,7 @@ export async function addReview(req, res, next) {
 
 export async function updateReview(req, res, next) {
   try {
-    const response = await updateOne(req.params.review_id, req.body);
+    const response = await updateOne(req.params.id, req.body);
     res.json(response);
   } catch (err) {
     next(err);
@@ -43,7 +43,7 @@ export async function updateReview(req, res, next) {
 
 export async function deleteReview(req, res, next) {
   try {
-    const review = await deleteOne(req.params.review_id);
+    const review = await deleteOne(req.params.id);
     if (!review) {
       return res.status(404).json({ error: "Review not found" });
     }
