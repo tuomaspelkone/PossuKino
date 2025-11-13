@@ -54,7 +54,7 @@ CREATE TABLE groups (
     FOREIGN KEY (user_id) REFERENCES "user"(user_id) ON DELETE CASCADE
 );
 
-CREATE TABLE "groupMembers" (
+CREATE TABLE "group_members" (
     member_id SERIAL PRIMARY KEY,
     group_id INT NOT NULL,
     user_id INT NOT NULL,
@@ -64,7 +64,7 @@ CREATE TABLE "groupMembers" (
     FOREIGN KEY (user_id) REFERENCES "user"(user_id) ON DELETE CASCADE
 );
 
-CREATE TABLE "groupMessages" (
+CREATE TABLE "group_messages" (
     message_id SERIAL PRIMARY KEY,
     group_id INT NOT NULL,
     user_id INT NOT NULL,
@@ -78,7 +78,7 @@ CREATE INDEX idx_reviews_movie ON reviews(movie_id);
 CREATE INDEX idx_reviews_user ON reviews(user_id);
 CREATE INDEX idx_favorites_user ON favorites(user_id);
 CREATE INDEX idx_favorites_movie ON favorites(movie_id);
-CREATE INDEX idx_group_members_group ON "groupMembers"(group_id);
-CREATE INDEX idx_group_messages_group ON "groupMessages"(group_id);
+CREATE INDEX idx_group_members_group ON "group_members"(group_id);
+CREATE INDEX idx_group_messages_group ON "group_messages"(group_id);
 CREATE INDEX idx_movie_genres_movie ON movie_genres(movie_id);
 CREATE INDEX idx_movie_genres_genre ON movie_genres(genre_id);
