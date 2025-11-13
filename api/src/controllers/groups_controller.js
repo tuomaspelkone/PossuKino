@@ -11,7 +11,7 @@ export async function getGroups(req, res, next) {
 
 export async function getGroup(req, res, next) {
   try {
-    const group = await getOne(req.params.group_id);
+    const group = await getOne(req.params.id);
     if (!group) {
       return res.status(404).json({ error: "Group not found" });
     }
@@ -34,7 +34,7 @@ export async function addGroup(req, res, next) {
 
 export async function updateGroup(req, res, next) {
   try {
-    const response = await updateOne(req.params.group_id, req.body);
+    const response = await updateOne(req.params.id, req.body);
     res.json(response);
   } catch (err) {
     next(err);
@@ -43,7 +43,7 @@ export async function updateGroup(req, res, next) {
 
 export async function deleteGroup(req, res, next) {
   try {
-    const group = await deleteOne(req.params.group_id);
+    const group = await deleteOne(req.params.id);
     if (!group) {
       return res.status(404).json({ error: "Group not found" });
     }
