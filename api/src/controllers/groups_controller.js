@@ -43,9 +43,9 @@ export async function updateGroup(req, res, next) {
 
 export async function deleteGroup(req, res, next) {
   try {
-    const group = await deleteOne(req.params.id);
+    const group = await deleteOne(req.params.group_id);
     if (!group) {
-      return res.status(404).json({ error: "Groups not found" });
+      return res.status(404).json({ error: "Group not found" });
     }
     res.json(group);
   } catch (err) {

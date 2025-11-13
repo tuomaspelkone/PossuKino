@@ -11,11 +11,11 @@ export async function getFavorites(req, res, next) {
 
 export async function getFavorite(req, res, next) {
   try {
-    const favorites = await getOne(req.params.favorite_id);
+    const favorite = await getOne(req.params.favorite_id);
     if (!favorite) {
       return res.status(404).json({ error: "Favorite not found" });
     }
-    res.jsos(favorite);
+    res.json(favorite);
   } catch (err) {
     next(err);
   }
