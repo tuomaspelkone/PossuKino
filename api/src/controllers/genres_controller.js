@@ -9,19 +9,19 @@ export async function getGenres(req, res, next) {
   }
 }
 
-export async function getGenres(req, res, next) {
+export async function getGenre(req, res, next) {
   try {
-    const genres = await getOne(req.params.genre_id);
-    if (!genres) {
-      return res.status(404).json({ error: "Genres not found" });
+    const genre = await getOne(req.params.genre_id);
+    if (!genre) {
+      return res.status(404).json({ error: "Genre not found" });
     }
-    res.json(genres);
+    res.json(genre);
   } catch (err) {
     next(err);
   }
 }
 
-export async function addGenres(req, res, next) {
+export async function addGenre(req, res, next) {
   console.log("add called");
   try {
     console.log(req.body);
@@ -32,7 +32,7 @@ export async function addGenres(req, res, next) {
   }
 }
 
-export async function updateGenres(req, res, next) {
+export async function updateGenre(req, res, next) {
   try {
     const response = await updateOne(req.params.genre_id, req.body);
     res.json(response);
@@ -41,13 +41,13 @@ export async function updateGenres(req, res, next) {
   }
 }
 
-export async function deleteGenres(req, res, next) {
+export async function deleteGenre(req, res, next) {
   try {
-    const genres = await deleteOne(req.params.genre_id);
-    if (!genres) {
-      return res.status(404).json({ error: "Genres not found" });
+    const genre = await deleteOne(req.params.genre_id);
+    if (!genre) {
+      return res.status(404).json({ error: "Genre not found" });
     }
-    res.json(genres);
+    res.json(genre);
   } catch (err) {
     next(err);
   }
