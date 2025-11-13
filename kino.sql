@@ -82,3 +82,64 @@ CREATE INDEX idx_group_members_group ON "groupMembers"(group_id);
 CREATE INDEX idx_group_messages_group ON "groupMessages"(group_id);
 CREATE INDEX idx_movie_genres_movie ON movie_genres(movie_id);
 CREATE INDEX idx_movie_genres_genre ON movie_genres(genre_id);
+
+-- Sample data for testing
+INSERT INTO "user" (username, email, password) VALUES
+('matti', 'matti@example.com', '$2b$10$hashedpassword1'),
+('liisa', 'liisa@example.com', '$2b$10$hashedpassword2'),
+('pekka', 'pekka@example.com', '$2b$10$hashedpassword3');
+
+INSERT INTO genres (genre_name) VALUES
+('Action'),
+('Comedy'),
+('Drama'),
+('Sci-Fi'),
+('Horror'),
+('Romance'),
+('Thriller');
+
+INSERT INTO movies (movie_title, movie_image, movie_description, movie_certification) VALUES
+('The Matrix', 'matrix.jpg', 'A computer hacker learns about the true nature of reality.', 'PG-13'),
+('Inception', 'inception.jpg', 'A thief who steals corporate secrets through dream-sharing technology.', 'PG-13'),
+('The Shawshank Redemption', 'shawshank.jpg', 'Two imprisoned men bond over years, finding redemption.', 'R'),
+('Pulp Fiction', 'pulp.jpg', 'Various interconnected stories of criminals in Los Angeles.', 'R'),
+('The Dark Knight', 'batman.jpg', 'Batman faces the Joker in Gotham City.', 'PG-13');
+
+INSERT INTO movie_genres (movie_id, genre_id) VALUES
+(1, 1), (1, 4), -- Matrix: Action, Sci-Fi
+(2, 1), (2, 4), (2, 7), -- Inception: Action, Sci-Fi, Thriller
+(3, 3), -- Shawshank: Drama
+(4, 3), (4, 7), -- Pulp Fiction: Drama, Thriller
+(5, 1), (5, 3), (5, 7); -- Dark Knight: Action, Drama, Thriller
+
+INSERT INTO reviews (movie_id, user_id, rating, review_text) VALUES
+(1, 1, 5, 'Mind-blowing! Best sci-fi movie ever.'),
+(1, 2, 4, 'Great action and concept, but a bit confusing.'),
+(2, 1, 5, 'Christopher Nolan is a genius!'),
+(3, 2, 5, 'Absolutely perfect. A masterpiece.'),
+(4, 3, 4, 'Tarantino at his best.'),
+(5, 1, 5, 'Heath Ledger was phenomenal as Joker.');
+
+INSERT INTO favorites (user_id, movie_id) VALUES
+(1, 1),
+(1, 2),
+(1, 5),
+(2, 1),
+(2, 3),
+(3, 4);
+
+INSERT INTO groups (user_id, group_name, group_description) VALUES
+(1, 'Sci-Fi Lovers', 'Group for science fiction movie enthusiasts'),
+(2, 'Classic Movies', 'Discussing timeless cinema');
+
+INSERT INTO "groupMembers" (group_id, user_id, group_admin) VALUES
+(1, 1, true),
+(1, 2, false),
+(2, 2, true),
+(2, 3, false);
+
+INSERT INTO "groupMessages" (group_id, user_id, message) VALUES
+(1, 1, 'Welcome to Sci-Fi Lovers! What is your favorite sci-fi movie?'),
+(1, 2, 'I love The Matrix!'),
+(2, 2, 'Has anyone seen Casablanca?'),
+(2, 3, 'Yes, it is a classic!');
