@@ -11,7 +11,7 @@ export async function get_group_messages(req, res, next) {
 
 export async function get_group_message(req, res, next) {
   try {
-    const message = await getOne(req.params.message_id);
+    const message = await getOne(req.params.id);
     if (!message) {
       return res.status(404).json({ error: "Message not found" });
     }
@@ -34,7 +34,7 @@ export async function add_group_message(req, res, next) {
 
 export async function update_group_message(req, res, next) {
   try {
-    const response = await updateOne(req.params.message_id, req.body);
+    const response = await updateOne(req.params.id, req.body);
     res.json(response);
   } catch (err) {
     next(err);
@@ -43,7 +43,7 @@ export async function update_group_message(req, res, next) {
 
 export async function delete_group_message(req, res, next) {
   try {
-    const message = await deleteOne(req.params.message_id);
+    const message = await deleteOne(req.params.id);
     if (!message) {
       return res.status(404).json({ error: "Message not found" });
     }
