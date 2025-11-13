@@ -1,12 +1,12 @@
 import { Router } from "express";
 import { getFavorites, getFavorite, addFavorite, updateFavorite, deleteFavorite } from "../controllers/favorites_controller.js";
 
-const favoriteRouter = Router();
+const favorite_router = Router();
 
-favoriteRouter.get("/", getFavorites);
-favoriteRouter.get("/:favorite_id", getFavorite);
-favoriteRouter.post("/", addFavorite);
-favoriteRouter.put("/:favorite_id", updateFavorite);
-favoriteRouter.delete("/:favorite_id", deleteFavorite);
+favorite_router.get("/", getFavorites);
+favorite_router.get("/:favorite_id", getFavorite);
+favorite_router.post("/", addFavorite);
+favorite_router.put("/:favorite_id", updateFavorite);
+favorite_router.delete("/:favorite_id", deleteFavorite);
 
-export default favoriteRouter;
+export default favorite_router;
