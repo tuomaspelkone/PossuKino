@@ -84,10 +84,10 @@ CREATE INDEX idx_movie_genres_movie ON movie_genres(movie_id);
 CREATE INDEX idx_movie_genres_genre ON movie_genres(genre_id);
 
 -- Sample data for testing
-INSERT INTO "user" (username, email, password) VALUES
-('matti', 'matti@example.com', '$2b$10$hashedpassword1'),
-('liisa', 'liisa@example.com', '$2b$10$hashedpassword2'),
-('pekka', 'pekka@example.com', '$2b$10$hashedpassword3');
+INSERT INTO "user" (user_id, username, email, password) VALUES
+(1, 'matti', 'matti@example.com', '$2b$10$hashedpassword1'),
+(2, 'liisa', 'liisa@example.com', '$2b$10$hashedpassword2'),
+(3, 'pekka', 'pekka@example.com', '$2b$10$hashedpassword3');
 
 INSERT INTO genres (genre_name) VALUES
 ('Action'),
