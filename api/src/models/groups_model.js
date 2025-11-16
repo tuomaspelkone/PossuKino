@@ -27,3 +27,18 @@ export async function deleteOne(id) {
   const result = await pool.query("DELETE FROM groups WHERE group_id = $1", [id]);
   return result.rows;
 }
+
+export async function search(searchTerm) {
+  let query = 'SELECT * FROM groups WHERE 1=1';
+  const params = [];
+
+  if (searchTerm) {
+    query += ' AND group_name ILIKE $1';
+    params.push(`%${searchTerm}%`);
+  }
+
+  query += ' ORDER BY group_name';
+
+  const result = await pool.query(query, params);
+  return result.rows;
+}

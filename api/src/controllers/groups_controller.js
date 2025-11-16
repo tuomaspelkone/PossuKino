@@ -1,4 +1,4 @@
-import { getAll, getOne, addOne, updateOne, deleteOne } from "../models/groups_model.js";
+import { getAll, getOne, addOne, updateOne, deleteOne, search } from "../models/groups_model.js";
 
 export async function getGroups(req, res, next) {
   try {
@@ -36,6 +36,16 @@ export async function updateGroup(req, res, next) {
   try {
     const response = await updateOne(req.params.id, req.body);
     res.json(response);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function searchGroups(req, res, next) {
+  try {
+    const { q } = req.query;
+    const groups = await search(q);
+    res.json(groups);
   } catch (err) {
     next(err);
   }
