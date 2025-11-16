@@ -1,4 +1,4 @@
-import { getAll, getOne, addOne, updateOne, deleteOne } from "../models/movies_model.js";
+import { getAll, getOne, addOne, updateOne, deleteOne, search } from "../models/movies_model.js";
 
 export async function getMovies(req, res, next) {
   try {
@@ -38,6 +38,18 @@ export async function updateMovie(req, res, next) {
     const id = req.params.movie_id || req.params.id;
     const response = await updateOne(id, req.body);
     res.json(Array.isArray(response) && response.length > 0 ? response[0] : response);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function searchMovies(req, res, next) {
+  try {
+    const { q, genres, certification } = req.query;
+    const genreArray = genres ? genres.split(',').map(Number) : null;
+    
+    const movies = await search(q, genreArray, certification);
+    res.json(movies);
   } catch (err) {
     next(err);
   }

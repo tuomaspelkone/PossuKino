@@ -32,3 +32,36 @@ export async function deleteOne(id) {
   const result = await pool.query("DELETE FROM movies WHERE movie_id = $1 RETURNING *", [id]);
   return result.rows;
 }
+
+export async function search(searchTerm, genreIds, certification) {
+  let query = `
+    SELECT DISTINCT m.* 
+    FROM movies m
+    LEFT JOIN movie_genres mg ON m.movie_id = mg.movie_id
+    WHERE 1=1
+  `;
+  const params = [];
+  let paramIndex = 1;
+
+  if (searchTerm) {
+    query += ` AND m.movie_title ILIKE $${paramIndex}`;
+    params.push(`%${searchTerm}%`);
+    paramIndex++;
+  }
+
+  if (genreIds && genreIds.length > 0) {
+    query += ` AND mg.genre_id = ANY($${paramIndex}::int[])`;
+    params.push(genreIds);
+    paramIndex++;
+  }
+
+  if (certification) {
+    query += ` AND m.movie_certification = $${paramIndex}`;
+    params.push(certification);
+  }
+
+  query += ` ORDER BY m.movie_title`;
+
+  const result = await pool.query(query, params);
+  return result.rows;
+}

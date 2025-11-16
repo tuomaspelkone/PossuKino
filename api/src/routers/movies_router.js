@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { getMovies, getMovie, addMovie, updateMovie, deleteMovie } from "../controllers/movies_controller.js";
+import { getMovies, getMovie, addMovie, updateMovie, deleteMovie, searchMovies } from "../controllers/movies_controller.js";
 
 const movie_router = Router();
 
+movie_router.get("/search", searchMovies);
 movie_router.get("/", getMovies);
 movie_router.get("/:movie_id", getMovie);
 movie_router.post("/", addMovie);

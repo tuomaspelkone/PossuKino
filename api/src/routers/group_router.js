@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { getGroups, getGroup, addGroup, updateGroup, deleteGroup } from "../controllers/groups_controller.js";
+import { getGroups, getGroup, addGroup, updateGroup, deleteGroup, searchGroups } from "../controllers/groups_controller.js";
 
 const group_router = Router();
 
+group_router.get("/search", searchGroups);
 group_router.get("/", getGroups);
 group_router.get("/:group_id", getGroup);
 group_router.post("/", addGroup);
