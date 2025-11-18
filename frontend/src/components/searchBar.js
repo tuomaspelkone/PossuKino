@@ -10,6 +10,7 @@ function SearchBar({ onSearchResults }) {
   const [genres, setGenres] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchResultsLocal, setSearchResultsLocal] = useState([]);
+  const [showGenreDropdown, setShowGenreDropdown] = useState(false);
 
   // Hae genret komponentin latautuessa
   useEffect(() => {
@@ -54,10 +55,10 @@ function SearchBar({ onSearchResults }) {
       }
 
       const response = await fetch(`${url}?${params}`);
-  const data = await response.json();
-  // Rajaa dropdownissa näytettävät tulokset ensimmäisiin 10:een
-  setSearchResultsLocal(Array.isArray(data) ? data.slice(0, 10) : []);   // lokaalisti renderointia varten
-      onSearchResults && onSearchResults(data); // säilytä nykyinen callback, jos joku käyttää
+      const data = await response.json();
+      // Rajaa dropdownissa näytettävät tulokset ensimmäisiin 10:een
+      setSearchResultsLocal(Array.isArray(data) ? data.slice(0, 10) : []);
+      onSearchResults && onSearchResults(data);
     } catch (error) {
       console.error('Search error:', error);
       onSearchResults([]);
@@ -140,19 +141,29 @@ function SearchBar({ onSearchResults }) {
             <div className="filters">
               {/* Genre-suodatin */}
               <div className="filter-group">
-                <label>Genret:</label>
-                <div className="genre-checkboxes">
-                  {genres.map(genre => (
-                    <label key={genre.genre_id} className="checkbox-label">
-                      <input
-                        type="checkbox"
-                        checked={selectedGenres.includes(genre.genre_id)}
-                        onChange={() => handleGenreToggle(genre.genre_id)}
-                      />
-                      {genre.genre_name}
-                    </label>
-                  ))}
-                </div>
+                <button 
+                  className="genre-toggle-btn"
+                  onClick={() => setShowGenreDropdown(!showGenreDropdown)}
+                  type="button"
+                >
+                  Genret {showGenreDropdown ? '▲' : '▼'}
+                  {selectedGenres.length > 0 && ` (${selectedGenres.length} valittu)`}
+                </button>
+                
+                {showGenreDropdown && (
+                  <div className="genre-checkboxes">
+                    {genres.map(genre => (
+                      <label key={genre.genre_id} className="checkbox-label">
+                        <input
+                          type="checkbox"
+                          checked={selectedGenres.includes(genre.genre_id)}
+                          onChange={() => handleGenreToggle(genre.genre_id)}
+                        />
+                        {genre.genre_name}
+                      </label>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Ikäraja-suodatin */}

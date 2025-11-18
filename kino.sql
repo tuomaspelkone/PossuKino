@@ -1,3 +1,14 @@
+-- Drop tables if they exist (in correct order due to foreign keys)
+DROP TABLE IF EXISTS "group_messages" CASCADE;
+DROP TABLE IF EXISTS "group_members" CASCADE;
+DROP TABLE IF EXISTS groups CASCADE;
+DROP TABLE IF EXISTS favorites CASCADE;
+DROP TABLE IF EXISTS reviews CASCADE;
+DROP TABLE IF EXISTS movie_genres CASCADE;
+DROP TABLE IF EXISTS genres CASCADE;
+DROP TABLE IF EXISTS movies CASCADE;
+DROP TABLE IF EXISTS "user" CASCADE;
+
 CREATE TABLE "user" (
     user_id SERIAL PRIMARY KEY,
     username VARCHAR(255),
@@ -11,7 +22,8 @@ CREATE TABLE movies (
     movie_title VARCHAR(255) NOT NULL,
     movie_image VARCHAR(255),
     movie_description TEXT,
-    movie_certification VARCHAR(100)
+    movie_certification VARCHAR(100),
+    movie_year INT
 );
 
 CREATE TABLE genres (
