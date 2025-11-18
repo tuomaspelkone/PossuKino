@@ -1,4 +1,4 @@
-import NodeCache from "node-cache";
+import { default as NodeCache } from "node-cache";
 import { getAll, search } from "../models/movies_model.js";
 
 // Välimuisti: tiedot säilyvät 1 tunniksi (3600 sekuntia)
