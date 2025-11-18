@@ -1,5 +1,6 @@
 import React from 'react';
 import SearchBar from './searchBar';
+import LoginButton from './loginButton';
 import './navbar.css';
 
 function Navbar({ onSearchResults }) {
@@ -20,6 +21,7 @@ function Navbar({ onSearchResults }) {
           <a href="#movies">Elokuvat</a>
           <a href="#groups">Ryhmät</a>
           <a href="#profile">Profiili</a>
+          <LoginButton />
         </div>
       </div>
     </nav>
