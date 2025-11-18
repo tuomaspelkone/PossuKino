@@ -21,13 +21,41 @@ function App() {
       
       {/* Pääsisältö */}
       <main className="main-content">
-        {isProfile ? (
-          <div className="profile-empty">
-            <h2>Otiskko</h2>
-            <p>tekstiä</p>
-            <img src="/profile-placeholder.svg" alt="Profile placeholder" width="128" height="128" />
-            <button className="btn">Testinappi</button>
-            </div>
+            {isProfile ? (
+              <>
+                <div className="profile-empty">
+                  <div className="profile-icon">
+                    <img src="/profile-placeholder.svg" alt="Profiilikuva" width="60" height="60" />
+                  </div>
+                  <div className="profile-info">
+                    <div>Käyttäjä nimi: Juukelis</div>
+                    <div>Sähköposti: juupelis@gmail.com</div>
+                  </div>
+                  <button className="btn">Muokkaa profiilitietoja</button>
+                </div>
+
+                <div className="profile-favourites">
+                  {/* Tyhjä laatikko suosikeille */}
+                  <p>Suosikit:</p>
+                </div>
+                <div className="profile-groups">
+                  {/* Tyhjä laatikko ryhmille */}
+                  <p className="section-title">Omat ryhmät:</p>
+
+                  <div className="group-row">
+                    <div className="group-name">Oma ryhmä</div>
+                    <div className="group-actions">
+                      <button className="btn">Poista ryhmä</button>
+                      <button className="btn">linkki ryhmään</button>
+                    </div>
+                  </div>
+                </div>
+                <div className="profile-reviews">
+                  {/* Tyhjä laatikko arvosteluille */}
+                  <p className="section-title">Selaa arvostelujasi:</p>
+
+                </div>
+              </>
 
         ) : (
           <>
