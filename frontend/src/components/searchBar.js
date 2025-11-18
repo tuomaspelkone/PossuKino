@@ -9,6 +9,7 @@ function SearchBar({ onSearchResults }) {
   const [selectedCertification, setSelectedCertification] = useState('');
   const [genres, setGenres] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [searchResultsLocal, setSearchResultsLocal] = useState([]);
 
   // Hae genret komponentin latautuessa
   useEffect(() => {
@@ -53,8 +54,10 @@ function SearchBar({ onSearchResults }) {
       }
 
       const response = await fetch(`${url}?${params}`);
-      const data = await response.json();
-      onSearchResults(data);
+  const data = await response.json();
+  // Rajaa dropdownissa näytettävät tulokset ensimmäisiin 10:een
+  setSearchResultsLocal(Array.isArray(data) ? data.slice(0, 10) : []);   // lokaalisti renderointia varten
+      onSearchResults && onSearchResults(data); // säilytä nykyinen callback, jos joku käyttää
     } catch (error) {
       console.error('Search error:', error);
       onSearchResults([]);
@@ -75,6 +78,7 @@ function SearchBar({ onSearchResults }) {
     setSearchTerm('');
     setSelectedGenres([]);
     setSelectedCertification('');
+    setSearchResultsLocal([]);
   };
 
   return (
@@ -174,6 +178,28 @@ function SearchBar({ onSearchResults }) {
                   Tyhjennä suodattimet
                 </button>
               )}
+            </div>
+          )}
+          
+          {/* Hakutulokset listana (rajoitettu slice(0,10)) */}
+          {searchResultsLocal && searchResultsLocal.length > 0 && (
+            <div className="search-results-dropdown">
+              <ul>
+                {searchResultsLocal.map(item => (
+                  <li key={item.movie_id || item.group_id} className="search-result-item">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        // Sulje dropdown; tarvittaessa lisää navigointi tähän
+                        setIsOpen(false);
+                      }}
+                    >
+                      {item.movie_title || item.group_name}
+                      {item.movie_year ? ` (${item.movie_year})` : ""}
+                    </button>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </div>

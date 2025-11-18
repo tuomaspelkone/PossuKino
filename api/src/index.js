@@ -3,6 +3,7 @@ import cors from "cors";
 import "dotenv/config";
 
 import bookRouter from "./routers/book_router.js";
+import cache_router from "./routers/cache_router.js";
 import favorites_router from "./routers/favorites_router.js";
 import genres_router from "./routers/genres_router.js";
 import group_members_router from "./routers/group_members_router.js";
@@ -19,6 +20,7 @@ const port = process.env.PORT;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use("/cache", cache_router);
 
 app.get("/", async (req, res) => {
   res.send("Postgres API esimerkki");
