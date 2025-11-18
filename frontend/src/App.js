@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Navbar from "./components/navbar";
 import './App.css';
+import MovieShowcase from "./components/movieShowcase";
 
 function App() {
   const [searchResults, setSearchResults] = useState([]);
@@ -11,8 +12,9 @@ function App() {
       
       {/* Pääsisältö */}
       <main className="main-content">
-        {/* Näytä tulokset */}
-        <div className="search-results">
+        {/* Näytetään aina elokuvagalleria */}
+        <MovieShowcase />
+        {/*<div className="search-results">
           {searchResults.length > 0 ? (
             searchResults.map(result => (
               <div key={result.movie_id || result.group_id} className="result-card">
@@ -21,13 +23,14 @@ function App() {
                 {result.group_description && <p>{result.group_description}</p>}
               </div>
             ))
-          ) : (
+          ) 
+          */}
+          : (
             <div className="empty-state">
               <h2>Tervetuloa PossuKinoon!</h2>
-              <p>Käytä yllä olevaa hakupalkkia löytääksesi elokuvia tai ryhmiä.</p>
+              <p> Käytä ylänurkan hakupalkkia löytääksesi elokuvia tai ryhmiä.</p>
             </div>
-          )}
-        </div>
+          )
       </main>
     </div>
   );
