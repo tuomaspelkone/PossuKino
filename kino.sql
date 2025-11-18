@@ -101,6 +101,9 @@ INSERT INTO "user" (user_id, username, email, password) VALUES
 (2, 'liisa', 'liisa@example.com', '$2b$10$hashedpassword2'),
 (3, 'pekka', 'pekka@example.com', '$2b$10$hashedpassword3');
 
+-- Reset user_id sequence to correct value
+SELECT setval('user_user_id_seq', (SELECT MAX(user_id) FROM "user"));
+
 INSERT INTO genres (genre_name) VALUES
 ('Action'),
 ('Comedy'),

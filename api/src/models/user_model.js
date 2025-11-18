@@ -11,8 +11,11 @@ export async function getOne(id) {
 }
 
 export async function addOne(user) {
-  const result = await pool.query('INSERT INTO "user" (username, email, password, refresh_token) VALUES($1,$2,$3,$4)', [user.username, user.email, user.password, user.refresh_token]);
-  return result.rows;
+  const result = await pool.query(
+    'INSERT INTO "user" (username, email, password) VALUES($1,$2,$3) RETURNING *', 
+    [user.username, user.email, user.password]
+  );
+  return result.rows[0];
 }
 
 export async function updateOne(id,user) {
@@ -25,4 +28,9 @@ export async function deleteOne(id) {
   console.log("delete:"+id);
   const result = await pool.query('DELETE FROM "user" WHERE user_id = $1', [id]);
   return result.rows;
+}
+
+export async function getUserByEmail(email) {
+  const result = await pool.query('SELECT * FROM "user" WHERE email = $1', [email]);
+  return result.rows.length > 0 ? result.rows[0] : null;
 }
