@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title">
+  <title id="title">Profile placeholder</title>
+  <rect width="128" height="128" rx="16" ry="16" fill="#f3f4f6" />
+  <g transform="translate(64,52)">
+    <!-- head -->
+    <circle cx="0" cy="-12" r="18" fill="#9ca3af" />
+    <!-- shoulders -->
+    <path d="M-36,36 C-36,16 -12,8 0,8 C12,8 36,16 36,36 Z" fill="#9ca3af" transform="translate(0,-4)"/>
+  </g>
+</svg>

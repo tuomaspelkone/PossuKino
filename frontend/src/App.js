@@ -5,6 +5,15 @@ import MovieShowcase from "./components/movieShowcase";
 
 function App() {
   const [searchResults, setSearchResults] = useState([]);
+  const [hash, setHash] = useState(window.location.hash || "");
+
+  useEffect(() => {
+    const onHashChange = () => setHash(window.location.hash || "");
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+
+  const isProfile = hash === '#profile';
 
   return (
     <div className="App">
@@ -12,9 +21,19 @@ function App() {
       
       {/* Pääsisältö */}
       <main className="main-content">
-        {/* Näytetään aina elokuvagalleria */}
-        <MovieShowcase />
-        {/*<div className="search-results">
+        {isProfile ? (
+          <div className="profile-empty">
+            <h2>Otiskko</h2>
+            <p>tekstiä</p>
+            <img src="/profile-placeholder.svg" alt="Profile placeholder" width="128" height="128" />
+            <button className="btn">Testinappi</button>
+            </div>
+
+        ) : (
+          <>
+            {/* Näytetään aina elokuvagalleria */}
+            <MovieShowcase />
+            {/*<div className="search-results">
           {searchResults.length > 0 ? (
             searchResults.map(result => (
               <div key={result.movie_id || result.group_id} className="result-card">
@@ -31,6 +50,8 @@ function App() {
               <p> Käytä ylänurkan hakupalkkia löytääksesi elokuvia tai ryhmiä.</p>
             </div>
           )
+          </>
+        )}
       </main>
     </div>
   );
