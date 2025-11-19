@@ -30,6 +30,12 @@ function LoginButton() {
         setSuccess('Kirjautuminen onnistui!');
         // Tallenna token localStorageen
         localStorage.setItem('token', data.token);
+        // Tallenna käyttäjätiedot localStorageen jotta muut komponentit voivat käyttää niitä
+        if (data.user) {
+          localStorage.setItem('user', JSON.stringify(data.user));
+        }
+        // Ilmoita muille komponenteille että käyttäjä vaihtui
+        window.dispatchEvent(new Event('userChanged'));
         setTimeout(() => {
           setIsOpen(false);
           setEmail('');

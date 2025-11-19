@@ -136,3 +136,33 @@ export async function login(req, res, next) {
     next(err);
   }
 }
+
+export async function changePassword(req, res, next) {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'Nykyinen ja uusi salasana vaaditaan' });
+    }
+
+    const user = await getOne(req.params.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const valid = await bcrypt.compare(currentPassword, user.password);
+    if (!valid) return res.status(401).json({ error: 'Virheellinen nykyinen salasana' });
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+
+    // reuse updateOne to set the new hashed password while keeping other fields
+    const payload = {
+      username: user.username,
+      email: user.email,
+      password: hashed,
+      refresh_token: user.refresh_token
+    };
+
+    await updateOne(req.params.id, payload);
+    res.json({ message: 'Salasana muutettu onnistuneesti' });
+  } catch (err) {
+    next(err);
+  }
+}
