@@ -1,12 +1,19 @@
+
 import { useEffect, useState } from "react";
 import Navbar from "./components/navbar";
 import './App.css';
 import MovieShowcase from "./components/movieShowcase";
 import Profile from "./components/profile";
+import ReactPaginate from 'react-paginate';
+
+
 
 function App() {
   const [searchResults, setSearchResults] = useState([]);
+  // searchResults now can be an object { results: [], page, total_pages }
+  const [searchResultsObj, setSearchResultsObj] = useState({ results: [], page: 1, total_pages: 0 });
   const [hash, setHash] = useState(window.location.hash || "");
+  const [searchPage, setSearchPage] = useState(1);
 
   useEffect(() => {
     const onHashChange = () => setHash(window.location.hash || "");
@@ -16,9 +23,14 @@ function App() {
 
   const isProfile = hash === '#profile';
 
+
   return (
     <div className="App">
-      <Navbar onSearchResults={setSearchResults} />
+      <Navbar onSearchResults={(data) => {
+        // normalize incoming data from SearchBar
+        if (Array.isArray(data)) setSearchResultsObj({ results: data, page: 1, total_pages: 0 });
+        else setSearchResultsObj({ results: data.results || [], page: data.page || 1, total_pages: data.total_pages || 0 });
+      }} page={searchPage} onPageChange={setSearchPage} />
 
       {/* Pääsisältö */}
       <main className="main-content">
@@ -28,24 +40,53 @@ function App() {
           <>
             {/* Näytetään aina elokuvagalleria */}
             <MovieShowcase />
-            {/*<div className="search-results">
-          {searchResults.length > 0 ? (
-            searchResults.map(result => (
-              <div key={result.movie_id || result.group_id} className="result-card">
-                <h3>{result.movie_title || result.group_name}</h3>
-                {result.movie_description && <p>{result.movie_description}</p>}
-                {result.group_description && <p>{result.group_description}</p>}
+
+            {/* Hakutulokset TMDB:stä (jos olemassa) */}
+            {searchResultsObj && searchResultsObj.results && searchResultsObj.results.length > 0 ? (
+              <div className="search-results">
+                <h2>Hakutulokset</h2>
+                <div className="movies-grid">
+                  {searchResultsObj.results.map(result => (
+                    <div key={result.movie_id || result.tmdb_id} className="movie-card">
+                      <div className="movie-poster">
+                        {result.movie_image ? (
+                          <img src={result.movie_image} alt={result.movie_title} onError={(e) => e.target.style.display = 'none'} />
+                        ) : (
+                          <div className="no-poster">Ei kuvaa</div>
+                        )}
+                      </div>
+                      <div className="movie-info">
+                        <h3>{result.movie_title}</h3>
+                        {result.movie_certification && <p className="certification">📋 {result.movie_certification}</p>}
+                        {result.movie_description && <p className="description">{result.movie_description.substring(0, 100)}...</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {searchResultsObj.total_pages > 1 && (
+                  <ReactPaginate
+                    breakLabel="..."
+                    nextLabel="next >"
+                    onPageChange={(e) => {
+                      const newPage = e.selected + 1;
+                      setSearchPage(newPage);
+                    }}
+                    pageRangeDisplayed={5}
+                    pageCount={searchResultsObj.total_pages}
+                    previousLabel="< previous"
+                    forcePage={(searchResultsObj.page || 1) - 1}
+                    renderOnZeroPageCount={null}
+                  />
+                )}
               </div>
-            ))
-          ) 
-          */}
-          : 
-            <div className="empty-state">
-              <h2>Tervetuloa PossuKinoon!</h2>
-              <p> Käytä ylänurkan hakupalkkia löytääksesi elokuvia tai ryhmiä.</p>
-            </div>
+            ) : (
+              <div className="empty-state">
+                <h2>Tervetuloa PossuKinoon!</h2>
+                <p> Käytä ylänurkan hakupalkkia löytääksesi elokuvia tai ryhmiä.</p>
+              </div>
+            )}
           </>
-        
         )}
       </main>
     </div>

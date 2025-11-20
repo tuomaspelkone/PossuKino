@@ -11,7 +11,7 @@ export async function getMovies(req, res, next) {
 
 export async function getMovie(req, res, next) {
   try {
-    const id = req.params.movie_id || req.params.id;
+    const id = req.params.tmdb_id || req.params.id;
     const movie = await getOne(id);
     if (!movie) {
       return res.status(404).json({ error: "Movie not found" });
@@ -35,7 +35,7 @@ export async function addMovie(req, res, next) {
 
 export async function updateMovie(req, res, next) {
   try {
-    const id = req.params.movie_id || req.params.id;
+    const id = req.params.tmdb_id || req.params.id;
     const response = await updateOne(id, req.body);
     res.json(Array.isArray(response) && response.length > 0 ? response[0] : response);
   } catch (err) {
@@ -57,7 +57,7 @@ export async function searchMovies(req, res, next) {
 
 export async function deleteMovie(req, res, next) {
   try {
-    const id = req.params.movie_id || req.params.id;
+    const id = req.params.tmdb_id || req.params.id;
     const movie = await deleteOne(id);
     if (!Array.isArray(movie) || movie.length === 0) {
       return res.status(404).json({ error: "Movie not found" });

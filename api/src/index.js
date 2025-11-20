@@ -13,6 +13,7 @@ import movie_genres_router from "./routers/movie_genres_router.js";
 import movies_router from "./routers/movies_router.js";
 import reviews_router from "./routers/reviews_router.js";
 import user_router from "./routers/user_router.js";
+import tmdb_router from "./routers/tmdb_router.js";
 
 const app = express();
 const port = process.env.PORT;
@@ -36,6 +37,7 @@ app.use("/group", group_router);
 app.use("/movie_genres", movie_genres_router);
 app.use("/movies", movies_router);
 app.use("/reviews", reviews_router);
+app.use("/tmdb", tmdb_router);
 
 app.listen(port, () => {
   console.log(`Server is listening port ${port}`);

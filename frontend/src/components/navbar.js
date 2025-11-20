@@ -3,7 +3,7 @@ import SearchBar from './searchBar';
 import LoginButton from './loginButton';
 import './navbar.css';
 
-function Navbar({ onSearchResults }) {
+function Navbar({ onSearchResults, page, onPageChange }) {
   return (
     <nav className="navbar">
       <div className="navbar-container">
@@ -12,7 +12,7 @@ function Navbar({ onSearchResults }) {
         </div>
         
         <div className="navbar-search">
-          <SearchBar onSearchResults={onSearchResults} />
+          <SearchBar onSearchResults={onSearchResults} page={page} onPageChange={onPageChange} />
         </div>
         
         <div className="navbar-links">

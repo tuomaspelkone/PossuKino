@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './searchBar.css';
 
-function SearchBar({ onSearchResults }) {
+function SearchBar({ onSearchResults, page = 1, onPageChange }) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchType, setSearchType] = useState('movies'); // 'movies' tai 'groups'
@@ -28,6 +28,15 @@ function SearchBar({ onSearchResults }) {
     return () => clearTimeout(timer);
   }, [searchTerm, selectedGenres, selectedCertification, searchType]);
 
+  // Re-run search when page changes (coming from parent pagination)
+  useEffect(() => {
+    // Only trigger when searching movies (or when no filters but page changed)
+    if (searchType === 'movies') {
+      performSearch();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
+
   const fetchGenres = async () => {
     try {
       const response = await fetch('http://localhost:3001/genres');
@@ -45,10 +54,12 @@ function SearchBar({ onSearchResults }) {
       const params = new URLSearchParams();
 
       if (searchType === 'movies') {
-        url = 'http://localhost:3001/movies/search';
+        url = 'http://localhost:3001/tmdb/search';
         if (searchTerm) params.append('q', searchTerm);
         if (selectedGenres.length > 0) params.append('genres', selectedGenres.join(','));
         if (selectedCertification) params.append('certification', selectedCertification);
+        // page is controlled by parent (App) via props; include it here
+        params.append('page', page || 1);
       } else {
         url = 'http://localhost:3001/groups/search';
         if (searchTerm) params.append('q', searchTerm);
@@ -56,9 +67,12 @@ function SearchBar({ onSearchResults }) {
 
       const response = await fetch(`${url}?${params}`);
       const data = await response.json();
+      // TMDB proxy returns { results, page, total_pages }
+      const mapped = Array.isArray(data.results) ? data.results : [];
       // Rajaa dropdownissa näytettävät tulokset ensimmäisiin 10:een
-      setSearchResultsLocal(Array.isArray(data) ? data.slice(0, 10) : []);
-      onSearchResults && onSearchResults(data);
+      setSearchResultsLocal(mapped.slice(0, 10));
+      // Call parent with structured payload so App can paginate
+      onSearchResults && onSearchResults({ results: mapped, page: data.page, total_pages: data.total_pages });
     } catch (error) {
       console.error('Search error:', error);
       onSearchResults([]);
@@ -197,7 +211,7 @@ function SearchBar({ onSearchResults }) {
             <div className="search-results-dropdown">
               <ul>
                 {searchResultsLocal.map(item => (
-                  <li key={item.movie_id || item.group_id} className="search-result-item">
+                  <li key={item.movie_id || item.tmdb_id || item.group_id} className="search-result-item">
                     <button
                       type="button"
                       onClick={() => {
