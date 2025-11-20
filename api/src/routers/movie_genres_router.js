@@ -4,9 +4,9 @@ import { getMovie_genres, getMovie_genre, addMovie_genre, updateMovie_genre, del
 const movie_genres_router = Router();
 
 movie_genres_router.get("/", getMovie_genres);
-movie_genres_router.get("/:movie_id", getMovie_genre);
+movie_genres_router.get("/:tmdb_id", getMovie_genre);
 movie_genres_router.post("/", addMovie_genre);
-movie_genres_router.put("/:movie_id", updateMovie_genre);
-movie_genres_router.delete("/:movie_id", deleteMovie_genre);
+movie_genres_router.put("/:tmdb_id", updateMovie_genre);
+movie_genres_router.delete("/:tmdb_id", deleteMovie_genre);
 
 export default movie_genres_router;

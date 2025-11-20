@@ -61,7 +61,7 @@ function MovieShowcase() {
       <h2>📽️ Elokuvat tietokannasta</h2>
       <div className="movies-grid">
         {movies.map(movie => (
-          <div key={movie.movie_id} className="movie-card">
+          <div key={movie.tmdb_id} className="movie-card">
             <div className="movie-poster">
               {movie.movie_image ? (
                 <img 

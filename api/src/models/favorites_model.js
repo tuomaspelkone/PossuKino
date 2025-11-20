@@ -12,8 +12,8 @@ export async function getOne(id) {
 
 export async function addOne(favorite) {
   const result = await pool.query(
-    "INSERT INTO favorites (user_id, movie_id) VALUES($1,$2) RETURNING *",
-    [favorite.user_id, favorite.movie_id]
+    "INSERT INTO favorites (user_id, tmdb_id) VALUES($1,$2) RETURNING *",
+    [favorite.user_id, favorite.tmdb_id]
   );
   return result.rows;
 }
@@ -21,8 +21,8 @@ export async function addOne(favorite) {
 export async function updateOne(id,favorite) {
   console.log("update:"+id);
   const result = await pool.query(
-    "UPDATE favorites SET user_id=$1, movie_id=$2 WHERE favorite_id=$3 RETURNING *",
-    [favorite.user_id, favorite.movie_id, id]
+    "UPDATE favorites SET user_id=$1, tmdb_id=$2 WHERE favorite_id=$3 RETURNING *",
+    [favorite.user_id, favorite.tmdb_id, id]
   );
   return result.rows;
 }
