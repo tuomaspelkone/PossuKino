@@ -96,3 +96,30 @@ ul li {
 li.selected{
   color: red;
 }
+
+.pagination-wrapper {
+  grid-column: 1 / -1;      /* Vie koko rivin */
+  display: flex;
+  justify-content: center;  /* Keskittää sivutuksen */
+  margin-top: 2rem;
+}
+
+.pagination-wrapper ul {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0;
+}
+
+.pagination-wrapper li {
+  list-style: none;
+  padding: 0.5rem 0.8rem;
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  cursor: pointer;
+}
+
+.pagination-wrapper li.selected {
+  background: #1a1a2e;
+  color: white;
+}

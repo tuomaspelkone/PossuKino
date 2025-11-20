@@ -30,8 +30,8 @@ function SearchBar({ onSearchResults, page = 1, onPageChange }) {
 
   // Re-run search when page changes (coming from parent pagination)
   useEffect(() => {
-    // Only trigger when searching movies (or when no filters but page changed)
-    if (searchType === 'movies') {
+    // Only trigger when searching movies with existing results
+    if (searchType === 'movies' && searchResultsLocal.length > 0) {
       performSearch();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -79,6 +79,11 @@ function SearchBar({ onSearchResults, page = 1, onPageChange }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSearchClick = async () => {
+    await performSearch();
+    setIsOpen(false);
   };
 
   const handleGenreToggle = (genreId) => {
@@ -150,6 +155,15 @@ function SearchBar({ onSearchResults, page = 1, onPageChange }) {
             {loading && <span className="loading-spinner">🔄</span>}
           </div>
 
+          {/* Hae-nappi */}
+          <button 
+            className="search-button"
+            onClick={handleSearchClick}
+            disabled={!searchTerm && selectedGenres.length === 0 && !selectedCertification}
+          >
+            Hae
+          </button>
+
           {/* Suodattimet - näytetään vain elokuvahaussa */}
           {searchType === 'movies' && (
             <div className="filters">
@@ -206,16 +220,15 @@ function SearchBar({ onSearchResults, page = 1, onPageChange }) {
             </div>
           )}
           
-          {/* Hakutulokset listana (rajoitettu slice(0,10)) */}
-          {searchResultsLocal && searchResultsLocal.length > 0 && (
-            <div className="search-results-dropdown">
+          {/* Hakutulokset dropdownissa kirjoitettaessa */}
+          {searchResultsLocal && searchResultsLocal.length > 0 && isOpen && (
+            <div className="search-results-dropdown-inline">
               <ul>
                 {searchResultsLocal.map(item => (
-                  <li key={item.movie_id || item.tmdb_id || item.group_id} className="search-result-item">
+                  <li key={item.movie_id || item.tmdb_id || item.group_id}>
                     <button
                       type="button"
                       onClick={() => {
-                        // Sulje dropdown; tarvittaessa lisää navigointi tähän
                         setIsOpen(false);
                       }}
                     >
