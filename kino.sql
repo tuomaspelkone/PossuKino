@@ -97,7 +97,7 @@ CREATE INDEX idx_movie_genres_genre ON movie_genres(genre_id);
 
 -- Sample data for testing
 INSERT INTO "user" (user_id, username, email, password) VALUES
-(1, 'matti', 'matti@example.com', '$2b$10$hashedpassword1'),
+(1, 'matti', 'matti@example.com', '$2b$10$2w9SzZ7iaKgTp0.a4y8hzutfgDUu6/8A1qDOkOnW4yqFczA7dqzyy'), --Matin salasana testpass123
 (2, 'liisa', 'liisa@example.com', '$2b$10$hashedpassword2'),
 (3, 'pekka', 'pekka@example.com', '$2b$10$hashedpassword3');
 
@@ -143,9 +143,11 @@ INSERT INTO favorites (user_id, movie_id) VALUES
 (2, 3),
 (3, 4);
 
-INSERT INTO groups (user_id, group_name, group_description) VALUES
-(1, 'Sci-Fi Lovers', 'Group for science fiction movie enthusiasts'),
-(2, 'Classic Movies', 'Discussing timeless cinema');
+INSERT INTO groups (group_id, user_id, group_name, group_description) VALUES
+(1, 1, 'Sci-Fi Lovers', 'Group for science fiction movie enthusiasts'),
+(2, 2, 'Classic Movies', 'Discussing timeless cinema'),
+(3, 1, 'Horror Fans', 'Fans of horror films'),
+(4, 3, 'Indie Films', 'Discussing independent movies');
 
 INSERT INTO group_members (group_id, user_id, group_admin) VALUES
 (1, 1, true),
