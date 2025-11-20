@@ -104,6 +104,31 @@
   border-color: #1a1a2e;
 }
 
+.search-button {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: #1a1a2e;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s;
+  margin-bottom: 1rem;
+}
+
+.search-button:hover:not(:disabled) {
+  background: #0f0f1e;
+  transform: translateY(-2px);
+}
+
+.search-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .loading-spinner {
   position: absolute;
   right: 10px;
@@ -205,43 +230,110 @@
   background: #ff5252;
 }
 
-/* Hakudropdownin tulokset */
-.search-results-dropdown {
+/* Hakudropdownin tulokset (kirjoitettaessa näkyvät) */
+.search-results-dropdown-inline {
   margin-top: 8px;
   max-height: 320px;
   overflow-y: auto;
   background: white;
   color: #111;
   border-radius: 6px;
-  padding: 8px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-  width: 100%;
+  padding: 0;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+  width: calc(100% - 0px);
+  border: 1px solid #eee;
 }
 
-.search-results-dropdown ul {
+.search-results-dropdown-inline ul {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.search-result-item {
+.search-results-dropdown-inline li {
   margin: 0;
-  padding: 6px 4px;
+  padding: 0;
   border-bottom: 1px solid rgba(0,0,0,0.06);
 }
 
-.search-result-item button {
+.search-results-dropdown-inline li:last-child {
+  border-bottom: none;
+}
+
+.search-results-dropdown-inline button {
   width: 100%;
   text-align: left;
   background: transparent;
   border: none;
-  padding: 6px;
+  padding: 8px 10px;
   cursor: pointer;
   font-size: 0.95rem;
+  color: #1a1a2e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
 }
 
-.search-result-item button:hover {
-  background: rgba(0,0,0,0.03);
+.search-results-dropdown-inline button:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+/* Hakutulokset alhaalla (näkyvät kun "Hae" painetaan) */
+.search-results-below {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.search-results-below h4 {
+  margin: 0 0 1rem 0;
+  color: #1a1a2e;
+  font-size: 1.1rem;
+}
+
+.search-results-below ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.search-result-item-below {
+  margin: 0.5rem 0;
+  padding: 0;
+}
+
+.search-result-item-below button {
+  width: 100%;
+  text-align: left;
+  background: #f9f9f9;
+  border: 1px solid #eee;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  border-radius: 4px;
+  transition: all 0.3s;
+  color: #1a1a2e;
+}
+
+.search-result-item-below button:hover {
+  background: #1a1a2e;
+  color: white;
+  border-color: #1a1a2e;
 }
 
 /* Responsiivisuus */

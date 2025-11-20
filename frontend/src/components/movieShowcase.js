@@ -13,15 +13,15 @@ function MovieShowcase() {
   const fetchPopularMovies = async () => {
     try {
       setLoading(true);
-      // Kutsu backendiin välimuistin kautta
-      const response = await fetch("http://localhost:3001/cache/popular");
+      // Kutsu TMDB API:ta suoraan täydellä elokuvadatalla
+      const response = await fetch("http://localhost:3001/tmdb/popular");
       
       if (!response.ok) {
         throw new Error(`HTTP-virhe: ${response.status}`);
       }
       
       const data = await response.json();
-      setMovies(data);
+      setMovies(data.results || []);
       setError(null);
     } catch (error) {
       console.error("Virhe:", error);
@@ -58,7 +58,7 @@ function MovieShowcase() {
 
   return (
     <div className="movie-showcase">
-      <h2>📽️ Elokuvat tietokannasta</h2>
+      <h2>📽️ Uusimmat elokuvat</h2>
       <div className="movies-grid">
         {movies.map(movie => (
           <div key={movie.tmdb_id} className="movie-card">

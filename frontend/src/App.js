@@ -65,19 +65,21 @@ function App() {
                 </div>
 
                 {searchResultsObj.total_pages > 1 && (
+                  <div className="pagination-wrapper">
                   <ReactPaginate
                     breakLabel="..."
-                    nextLabel="next >"
+                    nextLabel=">"
                     onPageChange={(e) => {
                       const newPage = e.selected + 1;
                       setSearchPage(newPage);
                     }}
                     pageRangeDisplayed={5}
                     pageCount={searchResultsObj.total_pages}
-                    previousLabel="< previous"
+                    previousLabel="<"
                     forcePage={(searchResultsObj.page || 1) - 1}
                     renderOnZeroPageCount={null}
                   />
+                  </div>
                 )}
               </div>
             ) : (
