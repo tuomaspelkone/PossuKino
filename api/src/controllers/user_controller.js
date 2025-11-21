@@ -1,4 +1,4 @@
-import { getAll, getOne, addOne, updateOne, deleteOne, getUserByEmail } from "../models/user_model.js";
+import { getAll, getOne, addOne, updateOne, deleteOne, getUserByEmail, getDeletedOne } from "../models/user_model.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -20,6 +20,18 @@ export async function getUser(req, res, next) {
       return res.status(404).json({ error: "User not found" });
     }
     res.json(user);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getDeletedUser(req, res, next) {
+  try {
+    const deleted = await getDeletedOne(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ error: "Deleted user info not found" });
+    }
+    res.json(deleted);
   } catch (err) {
     next(err);
   }

@@ -23,13 +23,11 @@ function Profile() {
       try {
         setLoading(true);
 
-        // Fetch user
         const resUser = await fetch(`${apiBase.replace(/\/$/, '')}/user/${userId}`);
         if (!resUser.ok) throw new Error(`User HTTP ${resUser.status}`);
         const userData = await resUser.json();
         setUser(userData);
 
-        // Fetch favorites, movies, group members and groups in parallel
         const apiBaseNoSlash = apiBase.replace(/\/$/, '');
         const [resFavs, resMovies, resGroupMembers, resGroups, resReviews] = await Promise.all([
           fetch(`${apiBaseNoSlash}/favorites`),
@@ -49,18 +47,39 @@ function Profile() {
         const groupsAll = await resGroups.json();
         const reviewsAll = await resReviews.json();
 
-        // Filter favorites for this user and map to movie objects
+        async function fetchDetailsForIds(ids) {
+          const uniq = Array.from(new Set(ids.filter(Boolean)));
+          if (uniq.length === 0) return {};
+          const results = await Promise.all(uniq.map(id =>
+            fetch(`${apiBaseNoSlash}/tmdb/movie/${id}`).then(r => r.ok ? r.json().catch(() => null) : null).catch(() => null)
+          ));
+          const map = {};
+          uniq.forEach((id, i) => { if (results[i]) map[Number(id)] = results[i]; });
+          return map;
+        }
+
         const userFavs = favs.filter(f => Number(f.user_id) === Number(userData.user_id));
-        const favMovies = userFavs.map(f => movies.find(m => Number(m.movie_id) === Number(f.movie_id))).filter(Boolean);
+        const favIds = userFavs.map(f => Number(f.movie_id || f.tmdb_id || f.tmdbId || f.tmdb));
+        const userReviewRows = reviewsAll.filter(r => Number(r.user_id) === Number(userData.user_id));
+        const reviewIds = userReviewRows.map(r => Number(r.movie_id || r.tmdb_id || r.tmdbId || r.tmdb));
+
+        const neededIds = Array.from(new Set([...favIds, ...reviewIds]));
+        const detailsMap = await fetchDetailsForIds(neededIds);
+
+        const favMovies = userFavs.map(f => {
+          const favKey = Number(f.movie_id || f.tmdb_id || f.tmdbId || f.tmdb);
+          const local = movies.find(m => Number(m.movie_id || m.tmdb_id || m.tmdbId || m.tmdb) === favKey);
+          return detailsMap[favKey] || local || null;
+        }).filter(Boolean);
         setFavorites(favMovies);
-        // Find groups where the user is a member
         const userMemberships = groupMembers.filter(gm => Number(gm.user_id) === Number(userData.user_id));
         const userGroups = userMemberships.map(m => groupsAll.find(g => Number(g.group_id) === Number(m.group_id))).filter(Boolean);
         setGroups(userGroups);
-        // Find reviews written by the user and attach movie info
-        const userReviews = reviewsAll
-          .filter(r => Number(r.user_id) === Number(userData.user_id))
-          .map(r => ({ ...r, movie: movies.find(m => Number(m.movie_id) === Number(r.movie_id)) }));
+        const userReviews = userReviewRows.map(r => {
+          const reviewKey = Number(r.movie_id || r.tmdb_id || r.tmdbId || r.tmdb);
+          const movieObj = detailsMap[reviewKey] || movies.find(m => Number(m.movie_id || m.tmdb_id || m.tmdbId || m.tmdb) === reviewKey) || null;
+          return { ...r, movie: movieObj };
+        });
         setReviews(userReviews);
       } catch (err) {
         setError(err.message || 'Error fetching data');
@@ -70,7 +89,6 @@ function Profile() {
     }
 
     if (!stored) {
-      // No logged-in user: don't fetch profile data
       setLoading(false);
       return;
     }
@@ -78,7 +96,6 @@ function Profile() {
     try {
       const parsed = JSON.parse(stored);
       if (parsed && parsed.user_id) {
-        // initialize with stored user and fetch fresh data
         setUser(parsed);
         fetchUserData(parsed.user_id);
       } else {
@@ -89,7 +106,6 @@ function Profile() {
     }
   }, []);
 
-  // Listen for global user change events (login/logout)
   useEffect(() => {
     function onUserChanged() {
       const stored = localStorage.getItem('user');
@@ -104,7 +120,6 @@ function Profile() {
       try {
         const parsed = JSON.parse(stored);
         if (parsed && parsed.user_id) {
-          // refetch data for the new user
           const apiBase = process.env.REACT_APP_API_URL || '';
           const apiBaseNoSlash = apiBase.replace(/\/$/, '');
           (async () => {
@@ -129,15 +144,41 @@ function Profile() {
               const groupsAll = await resGroups.json();
               const reviewsAll = await resReviews.json();
 
+              async function fetchDetailsForIds(ids) {
+                const uniq = Array.from(new Set(ids.filter(Boolean)));
+                if (uniq.length === 0) return {};
+                const results = await Promise.all(uniq.map(id =>
+                  fetch(`${apiBaseNoSlash}/tmdb/movie/${id}`).then(r => r.ok ? r.json().catch(() => null) : null).catch(() => null)
+                ));
+                const map = {};
+                uniq.forEach((id, i) => { if (results[i]) map[Number(id)] = results[i]; });
+                return map;
+              }
+
               const userFavs = favs.filter(f => Number(f.user_id) === Number(userData.user_id));
-              const favMovies = userFavs.map(f => movies.find(m => Number(m.movie_id) === Number(f.movie_id))).filter(Boolean);
+              const favIds = userFavs.map(f => Number(f.movie_id || f.tmdb_id || f.tmdbId || f.tmdb));
+              const userReviewRows = reviewsAll.filter(r => Number(r.user_id) === Number(userData.user_id));
+              const reviewIds = userReviewRows.map(r => Number(r.movie_id || r.tmdb_id || r.tmdbId || r.tmdb));
+
+              const neededIds = Array.from(new Set([...favIds, ...reviewIds]));
+              const detailsMap = await fetchDetailsForIds(neededIds);
+
+              const favMovies = userFavs.map(f => {
+                const favKey = Number(f.movie_id || f.tmdb_id || f.tmdbId || f.tmdb);
+                const local = movies.find(m => Number(m.movie_id || m.tmdb_id || m.tmdbId || m.tmdb) === favKey);
+                return detailsMap[favKey] || local || null;
+              }).filter(Boolean);
               setFavorites(favMovies);
+
               const userMemberships = groupMembers.filter(gm => Number(gm.user_id) === Number(userData.user_id));
               const userGroups = userMemberships.map(m => groupsAll.find(g => Number(g.group_id) === Number(m.group_id))).filter(Boolean);
               setGroups(userGroups);
-              const userReviews = reviewsAll
-                .filter(r => Number(r.user_id) === Number(userData.user_id))
-                .map(r => ({ ...r, movie: movies.find(m => Number(m.movie_id) === Number(r.movie_id)) }));
+
+              const userReviews = userReviewRows.map(r => {
+                const reviewKey = Number(r.movie_id || r.tmdb_id || r.tmdbId || r.tmdb);
+                const movieObj = detailsMap[reviewKey] || movies.find(m => Number(m.movie_id || m.tmdb_id || m.tmdbId || m.tmdb) === reviewKey) || null;
+                return { ...r, movie: movieObj };
+              });
               setReviews(userReviews);
             } catch (err) {
               setError(err.message || 'Error fetching data');
@@ -155,7 +196,6 @@ function Profile() {
     return () => window.removeEventListener('userChanged', onUserChanged);
   }, []);
 
-  // Cleanup object URL for selected image when component unmounts
   useEffect(() => {
     return () => {
       if (prevImageUrlRef.current) URL.revokeObjectURL(prevImageUrlRef.current);
@@ -166,7 +206,6 @@ function Profile() {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
     try {
-      // Revoke previous url
       if (prevImageUrlRef.current) {
         URL.revokeObjectURL(prevImageUrlRef.current);
       }
@@ -175,7 +214,6 @@ function Profile() {
       setSelectedImageFile(file);
       setSelectedImageUrl(url);
     } catch (err) {
-      // ignore object URL errors
       console.error('Could not create object URL for image', err);
     }
   }
@@ -200,7 +238,6 @@ function Profile() {
   if (loading) return <div className="profile-empty">Ladataan profiilia…</div>;
   if (error) return <div className="profile-empty">Virhe: {error}</div>;
 
-  // If no logged-in user, render nothing
   if (!user) return null;
 
   return (
@@ -213,7 +250,21 @@ function Profile() {
           <div>Käyttäjänimi: {user?.username || '—'}</div>
           <div>Sähköposti: {user?.email || '—'}</div>
         </div>
-        <button className="btn" onClick={() => setShowModal(true)}>Muokkaa profiilitietoja</button>
+        <div style={{display: 'flex', gap: '0.5rem'}}>
+          <button className="btn" onClick={() => setShowModal(true)}>Muokkaa profiilitietoja</button>
+          <button
+            className="btn"
+            onClick={() => {
+              localStorage.removeItem('token');
+              localStorage.removeItem('user');
+              setUser(null);
+              setFavorites([]);
+              setGroups([]);
+              setReviews([]);
+              window.dispatchEvent(new Event('userChanged'));
+            }}
+          >Kirjaudu Ulos</button>
+        </div>
       </div>
 
       <div className="profile-favourites">
@@ -223,11 +274,15 @@ function Profile() {
         ) : (
           <div className="favs-list">
             {favorites.map(movie => (
-              <div className="fav-row" key={movie.movie_id} style={{padding: '0.5rem 0', borderBottom: '1px solid #eee'}}>
-                <div style={{fontWeight:600}}>{movie.movie_title}</div>
-                <div style={{fontSize: '0.9rem', color: '#666'}}>{movie.movie_year ? movie.movie_year : ''}</div>
+              <div
+                className="fav-row"
+                key={movie.movie_id || movie.tmdb_id || movie.tmdbId || movie.id}
+                style={{padding: '0.5rem 0', borderBottom: '1px solid #eee'}}
+              >
+                <div style={{fontWeight:600}}>{movie.movie_title || movie.title || movie.name || '—'}</div>
+                <div style={{fontSize: '0.9rem', color: '#666'}}>{movie.movie_year || movie.year || ''}</div>
               </div>
-              ))}
+            ))}
           </div>
         )}
       </div>
@@ -306,7 +361,6 @@ function Profile() {
                       const res = await fetch(`${apiBaseNoSlash}/user/${user.user_id}`, { method: 'DELETE' });
                       if (!res.ok) throw new Error(`HTTP ${res.status}`);
                       setShowModal(false);
-                      // Remove stored auth and notify other components
                       localStorage.removeItem('token');
                       localStorage.removeItem('user');
                       window.dispatchEvent(new Event('userChanged'));
@@ -330,7 +384,7 @@ function Profile() {
               <div className="group-name">{g.group_name}</div>
               <div className="group-actions">
                 <button className="btn">Poista ryhmä</button>
-                <button className="btn">linkki ryhmään</button>
+                <button className="btn">Linkki ryhmään</button>
               </div>
             </div>
           ))
@@ -345,7 +399,7 @@ function Profile() {
           <div className="reviews-list">
             {reviews.map(r => (
               <div key={r.review_id} className="review-row">
-                <div className="review-title">{r.movie?.movie_title || '—'}</div>
+                <div className="review-title">{r.movie?.movie_title || r.movie?.title || r.movie?.name || '—'}</div>
                 <div className="review-body">
                   <div className="review-stars">{renderStars(r.rating)}</div>
                   <div className="review-text">{r.review_text}</div>

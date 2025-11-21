@@ -101,4 +101,19 @@ export const getPopular = async (req, res) => {
   }
 };
 
-export default { searchMovies, getPopular };
+export const getMovieDetails = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const options = getAuthOptions();
+    const response = await axios.get(`${TMDB_BASE}/movie/${id}`, options);
+    const m = response.data;
+    const mapped = mapMovie(m);
+    upsertMovieId(m.id).catch(err => console.error('Upsert failed:', err));
+    res.json(mapped);
+  } catch (error) {
+    console.error('TMDB movie fetch error:', error?.response?.data || error.message || error);
+    res.status(500).json({ error: 'TMDB movie fetch failed' });
+  }
+};
+
+export default { searchMovies, getPopular, getMovieDetails };
