@@ -101,7 +101,7 @@ CREATE INDEX idx_movie_genres_genre ON movie_genres(genre_id);
 -- Sample data for testing (using TMDB IDs: https://www.themoviedb.org/)
 -- NOTE: These are placeholder TMDB IDs — replace with real ones from TMDB API
 INSERT INTO "user" (user_id, username, email, password) VALUES
-(1, 'matti', 'matti@example.com', '$2b$10$hashedpassword1'),
+(1, 'matti', 'matti@example.com', '$2b$10$2w9SzZ7iaKgTp0.a4y8hzutfgDUu6/8A1qDOkOnW4yqFczA7dqzyy'),
 (2, 'liisa', 'liisa@example.com', '$2b$10$hashedpassword2'),
 (3, 'pekka', 'pekka@example.com', '$2b$10$hashedpassword3');
 
