@@ -61,7 +61,12 @@ function MovieShowcase() {
       <h2>📽️ Uusimmat elokuvat</h2>
       <div className="movies-grid">
         {movies.map(movie => (
-          <div key={movie.tmdb_id} className="movie-card">
+          <div 
+            key={movie.tmdb_id} 
+            className="movie-card"
+            onClick={() => window.location.hash = `#movie/${movie.tmdb_id}`}
+            style={{ cursor: 'pointer' }}
+          >
             <div className="movie-poster">
               {movie.movie_image ? (
                 <img 

@@ -4,6 +4,7 @@ import Navbar from "./components/navbar";
 import './App.css';
 import MovieShowcase from "./components/movieShowcase";
 import Profile from "./components/profile";
+import MovieDetail from "./components/movieDetail";
 import ReactPaginate from 'react-paginate';
 
 
@@ -22,6 +23,8 @@ function App() {
   }, []);
 
   const isProfile = hash === '#profile';
+  const isMovieDetail = hash.startsWith('#movie/');
+  const movieId = isMovieDetail ? hash.replace('#movie/', '') : null;
 
 
   return (
@@ -36,6 +39,8 @@ function App() {
       <main className="main-content">
         {isProfile ? (
           <Profile />
+        ) : isMovieDetail ? (
+          <MovieDetail movieId={movieId} />
         ) : (
           <>
             {/* Näytetään aina elokuvagalleria */}
@@ -47,7 +52,12 @@ function App() {
                 <h2>Hakutulokset</h2>
                 <div className="movies-grid">
                   {searchResultsObj.results.map(result => (
-                    <div key={result.movie_id || result.tmdb_id} className="movie-card">
+                    <div 
+                      key={result.movie_id || result.tmdb_id} 
+                      className="movie-card"
+                      onClick={() => window.location.hash = `#movie/${result.tmdb_id || result.movie_id}`}
+                      style={{ cursor: 'pointer' }}
+                    >
                       <div className="movie-poster">
                         {result.movie_image ? (
                           <img src={result.movie_image} alt={result.movie_title} onError={(e) => e.target.style.display = 'none'} />
