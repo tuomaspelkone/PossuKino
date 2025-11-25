@@ -66,10 +66,13 @@ function Profile() {
         const neededIds = Array.from(new Set([...favIds, ...reviewIds]));
         const detailsMap = await fetchDetailsForIds(neededIds);
 
+        // Rakennetaan suosikit: säilytetään favorite_id jotta voidaan poistaa
         const favMovies = userFavs.map(f => {
-          const favKey = Number(f.movie_id || f.tmdb_id || f.tmdbId || f.tmdb);
+          const favKey = Number(f.tmdb_id || f.movie_id || f.tmdbId || f.tmdb);
           const local = movies.find(m => Number(m.movie_id || m.tmdb_id || m.tmdbId || m.tmdb) === favKey);
-          return detailsMap[favKey] || local || null;
+          const movieObj = detailsMap[favKey] || local || null;
+          if (!movieObj) return null;
+          return { favorite_id: f.favorite_id, tmdb_id: favKey, movie: movieObj };
         }).filter(Boolean);
         setFavorites(favMovies);
         const userMemberships = groupMembers.filter(gm => Number(gm.user_id) === Number(userData.user_id));
@@ -164,9 +167,11 @@ function Profile() {
               const detailsMap = await fetchDetailsForIds(neededIds);
 
               const favMovies = userFavs.map(f => {
-                const favKey = Number(f.movie_id || f.tmdb_id || f.tmdbId || f.tmdb);
+                const favKey = Number(f.tmdb_id || f.movie_id || f.tmdbId || f.tmdb);
                 const local = movies.find(m => Number(m.movie_id || m.tmdb_id || m.tmdbId || m.tmdb) === favKey);
-                return detailsMap[favKey] || local || null;
+                const movieObj = detailsMap[favKey] || local || null;
+                if (!movieObj) return null;
+                return { favorite_id: f.favorite_id, tmdb_id: favKey, movie: movieObj };
               }).filter(Boolean);
               setFavorites(favMovies);
 
@@ -235,6 +240,19 @@ function Profile() {
     return <span className="stars" aria-label={`Arvostelu ${n} tähteä`}>{stars}</span>;
   }
 
+  async function handleRemoveFavorite(favoriteId) {
+    if (!favoriteId) return;
+    try {
+      const apiBase = process.env.REACT_APP_API_URL || '';
+      const apiBaseNoSlash = apiBase.replace(/\/$/, '');
+      const res = await fetch(`${apiBaseNoSlash}/favorites/${favoriteId}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error(`Suosikin poisto epäonnistui (HTTP ${res.status})`);
+      setFavorites(prev => prev.filter(f => f.favorite_id !== favoriteId));
+    } catch (err) {
+      setError(err.message || 'Suosikin poisto epäonnistui');
+    }
+  }
+
   if (loading) return <div className="profile-empty">Ladataan profiilia…</div>;
   if (error) return <div className="profile-empty">Virhe: {error}</div>;
 
@@ -273,14 +291,15 @@ function Profile() {
           <p>Ei suosikkeja.</p>
         ) : (
           <div className="favs-list">
-            {favorites.map(movie => (
-              <div
-                className="fav-row"
-                key={movie.movie_id || movie.tmdb_id || movie.tmdbId || movie.id}
-                style={{padding: '0.5rem 0', borderBottom: '1px solid #eee'}}
-              >
-                <div style={{fontWeight:600}}>{movie.movie_title || movie.title || movie.name || '—'}</div>
-                <div style={{fontSize: '0.9rem', color: '#666'}}>{movie.movie_year || movie.year || ''}</div>
+            {favorites.map(f => (
+              <div className="fav-row" key={f.favorite_id}>
+                <div className="fav-info">
+                  <div className="fav-title">{f.movie.movie_title || f.movie.title || f.movie.name || '—'}</div>
+                  <div className="fav-year">{f.movie.movie_year || f.movie.year || ''}</div>
+                </div>
+                <button className="btn fav-remove-btn" onClick={() => handleRemoveFavorite(f.favorite_id)}>
+                  Poista
+                </button>
               </div>
             ))}
           </div>
