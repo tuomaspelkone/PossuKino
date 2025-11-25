@@ -14,6 +14,7 @@ import movies_router from "./routers/movies_router.js";
 import reviews_router from "./routers/reviews_router.js";
 import user_router from "./routers/user_router.js";
 import tmdb_router from "./routers/tmdb_router.js";
+import group_movies_router from "./routers/group_movies_router.js";
 
 const app = express();
 const port = process.env.PORT;
@@ -38,6 +39,22 @@ app.use("/movie_genres", movie_genres_router);
 app.use("/movies", movies_router);
 app.use("/reviews", reviews_router);
 app.use("/tmdb", tmdb_router);
+app.use("/group_movies", group_movies_router);
+
+// Ensure group_movies table exists
+import db from './database.js';
+const ensureTableSql = `CREATE TABLE IF NOT EXISTS group_movies (
+  group_movie_id SERIAL PRIMARY KEY,
+  group_id INTEGER NOT NULL,
+  tmdb_id TEXT,
+  movie_title TEXT,
+  movie_image TEXT,
+  movie_description TEXT,
+  added_reason TEXT,
+  added_by INTEGER,
+  created_at TIMESTAMP DEFAULT now()
+);`;
+db.query(ensureTableSql).catch(err => console.error('Failed to ensure group_movies table', err));
 
 app.listen(port, () => {
   console.log(`Server is listening port ${port}`);

@@ -5,6 +5,7 @@ import './App.css';
 import MovieShowcase from "./components/movieShowcase";
 import Profile from "./components/profile";
 import MovieDetail from "./components/movieDetail";
+import GroupPage from "./components/groupPage";
 import ReactPaginate from 'react-paginate';
 
 
@@ -23,6 +24,7 @@ function App() {
   }, []);
 
   const isProfile = hash === '#profile';
+  const isGroups = hash === '#groups';
   const isMovieDetail = hash.startsWith('#movie/');
   const movieId = isMovieDetail ? hash.replace('#movie/', '') : null;
 
@@ -39,6 +41,8 @@ function App() {
       <main className="main-content">
         {isProfile ? (
           <Profile />
+        ) : isGroups ? (
+          <GroupPage />
         ) : isMovieDetail ? (
           <MovieDetail movieId={movieId} />
         ) : (
