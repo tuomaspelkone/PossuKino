@@ -151,7 +151,9 @@ INSERT INTO favorites (user_id, tmdb_id) VALUES
 
 INSERT INTO groups (user_id, group_name, group_description) VALUES
 (1, 'Sci-Fi Lovers', 'Group for science fiction movie enthusiasts'),
-(2, 'Classic Movies', 'Discussing timeless cinema');
+(2, 'Classic Movies', 'Discussing timeless cinema'),
+(3, 'Horror Fans', 'Discuss and recommend horror movies'),
+(1, 'Comedy Club', 'Share and discuss comedy films and stand-up');
 
 INSERT INTO group_members (group_id, user_id, group_admin) VALUES
 (1, 1, true),

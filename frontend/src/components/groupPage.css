@@ -1,0 +1,329 @@
+.group-page {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.group-page-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #111827;
+}
+
+.group-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.create-btn {
+  background-color: #10b981;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.create-btn:hover { background-color: #059669; }
+
+.create-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1300;
+  padding: 1rem;
+}
+.create-modal {
+  background: #fff;
+  border-radius: 10px;
+  max-width: 480px;
+  width: 100%;
+  padding: 1rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+.create-modal h3 { margin: 0 0 0.5rem 0; }
+.modal-label { font-size: 0.9rem; color: #374151; margin-top: 0.5rem; display:block; }
+.modal-input { width: 100%; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius:6px; margin-top:0.25rem; }
+.create-submit { background: #2563eb; color:#fff; border:none; padding:0.5rem 0.8rem; border-radius:6px; }
+.create-submit:hover { background:#1e40af; }
+
+.group-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.group-detail-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.group-desc-row { margin-top: 0.25rem; }
+
+.group-members-row {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+}
+
+.members-count { color:#374151; font-size:0.95rem; }
+.group-title-row { margin: 0; font-size: 1.25rem; font-weight: 700; }
+.group-detail-top .group-detail-left { display:flex; align-items:center; }
+.group-detail-middle {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+.group-detail-left {
+  flex: 1 1 60%;
+}
+.group-detail-right {
+  flex: 0 0 220px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+.group-movies-right { align-items:flex-start; }
+.small-btn {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+.small-btn:hover { background: #1e40af; }
+
+/* Back button in group detail */
+.back-btn {
+  background-color: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+.back-btn:hover { background-color: #1e40af; }
+.back-btn:focus { outline: 2px solid rgba(37,99,235,0.25); }
+
+/* Ensure the three action buttons in the detail view align horizontally */
+.group-detail .back-btn,
+.group-detail .members-section .small-btn,
+.group-detail .group-movies-header .create-btn {
+  /* same size and baseline */
+  padding: 0.5rem 0.75rem;
+  font-size: 0.95rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* vertical alignment tweak: push the top 'Takaisin' button down to match the other two */
+.group-detail .back-btn { margin-top: 0; }
+.group-detail .members-section .small-btn { margin-top: 0; }
+.group-members-row .small-btn { margin-top: 0; }
+.group-detail .group-movies-header .create-btn { margin-top: 0; }
+
+.members-list {
+  margin-top: 0.5rem;
+  list-style: none;
+  padding: 0;
+}
+.members-list li { padding: 0.25rem 0; color: #374151; }
+
+.group-movies-header {
+  display: block;
+  margin-top: 0.5rem;
+}
+.group-movies-header > div {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* make sure create button lines up with other right-side buttons */
+.group-movies-header .create-btn {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.95rem;
+}
+.add-search { margin: 0.5rem 0; }
+.group-movies-list { margin-top: 0.5rem; display:flex; flex-direction:column; gap:0.5rem; }
+.group-movie { padding: 0.5rem; background:#fff; border-radius:6px; border:1px solid #eef2f7; }
+
+.add-search-results { margin-top: 1rem; }
+.movies-grid-inline { display:flex; gap:0.5rem; flex-wrap:wrap; }
+.movie-card.small { width: 160px; cursor:pointer; transition:transform 0.2s ease; }
+.movie-card.small:hover { transform: translateY(-4px); }
+.movie-card.small .movie-info { padding:0.5rem; }
+.movie-title { font-weight:600; color:#111827; }
+
+/* Add-movie modal styles */
+.add-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding:2rem;
+  z-index:2000;
+}
+.add-modal {
+  background:#fff;
+  width: min(1100px, 96%);
+  border-radius:10px;
+  padding:1rem 1rem 1.5rem 1rem;
+  max-height: 90vh;
+  overflow:auto;
+}
+.add-row { margin-bottom:0.75rem; }
+.add-row-1 .add-search-input { width:100%; padding:0.6rem; border:1px solid #e5e7eb; border-radius:6px; }
+.add-row-2 { display:flex; gap:0.75rem; }
+.add-select { flex:1; padding:0.5rem; border:1px solid #e5e7eb; border-radius:6px; }
+.add-row-3 { display:flex; justify-content:flex-end; }
+.add-results { margin-top:0.75rem; }
+.movie-card.add-result { width:160px; border-radius:6px; overflow:hidden; border:1px solid #eef2f7; }
+.movie-card.add-result img { display:block; }
+.movie-card.add-result .movie-info { padding:0.5rem; }
+.movie-card.add-result .no-poster { height:240px; }
+
+/* When MovieDetail is embedded inside group detail, hide its own global back-button and adjust container */
+.group-detail .movie-detail-container .back-button { display: none; }
+.group-detail .movie-detail-container { padding: 0; }
+.movie-detail-inline { margin-top: 0.5rem; }
+.movie-desc { font-size:0.85rem; color:#6b7280; margin-top:0.25rem; }
+.selected-movie-detail img { border-radius:6px; }
+.modal-textarea { width:100%; min-height:100px; padding:0.5rem; border:1px solid #e5e7eb; border-radius:6px; }
+
+/* Members modal overlay */
+.members-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1400;
+  padding: 1rem;
+}
+.members-modal {
+  background: #fff;
+  border-radius: 8px;
+  max-width: 420px;
+  width: 100%;
+  padding: 1rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+.members-modal h4 { margin: 0 0 0.5rem 0; }
+.members-lines { max-height: 300px; overflow:auto; }
+.member-line { padding: 0.4rem 0; border-bottom: 1px solid #eef2f7; color:#374151; }
+
+/* Card actions: browse movies title + small action buttons */
+.card-actions {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:0.75rem;
+  gap:0.5rem;
+}
+.browse-movies-title {
+  font-weight:600;
+  color:#111827;
+  cursor:pointer;
+}
+.card-buttons { display:flex; gap:0.5rem; }
+
+/* Modal for add-search uses existing create-modal styles; small tweak */
+.create-modal h3 { margin-top:0; }
+
+.group-page-empty {
+  min-height: 200px;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px dashed #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+}
+
+.group-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.group-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  border: 1px solid #eef2f7;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.group-card .group-name {
+  font-size: 1rem;
+}
+
+.group-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+.group-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.group-name {
+  font-weight: 700;
+  color: #111827;
+}
+
+.group-desc {
+  margin-top: 0.5rem;
+  color: #4b5563;
+  font-size: 0.95rem;
+}
+
+.group-meta {
+  margin-top: 0.75rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+/* Join button on the right side of the card header */
+.join-btn {
+  background-color: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.join-btn:hover {
+  background-color: #1e40af;
+}
+
+.join-btn.joined,
+.join-btn[disabled] {
+  background-color: #94a3b8;
+  cursor: default;
+}

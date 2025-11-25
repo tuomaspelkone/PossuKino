@@ -24,9 +24,18 @@ export async function getGroup(req, res, next) {
 export async function addGroup(req, res, next) {
   console.log("add called");
   try {
-    console.log(req.body);
-    const response = await addOne(req.body);
-    res.json(response);
+    // Require authenticated user — middleware should have set req.user
+    const user = req.user;
+    if (!user || !user.user_id) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    const payload = {
+      user_id: Number(user.user_id),
+      group_name: req.body.group_name,
+      group_description: req.body.group_description || null,
+    };
+    const created = await addOne(payload);
+    res.status(201).json(created);
   } catch (err) {
     next(err);
   }
