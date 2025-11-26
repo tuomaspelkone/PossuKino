@@ -12,5 +12,7 @@ router.get('/:group_id', controller.getGroupMovies);
 
 // POST /group_movies  (requires auth)
 router.post('/', requireAuth, controller.addGroupMovie);
+// DELETE /group_movies/:group_movie_id (requires auth, admin)
+router.delete('/:group_movie_id', requireAuth, controller.deleteGroupMovie);
 
 export default router;

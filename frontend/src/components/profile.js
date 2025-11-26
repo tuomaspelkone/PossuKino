@@ -76,7 +76,11 @@ function Profile() {
         }).filter(Boolean);
         setFavorites(favMovies);
         const userMemberships = groupMembers.filter(gm => Number(gm.user_id) === Number(userData.user_id));
-        const userGroups = userMemberships.map(m => groupsAll.find(g => Number(g.group_id) === Number(m.group_id))).filter(Boolean);
+        const userGroups = userMemberships.map(m => {
+          const grp = groupsAll.find(g => Number(g.group_id) === Number(m.group_id));
+          if (!grp) return null;
+          return { ...grp, member_id: m.member_id, group_admin: !!m.group_admin };
+        }).filter(Boolean);
         setGroups(userGroups);
         const userReviews = userReviewRows.map(r => {
           const reviewKey = Number(r.movie_id || r.tmdb_id || r.tmdbId || r.tmdb);
@@ -176,7 +180,11 @@ function Profile() {
               setFavorites(favMovies);
 
               const userMemberships = groupMembers.filter(gm => Number(gm.user_id) === Number(userData.user_id));
-              const userGroups = userMemberships.map(m => groupsAll.find(g => Number(g.group_id) === Number(m.group_id))).filter(Boolean);
+              const userGroups = userMemberships.map(m => {
+                const grp = groupsAll.find(g => Number(g.group_id) === Number(m.group_id));
+                if (!grp) return null;
+                return { ...grp, member_id: m.member_id, group_admin: !!m.group_admin };
+              }).filter(Boolean);
               setGroups(userGroups);
 
               const userReviews = userReviewRows.map(r => {
@@ -280,6 +288,7 @@ function Profile() {
               setGroups([]);
               setReviews([]);
               window.dispatchEvent(new Event('userChanged'));
+                try { window.location.hash = '#home'; } catch (e) {}
             }}
           >Kirjaudu Ulos</button>
         </div>
@@ -383,6 +392,7 @@ function Profile() {
                       localStorage.removeItem('token');
                       localStorage.removeItem('user');
                       window.dispatchEvent(new Event('userChanged'));
+                      try { window.location.hash = '#home'; } catch (e) {}
                     } catch (err) {
                       setError(err.message || 'Tilin poisto epäonnistui');
                     }
@@ -402,8 +412,41 @@ function Profile() {
             <div className="group-row" key={g.group_id}>
               <div className="group-name">{g.group_name}</div>
               <div className="group-actions">
-                <button className="btn">Poista ryhmä</button>
-                <button className="btn">Linkki ryhmään</button>
+                <button className="btn" onClick={() => { try { sessionStorage.setItem('returnToGroup', String(g.group_id)); } catch(e){} window.location.hash = '#groups'; }}>Linkki ryhmään</button>
+                {g.group_admin ? (
+                  <button className="btn" onClick={async () => {
+                    if (!window.confirm('Haluatko varmasti poistaa ryhmän? Tätä ei voi perua.')) return;
+                    try {
+                      const apiBase = process.env.REACT_APP_API_URL || '';
+                      const apiBaseNoSlash = apiBase.replace(/\/$/, '');
+                      const token = localStorage.getItem('token');
+                      const headers = {};
+                      if (token) headers['Authorization'] = `Bearer ${token}`;
+                      const res = await fetch(`${apiBaseNoSlash}/group/${g.group_id}`, { method: 'DELETE', headers });
+                      if (!res.ok) throw new Error('HTTP ' + res.status);
+                      setGroups(prev => prev.filter(x => Number(x.group_id) !== Number(g.group_id)));
+                    } catch (err) {
+                      setError(err.message || 'Ryhmäpoisto epäonnistui');
+                    }
+                  }}>Poista ryhmä</button>
+                ) : (
+                  <button className="btn" onClick={async () => {
+                    if (!g.member_id) return;
+                    if (!window.confirm('Haluatko poistua ryhmästä?')) return;
+                    try {
+                      const apiBase = process.env.REACT_APP_API_URL || '';
+                      const apiBaseNoSlash = apiBase.replace(/\/$/, '');
+                      const token = localStorage.getItem('token');
+                      const headers = {};
+                      if (token) headers['Authorization'] = `Bearer ${token}`;
+                      const res = await fetch(`${apiBaseNoSlash}/group_members/${g.member_id}`, { method: 'DELETE', headers });
+                      if (!res.ok) throw new Error('HTTP ' + res.status);
+                      setGroups(prev => prev.filter(x => Number(x.group_id) !== Number(g.group_id)));
+                    } catch (err) {
+                      setError(err.message || 'Poistuminen epäonnistui');
+                    }
+                  }}>Poistu ryhmästä</button>
+                )}
               </div>
             </div>
           ))

@@ -26,6 +26,9 @@ function GroupPage() {
     const [addReason, setAddReason] = useState('');
     const [genresList, setGenresList] = useState([]);
     const [viewingMovieId, setViewingMovieId] = useState(null);
+    const [isCurrentUserAdmin, setIsCurrentUserAdmin] = useState(false);
+    const [currentUserId, setCurrentUserId] = useState(null);
+    const [addMemberUsername, setAddMemberUsername] = useState('');
 
   useEffect(() => {
     let mounted = true;
@@ -66,21 +69,18 @@ function GroupPage() {
           }
         }
 
-        // attach member_count and joined flag to each group object for easy rendering
-        const enriched = groupsArr.map(g => ({
-          ...g,
-          member_count: counts[Number(g.group_id)] || 0,
-          joined: !!joinedMap[Number(g.group_id)]
-        }));
-        setGroups(enriched);
-      } catch (err) {
+        // enrich groups with counts and joined flags
+        const enriched = groupsArr.map(g => ({ ...g, member_count: counts[Number(g.group_id)] || 0, joined: !!joinedMap[Number(g.group_id)] }));
         if (!mounted) return;
-        setError(err.message || 'Error fetching groups');
-      } finally {
-        if (mounted) setLoading(false);
+        setGroups(enriched);
+        setLoading(false);
+        setError(null);
+      } catch (e) {
+        if (!mounted) return;
+        console.error('fetchGroups error', e);
+        setError(e.message || String(e));
       }
     }
-
     fetchGroups();
     return () => { mounted = false; };
   }, []);
@@ -162,17 +162,7 @@ function GroupPage() {
       }
       const created = await res.json();
 
-      // optionally add the creator as a member (admin)
-      try {
-        await fetch(`${apiBaseNoSlash}/group_members`, {
-          method: 'POST',
-          headers: headers,
-          body: JSON.stringify({ user_id: Number(parsed.user_id), group_id: created.group_id, group_admin: true }),
-        });
-      } catch (e) {
-        // non-fatal
-        console.warn('Could not add creator as member', e);
-      }
+      // creator is now added as admin server-side
 
       // add to UI
       const newGroup = {
@@ -200,6 +190,8 @@ function GroupPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     // load persisted movies for this group
     fetchGroupMovies(group.group_id);
+    // check if current user is admin of this group
+    checkAdminStatus(group.group_id);
   }
 
   function closeGroup() {
@@ -216,16 +208,19 @@ function GroupPage() {
       if (!resMembers.ok) throw new Error(`Group members HTTP ${resMembers.status}`);
       const membersArr = await resMembers.json();
       const members = membersArr.filter(m => Number(m.group_id) === Number(group_id));
-      const uniqUserIds = Array.from(new Set(members.map(m => Number(m.user_id)).filter(Boolean)));
       const usernames = [];
-      for (const uid of uniqUserIds) {
+      for (const mm of members) {
         try {
+          const uid = Number(mm.user_id);
           const r = await fetch(`${apiBaseNoSlash}/user/${uid}`);
-          if (!r.ok) continue;
+          if (!r.ok) {
+            usernames.push({ member_id: mm.member_id, user_id: mm.user_id, username: `user-${uid}`, admin: !!mm.group_admin });
+            continue;
+          }
           const u = await r.json();
-          usernames.push(u.username || u.email || `user-${uid}`);
+          usernames.push({ member_id: mm.member_id, user_id: mm.user_id, username: (u.username || u.email || `user-${uid}`), admin: !!mm.group_admin });
         } catch (e) {
-          // skip
+          usernames.push({ member_id: mm.member_id, user_id: mm.user_id, username: `user-${mm.user_id}`, admin: !!mm.group_admin });
         }
       }
       setMemberUsernames(usernames);
@@ -233,6 +228,50 @@ function GroupPage() {
     } catch (err) {
       console.error('Failed to load member usernames', err);
       setMemberUsernames([]);
+    }
+  }
+
+  async function checkAdminStatus(group_id) {
+    try {
+      const stored = localStorage.getItem('user');
+      if (!stored) { setIsCurrentUserAdmin(false); setCurrentUserId(null); return; }
+      const parsed = JSON.parse(stored);
+      const curUid = parsed && parsed.user_id ? Number(parsed.user_id) : null;
+      setCurrentUserId(curUid);
+      if (!curUid) { setIsCurrentUserAdmin(false); return; }
+      const apiBase = process.env.REACT_APP_API_URL || '';
+      const apiBaseNoSlash = apiBase.replace(/\/$/, '');
+      const res = await fetch(`${apiBaseNoSlash}/group_members`);
+      if (!res.ok) { setIsCurrentUserAdmin(false); return; }
+      const rows = await res.json();
+      const match = rows.find(r => Number(r.group_id) === Number(group_id) && Number(r.user_id) === Number(curUid));
+      setIsCurrentUserAdmin(!!(match && match.group_admin));
+    } catch (e) {
+      console.error('checkAdminStatus failed', e);
+      setIsCurrentUserAdmin(false);
+    }
+  }
+
+  async function handleDeleteGroupMovie(group_movie_id) {
+    if (!group_movie_id) return;
+    if (!window.confirm('Poistetaanko tämä elokuva ryhmästä?')) return;
+    try {
+      const apiBase = process.env.REACT_APP_API_URL || '';
+      const apiBaseNoSlash = apiBase.replace(/\/$/, '');
+      const token = localStorage.getItem('token');
+      const headers = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const res = await fetch(`${apiBaseNoSlash}/group_movies/${group_movie_id}`, { method: 'DELETE', headers });
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(txt || 'delete failed');
+      }
+      // remove from UI
+      setSelectedGroup(prev => ({ ...prev, movies: (prev.movies || []).filter(x => Number(x.group_movie_id) !== Number(group_movie_id)) }));
+      setGroups(prev => prev.map(g => Number(g.group_id) === Number(selectedGroup.group_id) ? ({ ...g, movies: (g.movies||[]).filter(x => Number(x.group_movie_id) !== Number(group_movie_id)) }) : g));
+    } catch (e) {
+      console.error('Failed to delete group movie', e);
+      window.alert('Poisto epäonnistui: ' + (e.message || 'virhe'));
     }
   }
 
@@ -392,21 +431,81 @@ function GroupPage() {
 
           {/* Members modal overlay (used from detail) */}
           {showMembersList && (
-            <div className="members-modal-overlay" onClick={() => setShowMembersList(false)}>
+            <div className="members-modal-overlay" onClick={() => { setShowMembersList(false); setAddMemberUsername(''); }}>
               <div className="members-modal" onClick={e => e.stopPropagation()} role="dialog">
                 <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
                   <h4>Jäsenet — {modalGroupName}</h4>
-                  <button className="small-btn" onClick={() => setShowMembersList(false)}>Sulje</button>
+                  <button className="small-btn" onClick={() => { setShowMembersList(false); setAddMemberUsername(''); }}>Sulje</button>
                 </div>
                 <div className="members-lines">
-                  {memberUsernames.length === 0 ? (
-                    <div style={{padding:'0.5rem 0', color:'#6b7280'}}>Ei jäseniä.</div>
-                  ) : (
-                    memberUsernames.map((u, i) => (
-                      <div className="member-line" key={i}>{u}</div>
-                    ))
-                  )}
+                        {memberUsernames.length === 0 ? (
+                          <div style={{padding:'0.5rem 0', color:'#6b7280'}}>Ei jäseniä.</div>
+                        ) : (
+                          memberUsernames.map((u, i) => (
+                            <div className="member-line" key={i} style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                              <div>
+                                {u.admin ? <strong>{u.username}</strong> : <span>{u.username}</span>}
+                              </div>
+                              <div>
+                                {isCurrentUserAdmin && Number(u.user_id) !== Number(currentUserId) && (
+                                  <button className="small-btn" onClick={async () => {
+                                    if (!u.member_id) return;
+                                    if (!window.confirm('Poistetaanko jäsen?')) return;
+                                    try {
+                                      const apiBase = process.env.REACT_APP_API_URL || '';
+                                      const apiBaseNoSlash = apiBase.replace(/\/$/, '');
+                                      const token = localStorage.getItem('token');
+                                      const headers = {};
+                                      if (token) headers['Authorization'] = `Bearer ${token}`;
+                                      const res = await fetch(`${apiBaseNoSlash}/group_members/${u.member_id}`, { method: 'DELETE', headers });
+                                      if (!res.ok) throw new Error('HTTP ' + res.status);
+                                      // reload members
+                                      loadMemberUsernames(selectedGroup.group_id, selectedGroup.group_name);
+                                      // decrement count
+                                      setSelectedGroup(prev => ({ ...prev, member_count: Math.max(0, (prev.member_count||0) - 1) }));
+                                      setGroups(prev => prev.map(g => Number(g.group_id) === Number(selectedGroup.group_id) ? ({ ...g, member_count: Math.max(0, (g.member_count||0) - 1) }) : g));
+                                    } catch (err) {
+                                      console.error('Remove member failed', err);
+                                      window.alert('Poisto epäonnistui');
+                                    }
+                                  }}>Poista</button>
+                                )}
+                              </div>
+                            </div>
+                          ))
+                        )}
                 </div>
+                {isCurrentUserAdmin && (
+                  <div style={{marginTop:'0.5rem', display:'flex', gap:'0.5rem'}}>
+                    <input type="text" placeholder="Lisää käyttäjällä (käyttäjätunnus)" value={addMemberUsername} onChange={e => setAddMemberUsername(e.target.value)} style={{padding:'0.4rem', borderRadius:6, border:'1px solid #e5e7eb'}} />
+                    <button className="small-btn" onClick={async () => {
+                      const username = addMemberUsername && addMemberUsername.trim();
+                      if (!username) return window.alert('Kirjoita käyttäjätunnus');
+                      try {
+                        const apiBase = process.env.REACT_APP_API_URL || '';
+                        const apiBaseNoSlash = apiBase.replace(/\/$/, '');
+                        const token = localStorage.getItem('token');
+                        const headers = { 'Content-Type': 'application/json' };
+                        if (token) headers['Authorization'] = `Bearer ${token}`;
+                        const body = { username, group_id: Number(selectedGroup.group_id), group_admin: false };
+                        const res = await fetch(`${apiBaseNoSlash}/group_members`, { method: 'POST', headers, body: JSON.stringify(body) });
+                        if (!res.ok) {
+                          const txt = await res.text();
+                          throw new Error(txt || 'add failed');
+                        }
+                        // refresh members
+                        loadMemberUsernames(selectedGroup.group_id, selectedGroup.group_name);
+                        // increment count
+                        setSelectedGroup(prev => ({ ...prev, member_count: (prev.member_count||0) + 1 }));
+                        setGroups(prev => prev.map(g => Number(g.group_id) === Number(selectedGroup.group_id) ? ({ ...g, member_count: (g.member_count||0) + 1 }) : g));
+                        setAddMemberUsername('');
+                      } catch (err) {
+                        console.error('Add member failed', err);
+                        window.alert('Lisäys epäonnistui: ' + (err.message || 'virhe'));
+                      }
+                    }}>Lisää</button>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -414,7 +513,14 @@ function GroupPage() {
           <div className="group-movies-header">
             <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
               <strong>Elokuva Lista</strong>
-              <button className="create-btn" onClick={() => setShowAddModal(true)}>Lisää elokuva</button>
+              {selectedGroup && !selectedGroup.joined ? (
+                <div style={{display:'flex', alignItems:'center', gap: '0.5rem'}}>
+                  <button className="create-btn" disabled title="Et ole ryhmän jäsen, et voi lisätä elokuvia">Lisää elokuva</button>
+                  <div style={{color:'#6b7280', fontSize:'0.9rem'}}>Vain ryhmän jäsenet voivat lisätä elokuvia.</div>
+                </div>
+              ) : (
+                <button className="create-btn" onClick={() => setShowAddModal(true)}>Lisää elokuva</button>
+              )}
             </div>
           </div>
           <div className="group-movies-list">
@@ -428,37 +534,57 @@ function GroupPage() {
                 </div>
               </div>
             ) : (selectedGroup.movies && selectedGroup.movies.length > 0 ? (
-              <div className="movies-grid">
-                {selectedGroup.movies.map((m, i) => {
+              <div>
+                  {selectedGroup.movies.map((m, i) => {
                   const title = m.movie_title || m.title || m.name || '—';
                   const desc = m.movie_description || m.overview || '';
                   let img = m.movie_image || m.poster_path || '';
                   if (img && img.startsWith('/')) img = `https://image.tmdb.org/t/p/w300${img}`;
                   const movieId = m.tmdb_id || m.id || m.movie_id;
+                  const isAdderAdmin = !!m.added_by_is_admin;
+                  const isAdderMember = !!m.added_by_is_member;
+                  const adder = isAdderMember ? (m.added_by_username || (m.added_by ? `user-${m.added_by}` : 'Tuntematon')) : 'poistunut henkilö';
+                  const createdAt = m.created_at || m.createdAt || null;
+                  let createdAtText = null;
+                  try { if (createdAt) createdAtText = new Date(createdAt).toLocaleString(); } catch (e) { createdAtText = String(createdAt); }
                   return (
-                    <div
-                      key={i}
-                      className="movie-card"
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setViewingMovieId(movieId)}
-                    >
-                      <div className="movie-poster">
-                        {img ? (
-                          <img src={img} alt={title} onError={(e) => e.target.style.display = 'none'} />
-                        ) : (
-                          <div className="no-poster">Ei kuvaa</div>
+                    <div key={i} className={`group-movie-row ${isAdderAdmin ? 'admin' : ''}`}>
+                      <div className="group-movie-left">
+                        <div className="group-movie-title">{title}</div>
+                        {desc && <div className="group-movie-desc">{desc}</div>}
+                        <div className="group-movie-meta">Lisäsi: {isAdderAdmin ? <strong>{adder}</strong> : <span>{adder}</span>}</div>
+                        {createdAtText && <div className="group-movie-meta">Lisätty: <span style={{color:'#6b7280'}}>{createdAtText}</span></div>}
+                        {m.added_reason && <div className="group-movie-meta">Syy: {m.added_reason}</div>}
+                        {( (isCurrentUserAdmin || (currentUserId && m.added_by && Number(m.added_by) === Number(currentUserId))) && m.group_movie_id ) && (
+                          <div style={{marginTop:'0.5rem'}}>
+                            <button className="movie-delete-btn" onClick={() => handleDeleteGroupMovie(m.group_movie_id)}>Poista</button>
+                          </div>
                         )}
                       </div>
-                      <div className="movie-info">
-                        <h3>{title}</h3>
-                        {m.movie_certification && (
-                          <p className="certification">📋 {m.movie_certification}</p>
-                        )}
-                        {desc && (
-                          <p className="description">{desc.length > 120 ? desc.substring(0, 120) + '...' : desc}</p>
-                        )}
-                        {m.added_reason && (
-                          <p className="added-reason" style={{fontStyle:'italic', color:'#6b7280'}}>{m.added_reason}</p>
+                      <div className="group-movie-right">
+                        {img ? (
+                          <img
+                            src={img}
+                            alt={title}
+                            onError={e => e.target.style.display = 'none'}
+                            onClick={() => {
+                              if (!movieId) return;
+                              try {
+                                if (selectedGroup && selectedGroup.group_id) {
+                                  sessionStorage.setItem('returnToGroup', String(selectedGroup.group_id));
+                                }
+                              } catch (e) {}
+                              window.location.hash = `#movie/${movieId}`
+                            }}
+                            onKeyDown={e => { if ((e.key === 'Enter' || e.key === ' ') && movieId) {
+                              try { if (selectedGroup && selectedGroup.group_id) sessionStorage.setItem('returnToGroup', String(selectedGroup.group_id)); } catch (ee) {}
+                              window.location.hash = `#movie/${movieId}`
+                            }}}
+                            tabIndex={0}
+                            style={{ cursor: 'pointer' }}
+                          />
+                        ) : (
+                          <div className="no-poster" style={{height:120,background:'#f3f4f6',display:'flex',alignItems:'center',justifyContent:'center',color:'#6b7280'}}>Ei kuvaa</div>
                         )}
                       </div>
                     </div>

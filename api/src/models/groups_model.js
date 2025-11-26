@@ -30,8 +30,8 @@ export async function updateOne(id,groups) {
 
 export async function deleteOne(id) {
   console.log("delete:"+id);
-  const result = await pool.query("DELETE FROM groups WHERE group_id = $1", [id]);
-  return result.rows;
+  const result = await pool.query("DELETE FROM groups WHERE group_id = $1 RETURNING *", [id]);
+  return result.rows && result.rows.length > 0 ? result.rows[0] : null;
 }
 
 export async function search(searchTerm) {
