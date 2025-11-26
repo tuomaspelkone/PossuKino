@@ -61,8 +61,16 @@ function MovieDetail({ movieId }) {
     return (
       <div className="movie-detail-container">
         <div className="error">{error}</div>
-        <button onClick={() => window.location.hash = '#home'}>
-          ← Takaisin etusivulle
+        <button onClick={() => {
+          const ret = sessionStorage.getItem('returnToGroup');
+          if (ret) {
+            // Do not remove here; GroupPage will consume and remove it after loading
+            window.location.hash = '#groups';
+          } else {
+            window.location.hash = '#home';
+          }
+        }}>
+          ← Takaisin
         </button>
       </div>
     );
@@ -78,7 +86,15 @@ function MovieDetail({ movieId }) {
 
   return (
     <div className="movie-detail-container">
-      <button className="back-button" onClick={() => window.location.hash = '#home'}>
+      <button className="back-button" onClick={() => {
+        const ret = sessionStorage.getItem('returnToGroup');
+        if (ret) {
+          // Do not remove here; GroupPage will consume and remove it after loading
+          window.location.hash = '#groups';
+        } else {
+          window.location.hash = '#home';
+        }
+      }}>
         ← Takaisin
       </button>
 
