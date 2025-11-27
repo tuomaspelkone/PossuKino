@@ -1,12 +1,13 @@
 
 import { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from "./components/navbar";
 import './App.css';
 import MovieShowcase from "./components/movieShowcase";
 import Profile from "./components/profile";
+import ReactPaginate from 'react-paginate';
 import MovieDetail from "./components/movieDetail";
 import GroupPage from "./components/groupPage";
-import ReactPaginate from 'react-paginate';
 
 
 
@@ -30,7 +31,8 @@ function App() {
 
 
   return (
-    <div className="App">
+    <BrowserRouter>
+      <div className="App">
       <Navbar onSearchResults={(data) => {
         // normalize incoming data from SearchBar
         if (Array.isArray(data)) setSearchResultsObj({ results: data, page: 1, total_pages: 0 });
@@ -105,7 +107,8 @@ function App() {
           </>
         )}
       </main>
-    </div>
+      </div>
+    </BrowserRouter>
   );
 
 }

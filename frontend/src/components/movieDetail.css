@@ -347,6 +347,65 @@
   font-style: italic;
 }
 
+/* Kelluva suosikkinappi */
+.favorite-float-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #ff6b6b;
+  color: #fff;
+  border: none;
+  padding: 0.9rem 1.4rem;
+  border-radius: 50px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 1000;
+  transition: background 0.25s, transform 0.15s;
+}
+
+.favorite-float-btn:hover {
+  background: #ff5252;
+  transform: translateY(-2px);
+}
+
+.favorite-float-btn:active {
+  transform: translateY(0);
+}
+
+.favorite-float-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+  transform: none;
+}
+
+.favorite-float-btn.favorite-in-list {
+  background: #888;
+}
+
+.favorite-success-toast {
+  position: fixed;
+  bottom: 84px; /* hieman napin yläpuolelle */
+  right: 24px;
+  background: #1a1a2e;
+  color: #fff;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  animation: fadeSlide 0.25s ease-out;
+}
+
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* Responsiivisuus */
 @media (max-width: 768px) {
   .movie-detail-content {
