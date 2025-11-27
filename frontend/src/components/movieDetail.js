@@ -7,8 +7,45 @@ function MovieDetail({ movieId }) {
   const [genres, setGenres] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [favSuccess, setFavSuccess] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   const apiBase = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+
+  async function handleAddFavorite() {
+    if (isFavorite) return; // Estä turha lisäys jos jo suosikeissa
+    try {
+      setFavSuccess(false);
+      const stored = localStorage.getItem('user');
+      if (!stored) throw new Error('Kirjaudu sisään lisätäksesi suosikkeihin');
+      const user = JSON.parse(stored);
+      if (!user.user_id) throw new Error('Käyttäjätunnus puuttuu');
+      const apiBaseNoSlash = apiBase.replace(/\/$/, '');
+      const res = await fetch(`${apiBaseNoSlash}/favorites`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: user.user_id, tmdb_id: movieId })
+      });
+      console.log('Favorites POST status', res.status);
+      console.log('Favorites POST headers', [...res.headers.entries()]);
+      if (!res.ok) {
+        let serverMsg = 'Lisäys epäonnistui';
+        try {
+          const errBody = await res.json();
+          if (errBody && (errBody.error || errBody.message)) {
+            serverMsg = errBody.error || errBody.message;
+          }
+        } catch {}
+        throw new Error(serverMsg);
+      }
+      setFavSuccess(true);
+      setIsFavorite(true);
+      setTimeout(() => setFavSuccess(false), 2000);
+    } catch (err) {
+      setFavSuccess(false);
+      alert(err.message || 'Lisäys epäonnistui');
+    }
+  }
 
   useEffect(() => {
     async function fetchMovieData() {
@@ -35,6 +72,22 @@ function MovieDetail({ movieId }) {
         // Genret tulevat suoraan TMDB-datasta
         if (movieData.genres) {
           setGenres(movieData.genres);
+        }
+
+        // Tarkista onko jo suosikeissa (jos käyttäjä kirjautunut)
+        const stored = localStorage.getItem('user');
+        if (stored) {
+          try {
+            const user = JSON.parse(stored);
+            if (user && user.user_id) {
+              const favRes = await fetch(`${apiBase}/favorites`);
+              if (favRes.ok) {
+                const allFavs = await favRes.json();
+                const already = allFavs.some(f => Number(f.tmdb_id) === Number(movieId) && Number(f.user_id) === Number(user.user_id));
+                setIsFavorite(already);
+              }
+            }
+          } catch {}
         }
 
       } catch (err) {
@@ -174,6 +227,19 @@ function MovieDetail({ movieId }) {
           </div>
         </div>
       </div>
+      {/* Kelluva suosikkinappi sivun oikeassa alakulmassa */}
+      <button
+        className={`favorite-float-btn${isFavorite ? ' favorite-in-list' : ''}`}
+        onClick={handleAddFavorite}
+        disabled={favSuccess || isFavorite}
+        aria-disabled={favSuccess || isFavorite}
+        title={isFavorite ? 'Elokuva on jo suosikeissa' : 'Lisää elokuva suosikkeihin'}
+      >
+        {isFavorite ? '❤️ Suosikeissa' : '❤️ Lisää suosikiksi'}
+      </button>
+      {favSuccess && (
+        <div className="favorite-success-toast" aria-live="polite">Lisäys onnistui</div>
+      )}
     </div>
   );
 }

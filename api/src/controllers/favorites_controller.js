@@ -11,7 +11,7 @@ export async function getFavorites(req, res, next) {
 
 export async function getFavorite(req, res, next) {
   try {
-    const favorite = await getOne(req.params.id);
+    const favorite = await getOne(req.params.favorite_id);
     if (!favorite) {
       return res.status(404).json({ error: "Favorite not found" });
     }
@@ -34,7 +34,10 @@ export async function addFavorite(req, res, next) {
 
 export async function updateFavorite(req, res, next) {
   try {
-    const response = await updateOne(req.params.id, req.body);
+    const response = await updateOne(req.params.favorite_id, req.body);
+    if (!response || response.length === 0) {
+      return res.status(404).json({ error: "Favorite not found" });
+    }
     res.json(response);
   } catch (err) {
     next(err);
@@ -43,11 +46,11 @@ export async function updateFavorite(req, res, next) {
 
 export async function deleteFavorite(req, res, next) {
   try {
-    const favorite = await deleteOne(req.params.id);
-    if (!favorite) {
+    const deleted = await deleteOne(req.params.favorite_id);
+    if (!deleted || deleted.length === 0) {
       return res.status(404).json({ error: "Favorite not found" });
     }
-    res.json(favorite);
+    res.json(deleted);
   } catch (err) {
     next(err);
   }
