@@ -65,6 +65,191 @@
   font-size: 2.5rem;
 }
 
+/* Action buttons row (favorites / add to group) */
+.movie-action-buttons {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin: 0.75rem 0 1.5rem 0;
+  flex-wrap: wrap;
+}
+
+.movie-action-buttons .btn {
+  padding: 0.5rem 0.9rem;
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: #ffffff;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, background 180ms ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.movie-action-buttons .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.movie-action-buttons .add-fav-btn {
+  background: linear-gradient(90deg,#ff8a65,#ff6b6b);
+  color: white;
+  border: none;
+}
+
+.movie-action-buttons .add-group-btn {
+  background: #1a73e8;
+  color: white;
+  border: none;
+}
+
+/* Group picker modal */
+.group-picker-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+  padding: 1rem;
+}
+
+.group-picker-modal {
+  width: 100%;
+  max-width: 560px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 1.25rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+.group-picker-modal h3 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.15rem;
+  color: #1a1a2e;
+}
+
+.group-picker-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 320px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.group-picker-item {
+  padding: 0.45rem 0.5rem;
+  border-radius: 8px;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.group-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.group-picker-name {
+  font-weight: 600;
+  color: #222;
+}
+
+.group-picker-item .btn {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.95rem;
+}
+
+/* Review modal and button */
+.write-review-btn {
+  margin-left: 0.5rem;
+  background: #10b981;
+  color: #fff;
+  border: none;
+}
+
+.review-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1300;
+  padding: 1rem;
+}
+
+.review-modal {
+  width: 100%;
+  max-width: 640px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+.review-form-row {
+  margin-top: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.review-form-row label {
+  font-weight: 600;
+}
+
+.review-modal textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  resize: vertical;
+}
+
+.review-modal select {
+  padding: 0.4rem;
+  border-radius: 6px;
+}
+
+/* Average rating stars */
+.average-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.8rem 0 1.2rem 0;
+}
+
+.stars-outer {
+  position: relative;
+  display: inline-block;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: #d1d5db; /* gray background stars */
+  user-select: none;
+}
+
+.stars-inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  color: #f59e0b; /* filled star color (amber) */
+  pointer-events: none;
+}
+
+.avg-number {
+  font-size: 0.95rem;
+  color: #374151;
+}
+
 .tagline {
   font-style: italic;
   color: #666;

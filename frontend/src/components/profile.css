@@ -187,6 +187,25 @@
   color: #666;
 }
 
+/* Stars outer/inner used for fractional (half) stars */
+.stars-outer {
+  position: relative;
+  display: inline-block;
+  font-size: 1rem;
+  line-height: 1;
+  color: #ddd; /* gray background stars */
+  user-select: none;
+}
+.stars-inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  color: #f59e0b; /* filled star color */
+  pointer-events: none;
+}
+
 .profile-empty:last-child,
 .profile-favourites:last-child,
 .profile-groups:last-child,

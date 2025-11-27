@@ -232,20 +232,15 @@ function Profile() {
   }
 
   function renderStars(count) {
-    const stars = [];
-    const n = Math.max(0, Math.min(5, Number(count) || 0));
-    for (let i = 1; i <= 5; i++) {
-      stars.push(
-        <span
-          key={i}
-          className={i <= n ? 'star filled' : 'star'}
-          aria-hidden="true"
-        >
-          ★
-        </span>
-      );
-    }
-    return <span className="stars" aria-label={`Arvostelu ${n} tähteä`}>{stars}</span>;
+    // Accept stored ratings that might be scaled (0..10) or normal (0..5)
+    let val = Number(count) || 0;
+    if (val > 5) val = val / 2; // convert stored 0..10 to 0..5
+    const pct = Math.max(0, Math.min(100, (val / 5) * 100));
+    return (
+      <span className="stars" aria-label={`Arvostelu ${val} tähteä`}>
+        <span className="stars-outer">{'★★★★★'}<span className="stars-inner" style={{ width: `${pct}%` }}>{'★★★★★'}</span></span>
+      </span>
+    );
   }
 
   async function handleRemoveFavorite(favoriteId) {
