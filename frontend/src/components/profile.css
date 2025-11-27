@@ -187,6 +187,25 @@
   color: #666;
 }
 
+/* Stars outer/inner used for fractional (half) stars */
+.stars-outer {
+  position: relative;
+  display: inline-block;
+  font-size: 1rem;
+  line-height: 1;
+  color: #ddd; /* gray background stars */
+  user-select: none;
+}
+.stars-inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  color: #f59e0b; /* filled star color */
+  pointer-events: none;
+}
+
 .profile-empty:last-child,
 .profile-favourites:last-child,
 .profile-groups:last-child,
@@ -267,4 +286,36 @@
   gap: 0.5rem;
   margin-top: 0.75rem;
   justify-content: flex-end;
+}
+
+/* Suosikkilista */
+.favs-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.fav-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+.fav-info {
+  display: flex;
+  flex-direction: column;
+}
+.fav-title {
+  font-weight: 600;
+}
+.fav-year {
+  font-size: 0.85rem;
+  color: #666;
+}
+.fav-remove-btn {
+  background-color: #dc2626;
+}
+.fav-remove-btn:hover {
+  background-color: #b91c1c;
 }

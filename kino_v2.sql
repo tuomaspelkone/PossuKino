@@ -101,7 +101,7 @@ CREATE INDEX idx_movie_genres_genre ON movie_genres(genre_id);
 -- Sample data for testing (using TMDB IDs: https://www.themoviedb.org/)
 -- NOTE: These are placeholder TMDB IDs — replace with real ones from TMDB API
 INSERT INTO "user" (user_id, username, email, password) VALUES
-(1, 'matti', 'matti@example.com', '$2b$10$hashedpassword1'),
+(1, 'matti', 'matti@example.com', '$2b$10$2w9SzZ7iaKgTp0.a4y8hzutfgDUu6/8A1qDOkOnW4yqFczA7dqzyy'),
 (2, 'liisa', 'liisa@example.com', '$2b$10$hashedpassword2'),
 (3, 'pekka', 'pekka@example.com', '$2b$10$hashedpassword3');
 
@@ -151,7 +151,9 @@ INSERT INTO favorites (user_id, tmdb_id) VALUES
 
 INSERT INTO groups (user_id, group_name, group_description) VALUES
 (1, 'Sci-Fi Lovers', 'Group for science fiction movie enthusiasts'),
-(2, 'Classic Movies', 'Discussing timeless cinema');
+(2, 'Classic Movies', 'Discussing timeless cinema'),
+(3, 'Horror Fans', 'Discuss and recommend horror movies'),
+(1, 'Comedy Club', 'Share and discuss comedy films and stand-up');
 
 INSERT INTO group_members (group_id, user_id, group_admin) VALUES
 (1, 1, true),

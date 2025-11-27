@@ -9,4 +9,7 @@ router.get('/search', tmdbController.searchMovies);
 // GET /tmdb/popular?page=...
 router.get('/popular', tmdbController.getPopular);
 
+// GET /tmdb/movie/:id
+router.get('/movie/:id', tmdbController.getMovieDetails);
+
 export default router;

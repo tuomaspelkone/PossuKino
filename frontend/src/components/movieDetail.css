@@ -1,0 +1,425 @@
+.movie-detail-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.back-button {
+  background: #1a1a2e;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  transition: background 0.3s;
+}
+
+.back-button:hover {
+  background: #ff6b6b;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.error {
+  color: #ff6b6b;
+}
+
+.movie-detail-content {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 3rem;
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.movie-poster-large img {
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.no-poster-large {
+  width: 100%;
+  height: 500px;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: #999;
+  font-size: 1.2rem;
+}
+
+.movie-info-section h1 {
+  margin: 0 0 0.5rem 0;
+  color: #1a1a2e;
+  font-size: 2.5rem;
+}
+
+/* Action buttons row (favorites / add to group) */
+.movie-action-buttons {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin: 0.75rem 0 1.5rem 0;
+  flex-wrap: wrap;
+}
+
+.movie-action-buttons .btn {
+  padding: 0.5rem 0.9rem;
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: #ffffff;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, background 180ms ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.movie-action-buttons .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.movie-action-buttons .add-fav-btn {
+  background: linear-gradient(90deg,#ff8a65,#ff6b6b);
+  color: white;
+  border: none;
+}
+
+.movie-action-buttons .add-group-btn {
+  background: #1a73e8;
+  color: white;
+  border: none;
+}
+
+/* Group picker modal */
+.group-picker-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+  padding: 1rem;
+}
+
+.group-picker-modal {
+  width: 100%;
+  max-width: 560px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 1.25rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+.group-picker-modal h3 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.15rem;
+  color: #1a1a2e;
+}
+
+.group-picker-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 320px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.group-picker-item {
+  padding: 0.45rem 0.5rem;
+  border-radius: 8px;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.group-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.group-picker-name {
+  font-weight: 600;
+  color: #222;
+}
+
+.group-picker-item .btn {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.95rem;
+}
+
+/* Review modal and button */
+.write-review-btn {
+  margin-left: 0.5rem;
+  background: #10b981;
+  color: #fff;
+  border: none;
+}
+
+.review-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1300;
+  padding: 1rem;
+}
+
+.review-modal {
+  width: 100%;
+  max-width: 640px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+.review-form-row {
+  margin-top: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.review-form-row label {
+  font-weight: 600;
+}
+
+.review-modal textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  resize: vertical;
+}
+
+.review-modal select {
+  padding: 0.4rem;
+  border-radius: 6px;
+}
+
+/* Average rating stars */
+.average-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.8rem 0 1.2rem 0;
+}
+
+.stars-outer {
+  position: relative;
+  display: inline-block;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: #d1d5db; /* gray background stars */
+  user-select: none;
+}
+
+.stars-inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  color: #f59e0b; /* filled star color (amber) */
+  pointer-events: none;
+}
+
+.avg-number {
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+.tagline {
+  font-style: italic;
+  color: #666;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+.movie-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  color: #333;
+}
+
+.genres-section {
+  margin-bottom: 2rem;
+}
+
+.genres-section h3 {
+  margin: 0 0 1rem 0;
+  color: #1a1a2e;
+}
+
+.genres-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.genre-tag {
+  background: #1a1a2e;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+.description-section {
+  margin-bottom: 2rem;
+}
+
+.description-section h3 {
+  margin: 0 0 1rem 0;
+  color: #1a1a2e;
+}
+
+.description-section p {
+  line-height: 1.8;
+  color: #333;
+  font-size: 1.05rem;
+}
+
+.reviews-section h3 {
+  margin: 0 0 1rem 0;
+  color: #1a1a2e;
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.review-card {
+  background: #f8f8f8;
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid #ff6b6b;
+}
+
+.review-rating {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #1a1a2e;
+}
+
+.review-text {
+  margin: 0;
+  color: #333;
+  line-height: 1.6;
+}
+
+.no-reviews {
+  color: #999;
+  font-style: italic;
+}
+
+/* Kelluva suosikkinappi */
+.favorite-float-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #ff6b6b;
+  color: #fff;
+  border: none;
+  padding: 0.9rem 1.4rem;
+  border-radius: 50px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 1000;
+  transition: background 0.25s, transform 0.15s;
+}
+
+.favorite-float-btn:hover {
+  background: #ff5252;
+  transform: translateY(-2px);
+}
+
+.favorite-float-btn:active {
+  transform: translateY(0);
+}
+
+.favorite-float-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+  transform: none;
+}
+
+.favorite-float-btn.favorite-in-list {
+  background: #888;
+}
+
+.favorite-success-toast {
+  position: fixed;
+  bottom: 84px; /* hieman napin yläpuolelle */
+  right: 24px;
+  background: #1a1a2e;
+  color: #fff;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  animation: fadeSlide 0.25s ease-out;
+}
+
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsiivisuus */
+@media (max-width: 768px) {
+  .movie-detail-content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 1rem;
+  }
+
+  .movie-info-section h1 {
+    font-size: 1.8rem;
+  }
+
+  .movie-poster-large {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}
