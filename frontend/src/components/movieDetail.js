@@ -10,6 +10,17 @@ function MovieDetail({ movieId }) {
   const [favSuccess, setFavSuccess] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
 
+  // Group picker state for choosing which group to add the movie to
+  const [showGroupPicker, setShowGroupPicker] = useState(false);
+  const [myGroups, setMyGroups] = useState([]);
+  const [groupPickerLoading, setGroupPickerLoading] = useState(false);
+  const [groupPickerError, setGroupPickerError] = useState(null);
+  // Review modal state
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewText, setReviewText] = useState('');
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+
   const apiBase = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
   async function handleAddFavorite() {
@@ -102,6 +113,38 @@ function MovieDetail({ movieId }) {
     }
   }, [movieId, apiBase]);
 
+  // Add movie to selected group (called from group picker)
+  async function handleAddToGroup(group_id) {
+    try {
+      const stored = localStorage.getItem('user');
+      if (!stored) { window.alert('Kirjaudu sisään lisätäksesi ryhmään.'); return; }
+      const parsed = JSON.parse(stored);
+      if (!parsed || !parsed.user_id) { window.alert('Kirjaudu sisään lisätäksesi ryhmään.'); return; }
+
+      const apiBaseNoSlash = apiBase.replace(/\/$/, '');
+      const token = localStorage.getItem('token');
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const payload = {
+        group_id: Number(group_id),
+        tmdb_id: Number(movieId),
+        movie_title: movie.movie_title || movie.title,
+        movie_image: movie.movie_image || movie.poster_path || null,
+        movie_description: movie.movie_description || movie.overview || ''
+      };
+      const addRes = await fetch(`${apiBaseNoSlash}/group_movies`, { method: 'POST', headers, body: JSON.stringify(payload) });
+      if (!addRes.ok) {
+        const txt = await addRes.text();
+        throw new Error('HTTP ' + addRes.status + ': ' + txt);
+      }
+      window.alert('Elokuva lisätty ryhmään.');
+      setShowGroupPicker(false);
+    } catch (err) {
+      console.error('Lisää ryhmään epäonnistui', err);
+      window.alert('Lisää ryhmään epäonnistui: ' + (err.message || 'virhe'));
+    }
+  }
+
   if (loading) {
     return (
       <div className="movie-detail-container">
@@ -167,6 +210,74 @@ function MovieDetail({ movieId }) {
         {/* Elokuvan tiedot */}
         <div className="movie-info-section">
           <h1>{movie.movie_title || movie.title}</h1>
+          <div className="movie-action-buttons">
+            <button className="btn add-group-btn" onClick={async () => {
+              try {
+                const stored = localStorage.getItem('user');
+                if (!stored) { window.alert('Kirjaudu sisään lisätäksesi ryhmään.'); return; }
+                const parsed = JSON.parse(stored);
+                if (!parsed || !parsed.user_id) { window.alert('Kirjaudu sisään lisätäksesi ryhmään.'); return; }
+                const apiBaseNoSlash = apiBase.replace(/\/$/, '');
+
+                setGroupPickerLoading(true);
+                setGroupPickerError(null);
+
+                // Haetaan ryhmät ja jäsenyydet ja suodatetaan käyttäjän jäsenyyksiin
+                const [resGroups, resMembers] = await Promise.all([fetch(`${apiBaseNoSlash}/group`), fetch(`${apiBaseNoSlash}/group_members`)]);
+                if (!resGroups.ok || !resMembers.ok) throw new Error('Ryhmien hakeminen epäonnistui');
+                const groupsData = await resGroups.json();
+                const membersData = await resMembers.json();
+                const myGroupIds = (Array.isArray(membersData) ? membersData : []).filter(m => Number(m.user_id) === Number(parsed.user_id)).map(m => Number(m.group_id));
+                const groups = (Array.isArray(groupsData) ? groupsData : []).filter(g => myGroupIds.includes(Number(g.group_id)));
+
+                if (!groups || groups.length === 0) {
+                  if (window.confirm('Et ole jäsenenä missään ryhmässä. Haluatko mennä ryhmäsivulle liittymään tai luomaan ryhmän?')) {
+                    try { window.location.hash = '#groups'; } catch (e) {}
+                  }
+                  setGroupPickerLoading(false);
+                  return;
+                }
+
+                // Näytetään modal valinnalle
+                setMyGroups(groups);
+                setShowGroupPicker(true);
+                setGroupPickerLoading(false);
+              } catch (err) {
+                console.error('Ryhmien haku epäonnistui', err);
+                setGroupPickerError(err.message || 'Ryhmien haku epäonnistui');
+                setGroupPickerLoading(false);
+              }
+            }}>Lisää ryhmään</button>
+          </div>
+          {/* Group picker modal */}
+          {showGroupPicker && (
+            <div className="group-picker-overlay" onClick={() => setShowGroupPicker(false)}>
+              <div className="group-picker-modal" onClick={e => e.stopPropagation()} role="dialog">
+                <h3>Valitse ryhmä</h3>
+                {groupPickerLoading ? (
+                  <div className="loading">Ladataan...</div>
+                ) : groupPickerError ? (
+                  <div className="error">{groupPickerError}</div>
+                ) : myGroups.length === 0 ? (
+                  <div>Et ole jäsenenä missään ryhmässä.</div>
+                ) : (
+                  <ul className="group-picker-list">
+                    {myGroups.map(g => (
+                      <li key={g.group_id} className="group-picker-item">
+                        <div className="group-picker-row">
+                          <div className="group-picker-name">{g.group_name}</div>
+                          <button className="btn" onClick={() => handleAddToGroup(g.group_id)}>Lisää</button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <div style={{marginTop:8}}>
+                  <button className="btn" onClick={() => setShowGroupPicker(false)}>Peruuta</button>
+                </div>
+              </div>
+            </div>
+          )}
           
           {movie.tagline && (
             <p className="tagline">"{movie.tagline}"</p>
@@ -186,6 +297,22 @@ function MovieDetail({ movieId }) {
               <span className="meta-item">📋 {movie.movie_certification}</span>
             )}
           </div>
+
+          {/* Average rating (calculated from reviews) */}
+          {reviews && reviews.length > 0 && (() => {
+            const sum = reviews.reduce((s, r) => s + (Number(r.rating) || 0), 0);
+            const avg = sum / reviews.length;
+            const pct = Math.max(0, Math.min(100, (avg / 5) * 100));
+            return (
+              <div className="average-rating">
+                <div className="stars-outer" aria-hidden>
+                  {'★★★★★'}
+                  <div className="stars-inner" style={{ width: `${pct}%` }}>{'★★★★★'}</div>
+                </div>
+                <div className="avg-number">{avg.toFixed(1)} / 5 ({reviews.length})</div>
+              </div>
+            );
+          })()}
 
           {/* Genret */}
           {genres && genres.length > 0 && (
@@ -212,19 +339,103 @@ function MovieDetail({ movieId }) {
           {/* Arvostelut */}
           <div className="reviews-section">
             <h3>Arvostelut ({reviews.length})</h3>
+            {
+              (() => {
+                let stored = null;
+                try { stored = localStorage.getItem('user'); } catch (e) { stored = null; }
+                let isLogged = false;
+                try { const parsed = stored ? JSON.parse(stored) : null; isLogged = !!(parsed && parsed.user_id); } catch (e) { isLogged = false; }
+                return (
+                  <button className="btn write-review-btn" onClick={() => {
+                    if (!isLogged) { window.alert('Kirjaudu sisään kirjoittaaksesi arvostelun.'); return; }
+                    setShowReviewModal(true);
+                  }}>
+                    {isLogged ? 'Kirjoita arvostelu' : 'Kirjaudu sisään arvostelleksesi elokuva'}
+                  </button>
+                );
+              })()
+            }
             {reviews.length > 0 ? (
               <div className="reviews-list">
-                {reviews.map(review => (
-                  <div key={review.review_id} className="review-card">
-                    <div className="review-rating">⭐ {review.rating}/5</div>
-                    <p className="review-text">{review.review_text}</p>
-                  </div>
-                ))}
+                {reviews.map(review => {
+                  const stored = Number(review.rating || review.rating_raw || 0);
+                  const displayRating = stored > 5 ? (stored / 2) : stored; // if stored as 0..10, convert to 0..5
+                  const pct = Math.max(0, Math.min(100, (displayRating / 5) * 100));
+                  return (
+                    <div key={review.review_id} className="review-card">
+                      <div className="review-rating">
+                        <span className="stars-outer" aria-hidden>
+                          {'★★★★★'}
+                          <span className="stars-inner" style={{ width: `${pct}%` }}>{'★★★★★'}</span>
+                        </span>
+                        <span style={{ marginLeft: 8 }}>{displayRating % 1 === 0 ? displayRating.toFixed(0) : displayRating.toFixed(1)} / 5</span>
+                      </div>
+                      <p className="review-text">{review.review_text}</p>
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               <p className="no-reviews">Ei vielä arvosteluja</p>
             )}
           </div>
+
+          {/* Review modal */}
+          {showReviewModal && (
+            <div className="review-modal-overlay" onClick={() => { if (!reviewSubmitting) setShowReviewModal(false); }}>
+              <div className="review-modal" onClick={e => e.stopPropagation()} role="dialog">
+                <h3>Kirjoita arvostelu</h3>
+                <div className="review-form-row">
+                  <label>Tähdet:</label>
+                  <select value={reviewRating} onChange={e => setReviewRating(Number(e.target.value))}>
+                    {Array.from({ length: 5 }, (_, i) => 5 - i).map(val => (
+                      <option key={val} value={val}>{String(val)}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="review-form-row">
+                  <label>Kirjoita arvostelu</label>
+                  <textarea value={reviewText} onChange={e => setReviewText(e.target.value)} rows={6} />
+                </div>
+                <div style={{display:'flex',gap:8,marginTop:8}}>
+                  <button className="btn" disabled={reviewSubmitting} onClick={async () => {
+                    try {
+                      const stored = localStorage.getItem('user');
+                      if (!stored) { window.alert('Kirjaudu sisään kirjoittaaksesi arvostelun.'); return; }
+                      const parsed = JSON.parse(stored);
+                      if (!parsed || !parsed.user_id) { window.alert('Kirjaudu sisään kirjoittaaksesi arvostelun.'); return; }
+                      if (!reviewText || reviewText.trim().length === 0) { window.alert('Kirjoita ensin arvostelusi.'); return; }
+                      setReviewSubmitting(true);
+                      const apiBaseNoSlash = apiBase.replace(/\/$/, '');
+                      // store rating as integer 1..5
+                      const payload = { tmdb_id: Number(movieId), user_id: Number(parsed.user_id), rating: Math.round(Number(reviewRating)), review_text: reviewText.trim() };
+                      const res = await fetch(`${apiBaseNoSlash}/reviews`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                      if (!res.ok) {
+                        const txt = await res.text();
+                        throw new Error('HTTP ' + res.status + ': ' + txt);
+                      }
+                      const created = await res.json();
+                      // backend returns rows array in model; normalize
+                      const newReview = Array.isArray(created) ? created[0] : created;
+                      // ensure keys: review_id, rating, review_text, user_id, tmdb_id
+                      setReviews(prev => [newReview, ...prev]);
+                      // notify profile to refresh its data
+                      try { window.dispatchEvent(new Event('userChanged')); } catch (e) {}
+                      setShowReviewModal(false);
+                      setReviewText('');
+                      setReviewRating(5);
+                    } catch (err) {
+                      console.error('Arvostelun lähetys epäonnistui', err);
+                      window.alert('Arvostelun lähetys epäonnistui: ' + (err.message || 'virhe'));
+                    } finally {
+                      setReviewSubmitting(false);
+                    }
+                  }}>Tallenna</button>
+                  <button className="btn" onClick={() => { if (!reviewSubmitting) setShowReviewModal(false); }}>Peruuta</button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
       {/* Kelluva suosikkinappi sivun oikeassa alakulmassa */}
