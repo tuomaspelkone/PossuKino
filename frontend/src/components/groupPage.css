@@ -19,14 +19,14 @@
 }
 
 .create-btn {
-  background-color: #10b981;
+  background-color: var(--color-primary);
   color: #fff;
   border: none;
   padding: 0.5rem 0.75rem;
   border-radius: 6px;
   cursor: pointer;
 }
-.create-btn:hover { background-color: #059669; }
+.create-btn:hover { background-color: var(--color-secondary); }
 
 .create-modal-overlay {
   position: fixed;
@@ -49,8 +49,8 @@
 .create-modal h3 { margin: 0 0 0.5rem 0; }
 .modal-label { font-size: 0.9rem; color: #374151; margin-top: 0.5rem; display:block; }
 .modal-input { width: 100%; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius:6px; margin-top:0.25rem; }
-.create-submit { background: #2563eb; color:#fff; border:none; padding:0.5rem 0.8rem; border-radius:6px; }
-.create-submit:hover { background:#1e40af; }
+.create-submit { background: var(--color-primary); color:#fff; border:none; padding:0.5rem 0.8rem; border-radius:6px; }
+.create-submit:hover { background: var(--color-secondary); }
 
 .group-detail {
   display: flex;
@@ -91,7 +91,7 @@
 }
 .group-movies-right { align-items:flex-start; }
 .small-btn {
-  background: #2563eb;
+  background: var(--color-primary);
   color: #fff;
   border: none;
   padding: 0.5rem 0.75rem;
@@ -99,11 +99,11 @@
   cursor: pointer;
   font-size: 0.95rem;
 }
-.small-btn:hover { background: #1e40af; }
+.small-btn:hover { background: var(--color-secondary); }
 
 /* Back button in group detail */
 .back-btn {
-  background-color: #2563eb;
+  background-color: var(--color-primary);
   color: #fff;
   border: none;
   padding: 0.5rem 0.75rem;
@@ -111,8 +111,8 @@
   cursor: pointer;
   font-size: 0.95rem;
 }
-.back-btn:hover { background-color: #1e40af; }
-.back-btn:focus { outline: 2px solid rgba(37,99,235,0.25); }
+.back-btn:hover { background-color: var(--color-secondary); }
+.back-btn:focus { outline: 2px solid var(--color-primary-light); }
 
 /* Ensure the three action buttons in the detail view align horizontally */
 .group-detail .back-btn,
@@ -349,7 +349,7 @@
 
 /* Join button on the right side of the card header */
 .join-btn {
-  background-color: #2563eb;
+  background-color: var(--color-primary);
   color: #fff;
   border: none;
   padding: 0.5rem 0.75rem;
@@ -358,7 +358,7 @@
   font-size: 0.9rem;
 }
 .join-btn:hover {
-  background-color: #1e40af;
+  background-color: var(--color-secondary);
 }
 
 .join-btn.joined,

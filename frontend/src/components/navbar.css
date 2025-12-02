@@ -1,11 +1,18 @@
 .navbar {
-  background-color: #1a1a2e;
-  color: white;
+  background-color: var(--color-navbar-bg);
+  color: var(--color-navbar-text);
   padding: 0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   position: sticky;
   top: 0;
   z-index: 1000;
+  transition: box-shadow 0.3s ease;
+}
+
+/* Kauhu-teeman navbarin synkkä varjo */
+[data-theme="kauhu"] .navbar {
+  box-shadow: 0 4px 12px rgba(20, 9, 44, 0.5),
+              0 0 30px rgba(170, 68, 114, 0.2);
 }
 
 .navbar-container {
@@ -21,7 +28,7 @@
 .navbar-brand h1 {
   margin: 0;
   font-size: 1.5rem;
-  color: #ff6b6b;
+  color: var(--color-navbar-text);
   cursor: pointer;
 }
 
@@ -45,14 +52,14 @@
 }
 
 .navbar-links a {
-  color: white;
+  color: var(--color-navbar-text);
   text-decoration: none;
   font-size: 1rem;
   transition: color 0.3s;
 }
 
 .navbar-links a:hover {
-  color: #ff6b6b;
+  color: var(--color-navbar-link-hover);
 }
 
 /* Responsiivisuus */

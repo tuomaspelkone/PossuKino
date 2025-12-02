@@ -1,0 +1,90 @@
+/* PossuKino Teemat - CSS muuttujat */
+
+:root {
+  /* PossuKino (Roosa) - Oletusarvo */
+  --color-primary: #AE5969;
+  --color-primary-light: #CE8A97;
+  --color-primary-lighter: #EEC8CF;
+  --color-secondary: #634A45;
+  --color-secondary-dark: #412722;
+  --color-text-dark: #412722;
+  --color-text-medium: #634A45;
+
+  /* Yleiset pinta- ja komponenttimuuttujat */
+  --color-navbar-bg: var(--color-secondary);
+  --color-navbar-text: #ffffff;
+  --color-showcase-start: var(--color-primary-light);
+  --color-showcase-end: var(--color-primary);
+
+  /* Navbar-kontrollit (ikonit/painikkeet) */
+  --color-navbar-ctrl-border: rgba(255,255,255,0.3);
+  --color-navbar-ctrl-hover-bg: rgba(255,255,255,0.1);
+  --color-navbar-link-hover: var(--color-primary-light);
+}
+
+/* Kauhu teema */
+[data-theme="kauhu"] {
+  /* Uusi paletti: #14092C, #381C55, #672F66, #AA4472, #C44D7E */
+  --color-primary: #AA4472;
+  --color-primary-light: #C44D7E;
+  --color-primary-lighter: #672F66; /* taustaväri - keskitumma sävy paletista */
+  --color-secondary: #672F66;
+  --color-secondary-dark: #381C55;
+  --color-text-dark: #14092C;
+  --color-text-medium: #381C55;
+
+  /* Pinta-asetukset (kauhu) */
+  --color-navbar-bg: #C44D7E; /* vaaleampi navbar paletista */
+  --color-navbar-text: #14092C; /* tumma teksti, kontrasti logolle */
+  --color-showcase-start: #381C55; /* tumma gradientti */
+  --color-showcase-end: #14092C;
+
+  /* Vaalealla navbarilla tummat kontrollit */
+  --color-navbar-ctrl-border: rgba(0,0,0,0.2);
+  --color-navbar-ctrl-hover-bg: rgba(0,0,0,0.06);
+  --color-navbar-link-hover: #381C55;
+}
+
+/* Lapsi teema */
+[data-theme="lapsi"] {
+  --color-primary: #ffb3ba;
+  --color-primary-light: #ffdfba;
+  --color-primary-lighter: #ffffba;
+  --color-secondary: #baffc9;
+  --color-secondary-dark: #bae1ff;
+  --color-text-dark: #ffb3ba;
+  --color-text-medium: #bae1ff;
+
+  /* Lapsi-teeman pinnat */
+  --color-navbar-bg: #bae1ff; /* vaalea sininen */
+  --color-navbar-text: #ff69b4;
+  --color-showcase-start: #ffdfba;
+  --color-showcase-end: #bae1ff;
+  
+  /* Navbar kontrollit */
+  --color-navbar-ctrl-border: rgba(255,105,180,0.3);
+  --color-navbar-ctrl-hover-bg: rgba(255,105,180,0.1);
+  --color-navbar-link-hover: #ffb3ba;
+}
+
+/* Romantiikka teema */
+[data-theme="romantiikka"] {
+  --color-primary: #ab3f60;
+  --color-primary-light: #a35766;
+  --color-primary-lighter: #ecdbc9;
+  --color-secondary: #6b1a22;
+  --color-secondary-dark: #83092e;
+  --color-text-dark: #6b1a22;
+  --color-text-medium: #a35766;
+
+  /* Romantiikka-teeman pinnat */
+  --color-navbar-bg: #ab3f60;
+  --color-navbar-text: #ffffff;
+  --color-showcase-start: #a35766;
+  --color-showcase-end: #83092e;
+  
+  /* Navbar kontrollit */
+  --color-navbar-ctrl-border: rgba(255,255,255,0.3);
+  --color-navbar-ctrl-hover-bg: rgba(255,255,255,0.1);
+  --color-navbar-link-hover: #ecdbc9;
+}

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import SearchBar from './searchBar';
 import LoginButton from './loginButton';
+import ThemeToggle from './themeToggle';
 import './navbar.css';
 
 function Navbar({ onSearchResults, page, onPageChange }) {
@@ -47,6 +48,7 @@ function Navbar({ onSearchResults, page, onPageChange }) {
           ) : (
             <LoginButton />
           )}
+          <ThemeToggle />
         </div>
       </div>
     </nav>

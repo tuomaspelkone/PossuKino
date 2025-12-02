@@ -5,7 +5,7 @@
 }
 
 .back-button {
-  background: #1a1a2e;
+  background: var(--color-secondary);
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -17,7 +17,7 @@
 }
 
 .back-button:hover {
-  background: #ff6b6b;
+  background: var(--color-primary);
 }
 
 .loading, .error {
@@ -28,7 +28,7 @@
 }
 
 .error {
-  color: #ff6b6b;
+  color: #AE5969;
 }
 
 .movie-detail-content {
@@ -61,7 +61,7 @@
 
 .movie-info-section h1 {
   margin: 0 0 0.5rem 0;
-  color: #1a1a2e;
+  color: #412722;
   font-size: 2.5rem;
 }
 
@@ -90,13 +90,13 @@
 }
 
 .movie-action-buttons .add-fav-btn {
-  background: linear-gradient(90deg,#ff8a65,#ff6b6b);
+  background: linear-gradient(90deg, var(--color-primary-light), var(--color-primary));
   color: white;
   border: none;
 }
 
 .movie-action-buttons .add-group-btn {
-  background: #1a73e8;
+  background: var(--color-secondary);
   color: white;
   border: none;
 }
@@ -125,7 +125,7 @@
 .group-picker-modal h3 {
   margin: 0 0 0.75rem 0;
   font-size: 1.15rem;
-  color: #1a1a2e;
+  color: #412722;
 }
 
 .group-picker-list {
@@ -168,7 +168,7 @@
 /* Review modal and button */
 .write-review-btn {
   margin-left: 0.5rem;
-  background: #10b981;
+  background: #AE5969;
   color: #fff;
   border: none;
 }
@@ -280,7 +280,7 @@
 
 .genres-section h3 {
   margin: 0 0 1rem 0;
-  color: #1a1a2e;
+  color: #412722;
 }
 
 .genres-list {
@@ -290,7 +290,7 @@
 }
 
 .genre-tag {
-  background: #1a1a2e;
+  background: var(--color-secondary);
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 20px;
@@ -303,7 +303,7 @@
 
 .description-section h3 {
   margin: 0 0 1rem 0;
-  color: #1a1a2e;
+  color: #412722;
 }
 
 .description-section p {
@@ -314,7 +314,7 @@
 
 .reviews-section h3 {
   margin: 0 0 1rem 0;
-  color: #1a1a2e;
+  color: #412722;
 }
 
 .reviews-list {
@@ -327,13 +327,13 @@
   background: #f8f8f8;
   padding: 1rem;
   border-radius: 8px;
-  border-left: 4px solid #ff6b6b;
+  border-left: 4px solid #AE5969;
 }
 
 .review-rating {
   font-weight: bold;
   margin-bottom: 0.5rem;
-  color: #1a1a2e;
+  color: #412722;
 }
 
 .review-text {
@@ -352,7 +352,7 @@
   position: fixed;
   bottom: 24px;
   right: 24px;
-  background: #ff6b6b;
+  background: var(--color-primary);
   color: #fff;
   border: none;
   padding: 0.9rem 1.4rem;
@@ -369,7 +369,7 @@
 }
 
 .favorite-float-btn:hover {
-  background: #ff5252;
+  background: var(--color-primary-light);
   transform: translateY(-2px);
 }
 
@@ -391,7 +391,7 @@
   position: fixed;
   bottom: 84px; /* hieman napin yläpuolelle */
   right: 24px;
-  background: #1a1a2e;
+  background: #412722;
   color: #fff;
   padding: 0.75rem 1rem;
   border-radius: 6px;
