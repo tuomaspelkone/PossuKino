@@ -32,6 +32,27 @@
   cursor: pointer;
 }
 
+.navbar-brand a {
+  text-decoration: none;
+  color: inherit;
+  display: inline-block;
+}
+
+/* Logo images: default vs kauhu theme */
+.navbar-logo { display: inline-flex; align-items: center; height: 70px; }
+.navbar-logo .logo { height: 70px; display: none; }
+.navbar-logo .logo-default { display: block; }
+
+/* Theme-specific logo visibility */
+[data-theme="kauhu"] .navbar-logo .logo { display: none; }
+[data-theme="kauhu"] .navbar-logo .logo-kauhu { display: block; }
+
+[data-theme="lapsi"] .navbar-logo .logo { display: none; }
+[data-theme="lapsi"] .navbar-logo .logo-lapsi { display: block; }
+
+[data-theme="romantiikka"] .navbar-logo .logo { display: none; }
+[data-theme="romantiikka"] .navbar-logo .logo-romantiikka { display: block; }
+
 .navbar-search {
   position: relative;
 }
@@ -39,10 +60,6 @@
 /* Piilotetaan vanhat navbar-kohtaiset tyylit */
 .navbar-search .search-header {
   display: block; /* Näytetään dropdownissa */
-}
-
-.navbar-search .search-dropdown {
-  /* Dropdown näkyy oikein navbarissa */
 }
 
 .navbar-links {
