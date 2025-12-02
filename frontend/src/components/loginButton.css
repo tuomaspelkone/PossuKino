@@ -3,7 +3,7 @@
 }
 
 .login-toggle-btn {
-  background: #ff6b6b;
+  background: var(--color-primary);
   border: none;
   color: white;
   padding: 0.5rem 1rem;
@@ -17,7 +17,7 @@
 }
 
 .login-toggle-btn:hover {
-  background: #ff5252;
+  background: var(--color-primary-light);
 }
 
 .login-dropdown {
@@ -31,7 +31,7 @@
   padding: 1.5rem;
   min-width: 300px;
   z-index: 1000;
-  color: #1a1a2e;
+  color: var(--color-text-dark);
 }
 
 .login-header {
@@ -43,7 +43,7 @@
 
 .login-header h3 {
   margin: 0;
-  color: #1a1a2e;
+  color: var(--color-text-dark);
 }
 
 .close-btn {
@@ -61,7 +61,7 @@
 }
 
 .close-btn:hover {
-  color: #ff6b6b;
+  color: var(--color-primary);
 }
 
 .form-group {
@@ -72,7 +72,7 @@
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
-  color: #1a1a2e;
+  color: var(--color-text-dark);
 }
 
 .form-group input {
@@ -86,13 +86,13 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: #1a1a2e;
+  border-color: var(--color-primary);
 }
 
 .submit-btn {
   width: 100%;
   padding: 0.75rem;
-  background: #1a1a2e;
+  background: var(--color-secondary);
   color: white;
   border: none;
   border-radius: 4px;
@@ -103,7 +103,7 @@
 }
 
 .submit-btn:hover {
-  background: #2a2a3e;
+  background: var(--color-primary);
 }
 
 .toggle-mode {
@@ -116,7 +116,7 @@
 .toggle-mode-btn {
   background: transparent;
   border: none;
-  color: #1a1a2e;
+  color: var(--color-text-medium);
   cursor: pointer;
   font-size: 0.9rem;
   text-decoration: underline;
@@ -124,7 +124,7 @@
 }
 
 .toggle-mode-btn:hover {
-  color: #ff6b6b;
+  color: var(--color-primary);
 }
 
 .error-message {

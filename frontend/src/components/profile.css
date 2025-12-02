@@ -7,6 +7,159 @@
   border-radius: 8px;
   grid-column: 1 / -1;
   gap: 2rem;
+  transition: box-shadow 0.3s ease, border 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Kauhu-teeman dekoraatiot profiiliosioissa */
+[data-theme="kauhu"] .profile-empty::before,
+[data-theme="kauhu"] .profile-favourites::before,
+[data-theme="kauhu"] .profile-groups::before,
+[data-theme="kauhu"] .profile-reviews::before {
+  content: '💀';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 2rem;
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 5;
+}
+
+[data-theme="kauhu"] .profile-favourites::after,
+[data-theme="kauhu"] .profile-reviews::after {
+  content: '🕷️';
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  font-size: 1.8rem;
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Lapsi-teeman söpöt dekoraatiot profiilissa */
+[data-theme="lapsi"] .profile-empty::before,
+[data-theme="lapsi"] .profile-favourites::before,
+[data-theme="lapsi"] .profile-groups::before,
+[data-theme="lapsi"] .profile-reviews::before {
+  content: '💖';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 2.2rem;
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 5;
+}
+
+[data-theme="lapsi"] .profile-favourites::after {
+  content: '🍭';
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  font-size: 2rem;
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 5;
+}
+
+[data-theme="lapsi"] .profile-reviews::after {
+  content: '⭐';
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  font-size: 2rem;
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 5;
+}
+
+[data-theme="lapsi"] .profile-groups::after {
+  content: '🎀';
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  font-size: 2rem;
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Romantiikka-teeman romanttinen tunnelma profiilissa */
+[data-theme="romantiikka"] .profile-empty::before,
+[data-theme="romantiikka"] .profile-favourites::before,
+[data-theme="romantiikka"] .profile-groups::before,
+[data-theme="romantiikka"] .profile-reviews::before {
+  content: '💕';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 2.2rem;
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 5;
+}
+
+[data-theme="romantiikka"] .profile-favourites::after {
+  content: '🌹';
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  font-size: 2rem;
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 5;
+}
+
+[data-theme="romantiikka"] .profile-reviews::after {
+  content: '💖';
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  font-size: 2rem;
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 5;
+}
+
+[data-theme="romantiikka"] .profile-groups::after {
+  content: '💗';
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  font-size: 2rem;
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Kauhu-teeman hehku profiiliosioissa */
+[data-theme="kauhu"] .profile-empty,
+[data-theme="kauhu"] .profile-favourites,
+[data-theme="kauhu"] .profile-groups,
+[data-theme="kauhu"] .profile-reviews {
+  box-shadow: 0 2px 8px rgba(170, 68, 114, 0.2), 0 0 20px rgba(170, 68, 114, 0.1);
+  border: 1px solid rgba(170, 68, 114, 0.15);
+}
+
+/* Lapsi-teeman pehmeä hehku profiiliosioissa */
+[data-theme="lapsi"] .profile-empty,
+[data-theme="lapsi"] .profile-favourites,
+[data-theme="lapsi"] .profile-groups,
+[data-theme="lapsi"] .profile-reviews {
+  box-shadow: 0 2px 10px rgba(255, 179, 186, 0.3), 0 0 20px rgba(186, 225, 255, 0.2);
+  border: 2px solid rgba(255, 179, 186, 0.25);
+}
+
+/* Romantiikka-teeman romanttinen hehku */
+[data-theme="romantiikka"] .profile-empty,
+[data-theme="romantiikka"] .profile-favourites,
+[data-theme="romantiikka"] .profile-groups,
+[data-theme="romantiikka"] .profile-reviews {
+  box-shadow: 0 2px 10px rgba(171, 63, 96, 0.3), 0 0 25px rgba(171, 63, 96, 0.15);
+  border: 2px solid rgba(171, 63, 96, 0.25);
 }
 
 .profile-info {
@@ -16,7 +169,7 @@
   justify-content: center;
   gap: 0.5rem;
   font-size: 1.1rem;
-  color: #1a1a2e;
+  color: var(--color-text-dark);
 }
 
 .profile-icon {
@@ -30,12 +183,12 @@
 }
 
 .profile-empty p {
-  color: #666;
+  color: var(--color-text-medium);
   font-size: 1.1rem;
 }
 
 .profile-empty .btn {
-  background-color: #2563eb;
+  background-color: var(--color-primary);
   color: #fff;
   border: none;
   padding: 0.7rem 1.2rem;
@@ -48,7 +201,7 @@
 }
 
 .profile-empty .btn:hover {
-  background-color: #1e40af;
+  background-color: var(--color-secondary);
 }
 
 .profile-favourites {
@@ -61,9 +214,12 @@
   border-radius: 8px;
   grid-column: 1 / -1;
   gap: 1rem;
+  transition: box-shadow 0.3s ease, border 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 .profile-favourites p {
-  color: #666;
+  color: var(--color-text-medium);
   font-size: 1.1rem;
 }
 
@@ -78,13 +234,16 @@
   border-radius: 8px;
   grid-column: 1 / -1;
   gap: 2rem;
+  transition: box-shadow 0.3s ease, border 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 .profile-groups p {
-  color: #666;
+  color: var(--color-text-medium);
   font-size: 1.1rem;
 }
 .profile-groups .btn {
-  background-color: #2563eb;
+  background-color: var(--color-primary);
   color: #fff;
   border: none;
   padding: 0.7rem 1.2rem;
@@ -97,12 +256,12 @@
 }
 
 .profile-groups .btn:hover {
-  background-color: #1e40af;
+  background-color: var(--color-secondary);
 }
 
 /* Generic button style used across modal and other components */
 .btn {
-  background-color: #2563eb;
+  background-color: var(--color-primary);
   color: #fff;
   border: none;
   padding: 0.7rem 1.2rem;
@@ -111,7 +270,7 @@
   font-size: 1rem;
 }
 .btn:hover {
-  background-color: #1e40af;
+  background-color: var(--color-secondary);
 }
 
 .profile-groups .section-title {
@@ -144,9 +303,12 @@
   border-radius: 8px;
   grid-column: 1 / -1;
   gap: 1rem;
+  transition: box-shadow 0.3s ease, border 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 .profile-reviews p {
-  color: #666;
+  color: var(--color-text-medium);
   font-size: 1.1rem;
 }
 
@@ -184,7 +346,7 @@
 }
 .review-text {
   font-size: 0.95rem;
-  color: #666;
+  color: var(--color-text-medium);
 }
 
 /* Stars outer/inner used for fractional (half) stars */
@@ -231,7 +393,7 @@
   width: 100%;
   box-shadow: 0 10px 30px rgba(0,0,0,0.25);
   padding: 1rem 1rem 1.25rem 1rem;
-  color: #111827;
+  color: var(--color-text-dark);
 }
 .modal-header {
   display: flex;
@@ -273,7 +435,7 @@
 }
 .modal-label {
   font-size: 0.9rem;
-  color: #374151;
+  color: var(--color-text-medium);
 }
 .modal-input {
   padding: 0.5rem;
@@ -311,11 +473,11 @@
 }
 .fav-year {
   font-size: 0.85rem;
-  color: #666;
+  color: var(--color-text-medium);
 }
 .fav-remove-btn {
-  background-color: #dc2626;
+  background-color: var(--color-primary);
 }
 .fav-remove-btn:hover {
-  background-color: #b91c1c;
+  background-color: var(--color-secondary);
 }

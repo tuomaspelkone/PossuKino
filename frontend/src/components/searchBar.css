@@ -10,7 +10,7 @@
   cursor: pointer;
   padding: 0.5rem;
   transition: transform 0.2s;
-  color: white;
+  color: var(--color-navbar-text);
 }
 
 .search-toggle-btn:hover {
@@ -30,7 +30,7 @@
   min-width: 400px;
   max-width: 500px;
   z-index: 1000;
-  color: #1a1a2e;
+  color: var(--color-text-dark);
 }
 
 .search-header {
@@ -42,7 +42,7 @@
 
 .search-header h3 {
   margin: 0;
-  color: #1a1a2e;
+  color: var(--color-text-dark);
 }
 
 .close-btn {
@@ -60,7 +60,7 @@
 }
 
 .close-btn:hover {
-  color: #ff6b6b;
+  color: var(--color-primary);
 }
 
 .search-type-toggle {
@@ -80,9 +80,9 @@
 }
 
 .search-type-toggle button.active {
-  background: #1a1a2e;
+  background: var(--color-secondary);
   color: white;
-  border-color: #1a1a2e;
+  border-color: var(--color-secondary);
 }
 
 .search-input-container {
@@ -101,13 +101,13 @@
 
 .search-input:focus {
   outline: none;
-  border-color: #1a1a2e;
+  border-color: var(--color-secondary);
 }
 
 .search-button {
   width: 100%;
   padding: 0.75rem 1rem;
-  background: #1a1a2e;
+  background: var(--color-secondary);
   color: white;
   border: none;
   border-radius: 4px;
@@ -119,7 +119,7 @@
 }
 
 .search-button:hover:not(:disabled) {
-  background: #0f0f1e;
+  background: var(--color-secondary-dark);
   transform: translateY(-2px);
 }
 
@@ -217,7 +217,7 @@
 .clear-button {
   margin-top: 1rem;
   padding: 0.5rem 1rem;
-  background: #ff6b6b;
+  background: var(--color-primary);
   color: white;
   border: none;
   border-radius: 4px;
@@ -227,7 +227,7 @@
 }
 
 .clear-button:hover {
-  background: #ff5252;
+  background: var(--color-secondary);
 }
 
 /* Hakudropdownin tulokset (kirjoitettaessa näkyvät) */
@@ -268,7 +268,7 @@
   padding: 8px 10px;
   cursor: pointer;
   font-size: 0.95rem;
-  color: #1a1a2e;
+  color: var(--color-text-dark);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -302,7 +302,7 @@
 
 .search-results-below h4 {
   margin: 0 0 1rem 0;
-  color: #1a1a2e;
+  color: var(--color-text-dark);
   font-size: 1.1rem;
 }
 
@@ -331,9 +331,9 @@
 }
 
 .search-result-item-below button:hover {
-  background: #1a1a2e;
+  background: var(--color-secondary);
   color: white;
-  border-color: #1a1a2e;
+  border-color: var(--color-secondary);
 }
 
 /* Responsiivisuus */

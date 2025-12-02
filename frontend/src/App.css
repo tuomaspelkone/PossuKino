@@ -1,12 +1,122 @@
 .App {
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background-color: var(--color-primary-lighter);
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+/* Romantiikka-teeman satunnaiset sydämet ympäri sivua */
+[data-theme="romantiikka"] .App::before {
+  content: '💗';
+  position: fixed;
+  top: 8%;
+  left: 12%;
+  font-size: 6rem;
+  opacity: 0.25;
+  pointer-events: none;
+  z-index: -1;
+}
+
+[data-theme="romantiikka"] .App::after {
+  content: '💕';
+  position: fixed;
+  top: 18%;
+  right: 10%;
+  font-size: 5.5rem;
+  opacity: 0.25;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Kauhu-teeman vinjetti-efekti reunoille */
+[data-theme="kauhu"] .App::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 150px rgba(20, 9, 44, 0.6);
+  z-index: 1;
 }
 
 .main-content {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+/* Kauhu-teeman nurkka-dekoraatiot */
+[data-theme="kauhu"] .main-content::before {
+  content: '🦇';
+  position: fixed;
+  top: 80px;
+  left: 30px;
+  font-size: 2.8rem;
+  opacity: 0.6;
+  z-index: 1001;
+  pointer-events: none;
+}
+
+[data-theme="kauhu"] .main-content::after {
+  content: '🦇';
+  position: fixed;
+  top: 80px;
+  right: 30px;
+  font-size: 2.8rem;
+  opacity: 0.6;
+  z-index: 1001;
+  pointer-events: none;
+  transform: scaleX(-1);
+}
+
+/* Lapsi-teeman söpöt nallet nurkissa */
+[data-theme="lapsi"] .main-content::before {
+  content: '🧸';
+  position: fixed;
+  top: 80px;
+  left: 30px;
+  font-size: 3rem;
+  opacity: 0.7;
+  z-index: 1001;
+  pointer-events: none;
+}
+
+[data-theme="lapsi"] .main-content::after {
+  content: '🧸';
+  position: fixed;
+  top: 80px;
+  right: 30px;
+  font-size: 3rem;
+  opacity: 0.7;
+  z-index: 1001;
+  pointer-events: none;
+}
+
+/* Romantiikka-teeman sydämet ja ruusut nurkissa */
+[data-theme="romantiikka"] .main-content::before {
+  content: '💖';
+  position: fixed;
+  top: 35%;
+  left: 6%;
+  font-size: 5.5rem;
+  opacity: 0.25;
+  z-index: -1;
+  pointer-events: none;
+}
+
+[data-theme="romantiikka"] .main-content::after {
+  content: '💝';
+  position: fixed;
+  top: 28%;
+  right: 14%;
+  font-size: 6rem;
+  opacity: 0.25;
+  z-index: -1;
+  pointer-events: none;
 }
 
 .search-results {
@@ -14,6 +124,31 @@
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
   margin-top: 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+/* Romantiikka-teeman sydämet hakutulosten ympärillä */
+[data-theme="romantiikka"] .search-results::before {
+  content: '💖';
+  position: fixed;
+  bottom: 45%;
+  left: 22%;
+  font-size: 5rem;
+  opacity: 0.25;
+  pointer-events: none;
+  z-index: -1;
+}
+
+[data-theme="romantiikka"] .search-results::after {
+  content: '💝';
+  position: fixed;
+  top: 50%;
+  right: 5%;
+  font-size: 5.5rem;
+  opacity: 0.25;
+  pointer-events: none;
+  z-index: -1;
 }
 
 .result-card {
@@ -29,14 +164,47 @@
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
+/* Kauhu-teeman korttien hehku ja varjot */
+[data-theme="kauhu"] .result-card {
+  box-shadow: 0 2px 8px rgba(170, 68, 114, 0.2), 0 0 20px rgba(170, 68, 114, 0.1);
+  border: 1px solid rgba(170, 68, 114, 0.15);
+}
+
+[data-theme="kauhu"] .result-card:hover {
+  box-shadow: 0 4px 12px rgba(170, 68, 114, 0.3), 0 0 30px rgba(170, 68, 114, 0.2);
+  border-color: rgba(170, 68, 114, 0.3);
+}
+
+/* Lapsi-teeman pehmeät kortit */
+[data-theme="lapsi"] .result-card {
+  box-shadow: 0 2px 8px rgba(255, 179, 186, 0.3), 0 0 15px rgba(186, 225, 255, 0.2);
+  border: 2px solid rgba(255, 179, 186, 0.2);
+}
+
+[data-theme="lapsi"] .result-card:hover {
+  box-shadow: 0 4px 12px rgba(255, 179, 186, 0.4), 0 0 25px rgba(186, 225, 255, 0.3);
+  border-color: rgba(255, 179, 186, 0.4);
+}
+
+/* Romantiikka-teeman romanttinen hehku korteissa */
+[data-theme="romantiikka"] .result-card {
+  box-shadow: 0 2px 10px rgba(171, 63, 96, 0.3), 0 0 20px rgba(171, 63, 96, 0.15);
+  border: 2px solid rgba(171, 63, 96, 0.2);
+}
+
+[data-theme="romantiikka"] .result-card:hover {
+  box-shadow: 0 4px 14px rgba(171, 63, 96, 0.4), 0 0 30px rgba(171, 63, 96, 0.25);
+  border-color: rgba(171, 63, 96, 0.35);
+}
+
 .result-card h3 {
   margin: 0 0 0.5rem 0;
-  color: #1a1a2e;
+  color: var(--color-text-dark);
 }
 
 .result-card p {
   margin: 0;
-  color: #666;
+  color: var(--color-text-medium);
   line-height: 1.5;
 }
 
@@ -49,12 +217,12 @@
 }
 
 .empty-state h2 {
-  color: #1a1a2e;
+  color: var(--color-text-medium);
   margin-bottom: 1rem;
 }
 
 .empty-state p {
-  color: #666;
+  color: var(--color-text-medium);
   font-size: 1.1rem;
 }
 
@@ -70,6 +238,30 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  position: relative;
+}
+
+/* Romantiikka-teeman lisää sydämiä eri kohtiin */
+[data-theme="romantiikka"] body::before {
+  content: '💗';
+  position: fixed;
+  bottom: 25%;
+  left: 18%;
+  font-size: 5.5rem;
+  opacity: 0.25;
+  pointer-events: none;
+  z-index: -1;
+}
+
+[data-theme="romantiikka"] body::after {
+  content: '💕';
+  position: fixed;
+  bottom: 12%;
+  right: 8%;
+  font-size: 6rem;
+  opacity: 0.25;
+  pointer-events: none;
+  z-index: -1;
 }
 
 
@@ -120,6 +312,6 @@ li.selected{
 }
 
 .pagination-wrapper li.selected {
-  background: #1a1a2e;
+  background: var(--color-primary);
   color: white;
 }

@@ -1,8 +1,78 @@
 .movie-showcase {
   padding: 40px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--color-showcase-start) 0%, var(--color-showcase-end) 100%);
   color: white;
   margin: 0;
+  position: relative;
+}
+
+/* Kauhu-teeman kurpitsat nurkissa */
+[data-theme="kauhu"] .movie-showcase::before {
+  content: '🎃';
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 3.5rem;
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 10;
+}
+
+[data-theme="kauhu"] .movie-showcase::after {
+  content: '🎃';
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 3.5rem;
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Lapsi-teeman ilmapallot ja karkit */
+[data-theme="lapsi"] .movie-showcase::before {
+  content: '🎈🍭';
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 3rem;
+  opacity: 0.75;
+  pointer-events: none;
+  z-index: 10;
+}
+
+[data-theme="lapsi"] .movie-showcase::after {
+  content: '🍬🎈';
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 3rem;
+  opacity: 0.75;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Romantiikka-teeman sydämet ja ruusut */
+[data-theme="romantiikka"] .movie-showcase::before {
+  content: '💕🌹';
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 3rem;
+  opacity: 0.7;
+  pointer-events: none;
+  z-index: 10;
+}
+
+[data-theme="romantiikka"] .movie-showcase::after {
+  content: '🌹💖';
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 3rem;
+  opacity: 0.7;
+  pointer-events: none;
+  z-index: 10;
 }
 
 .movie-showcase h2 {
@@ -12,12 +82,92 @@
   text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
+/* Kauhu-teeman kamala hehku otsikossa */
+[data-theme="kauhu"] .movie-showcase h2 {
+  text-shadow: 0 0 20px rgba(196, 77, 126, 0.6), 
+               0 0 40px rgba(170, 68, 114, 0.4),
+               2px 2px 8px rgba(0,0,0,0.8);
+}
+
 .movies-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 20px;
   max-width: 1400px;
   margin: 0 auto;
+  position: relative;
+}
+
+/* Kauhu-teeman Scream-maskit taustalle */
+[data-theme="kauhu"] .movies-grid::before {
+  content: '😱';
+  position: absolute;
+  bottom: -40px;
+  left: 10%;
+  font-size: 5.5rem;
+  opacity: 0.4;
+  transform: rotate(-15deg);
+  pointer-events: none;
+  z-index: 10;
+}
+
+[data-theme="kauhu"] .movies-grid::after {
+  content: '😱';
+  position: absolute;
+  bottom: -40px;
+  right: 10%;
+  font-size: 5.5rem;
+  opacity: 0.4;
+  transform: rotate(15deg);
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Lapsi-teeman sateenkaari ja tähdet */
+[data-theme="lapsi"] .movies-grid::before {
+  content: '🌈';
+  position: absolute;
+  bottom: -30px;
+  left: 15%;
+  font-size: 4.5rem;
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 10;
+}
+
+[data-theme="lapsi"] .movies-grid::after {
+  content: '⭐✨';
+  position: absolute;
+  bottom: -30px;
+  right: 15%;
+  font-size: 3.5rem;
+  opacity: 0.65;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Romantiikka-teeman romanttinen tunnelma */
+[data-theme="romantiikka"] .movies-grid::before {
+  content: '💝';
+  position: absolute;
+  bottom: -30px;
+  left: 15%;
+  font-size: 4.5rem;
+  opacity: 0.55;
+  transform: rotate(-10deg);
+  pointer-events: none;
+  z-index: 10;
+}
+
+[data-theme="romantiikka"] .movies-grid::after {
+  content: '🌹💗';
+  position: absolute;
+  bottom: -30px;
+  right: 15%;
+  font-size: 3.5rem;
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 10;
 }
 
 .movie-card {
@@ -34,6 +184,17 @@
 .movie-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+/* Kauhu-teeman elokuvakorttien hehku */
+[data-theme="kauhu"] .movie-card {
+  border: 1px solid rgba(170, 68, 114, 0.3);
+}
+
+[data-theme="kauhu"] .movie-card:hover {
+  box-shadow: 0 10px 30px rgba(170, 68, 114, 0.4),
+              0 0 40px rgba(170, 68, 114, 0.2);
+  border-color: rgba(196, 77, 126, 0.6);
 }
 
 .movie-poster {
@@ -99,6 +260,6 @@
 }
 
 .error {
-  color: #ff6b6b;
-  background: rgba(255, 107, 107, 0.2);
+  color: var(--color-primary);
+  background: var(--color-primary-lighter);
 }
