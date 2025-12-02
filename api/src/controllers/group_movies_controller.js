@@ -16,6 +16,8 @@ export async function getGroupMovies(req, res) {
 export async function addGroupMovie(req, res) {
   try {
     const payload = req.body || {};
+    // Debug logging: show incoming payload and authenticated user
+    try { console.log('addGroupMovie called, payload:', JSON.stringify(payload), 'user:', JSON.stringify(req.user)); } catch (e) { console.log('addGroupMovie called'); }
     const group_id = Number(payload.group_id);
     if (!group_id) return res.status(400).json({ error: 'group_id required' });
     const tmdb_id = payload.tmdb_id || payload.movie_id || payload.id || null;

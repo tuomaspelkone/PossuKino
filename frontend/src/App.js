@@ -25,7 +25,7 @@ function App() {
   }, []);
 
   const isProfile = hash === '#profile';
-  const isGroups = hash === '#groups';
+  const isGroups = hash.startsWith('#groups');
   const isMovieDetail = hash.startsWith('#movie/');
   const movieId = isMovieDetail ? hash.replace('#movie/', '') : null;
 
@@ -61,7 +61,7 @@ function App() {
                     <div 
                       key={result.movie_id || result.tmdb_id} 
                       className="movie-card"
-                      onClick={() => window.location.hash = `#movie/${result.tmdb_id || result.movie_id}`}
+                      onClick={() => { try { sessionStorage.setItem('returnTo', '#home'); } catch(e){} window.location.hash = `#movie/${result.tmdb_id || result.movie_id}`; }}
                       style={{ cursor: 'pointer' }}
                     >
                       <div className="movie-poster">

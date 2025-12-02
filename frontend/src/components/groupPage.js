@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './groupPage.css';
 import SearchBar from './searchBar';
 import MovieDetail from './movieDetail';
@@ -29,10 +29,18 @@ function GroupPage() {
     const [isCurrentUserAdmin, setIsCurrentUserAdmin] = useState(false);
     const [currentUserId, setCurrentUserId] = useState(null);
     const [addMemberUsername, setAddMemberUsername] = useState('');
+    const carouselRef = useRef(null);
+    const [canScrollLeft, setCanScrollLeft] = useState(false);
+    const [canScrollRight, setCanScrollRight] = useState(false);
+    const [chatMessages, setChatMessages] = useState([]);
+    const [chatText, setChatText] = useState('');
+    const [userCache, setUserCache] = useState({}); // { [user_id]: { username, avatar_url } }
+    const chatListRef = useRef(null);
+    const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
   useEffect(() => {
     let mounted = true;
-    const apiBase = process.env.REACT_APP_API_URL || '';
+    const apiBase = API_BASE;
     const apiBaseNoSlash = apiBase.replace(/\/$/, '');
 
     async function fetchGroups() {
@@ -98,7 +106,7 @@ function GroupPage() {
       return;
     }
 
-    const apiBase = process.env.REACT_APP_API_URL || '';
+    const apiBase = API_BASE;
     const apiBaseNoSlash = apiBase.replace(/\/$/, '');
 
     try {
@@ -142,7 +150,7 @@ function GroupPage() {
       return;
     }
 
-    const apiBase = process.env.REACT_APP_API_URL || '';
+    const apiBase = API_BASE;
     const apiBaseNoSlash = apiBase.replace(/\/$/, '');
 
     try {
@@ -192,17 +200,24 @@ function GroupPage() {
     fetchGroupMovies(group.group_id);
     // check if current user is admin of this group
     checkAdminStatus(group.group_id);
+    // reflect group id in hash for deep link
+    try {
+      const current = String(window.location.hash || '');
+      const desired = `#groups?gid=${group.group_id}`;
+      if (current !== desired) window.location.hash = desired;
+    } catch (e) {}
   }
 
   function closeGroup() {
     setSelectedGroup(null);
     setShowMembersList(false);
     setMemberUsernames([]);
+    try { if (window.location.hash !== '#groups') window.location.hash = '#groups'; } catch (e) {}
   }
 
   async function loadMemberUsernames(group_id, group_name) {
     try {
-      const apiBase = process.env.REACT_APP_API_URL || '';
+      const apiBase = API_BASE;
       const apiBaseNoSlash = apiBase.replace(/\/$/, '');
       const resMembers = await fetch(`${apiBaseNoSlash}/group_members`);
       if (!resMembers.ok) throw new Error(`Group members HTTP ${resMembers.status}`);
@@ -239,7 +254,7 @@ function GroupPage() {
       const curUid = parsed && parsed.user_id ? Number(parsed.user_id) : null;
       setCurrentUserId(curUid);
       if (!curUid) { setIsCurrentUserAdmin(false); return; }
-      const apiBase = process.env.REACT_APP_API_URL || '';
+      const apiBase = API_BASE;
       const apiBaseNoSlash = apiBase.replace(/\/$/, '');
       const res = await fetch(`${apiBaseNoSlash}/group_members`);
       if (!res.ok) { setIsCurrentUserAdmin(false); return; }
@@ -256,7 +271,7 @@ function GroupPage() {
     if (!group_movie_id) return;
     if (!window.confirm('Poistetaanko tämä elokuva ryhmästä?')) return;
     try {
-      const apiBase = process.env.REACT_APP_API_URL || '';
+      const apiBase = API_BASE;
       const apiBaseNoSlash = apiBase.replace(/\/$/, '');
       const token = localStorage.getItem('token');
       const headers = {};
@@ -277,7 +292,7 @@ function GroupPage() {
 
   // fetch genres for add modal
   useEffect(() => {
-    const apiBase = process.env.REACT_APP_API_URL || '';
+    const apiBase = API_BASE;
     const apiBaseNoSlash = apiBase.replace(/\/$/, '');
     async function fetchGenres() {
       try {
@@ -292,6 +307,33 @@ function GroupPage() {
     fetchGenres();
   }, []);
 
+  // When groups loaded or hash changes, open group from gid param if present
+  useEffect(() => {
+    function getGid() {
+      const m = (window.location.hash || '').match(/^#groups\?gid=(\d+)/);
+      return m ? Number(m[1]) : null;
+    }
+    function syncFromHash() {
+      const gid = getGid();
+      if (!gid) {
+        // if no gid and currently in detail, close
+        if (selectedGroup) closeGroup();
+        return;
+      }
+      // if already showing same group, nothing
+      if (selectedGroup && Number(selectedGroup.group_id) === Number(gid)) return;
+      const found = groups.find(g => Number(g.group_id) === Number(gid));
+      if (found) openGroup(found);
+    }
+    // initial sync once groups available
+    if (groups && groups.length >= 0) {
+      syncFromHash();
+    }
+    const onHash = () => syncFromHash();
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, [groups, selectedGroup]);
+
   function onSearchAddResults(payload) {
     const results = Array.isArray(payload.results) ? payload.results : [];
     setSearchAddResults(results.slice(0, 20));
@@ -302,15 +344,21 @@ function GroupPage() {
     const id = movie.tmdb_id || movie.movie_id || movie.id || movie.tmdbId;
     const exists = (selectedGroup.movies || []).some(m => (m.tmdb_id || m.movie_id) === id);
     if (exists) return;
-    const newMovie = { tmdb_id: id, movie_title: movie.movie_title || movie.title || movie.name, movie_image: movie.movie_image || movie.poster_path };
-    setSelectedGroup(prev => ({ ...prev, movies: [newMovie, ...(prev.movies || [])] }));
+    // Persist via the same confirm flow so backend receives added_by info
+    try {
+      confirmAddMovie(movie);
+    } catch (e) {
+      // fallback to client-only add if confirmAddMovie fails synchronously
+      const newMovie = { tmdb_id: id, movie_title: movie.movie_title || movie.title || movie.name, movie_image: movie.movie_image || movie.poster_path };
+      setSelectedGroup(prev => ({ ...prev, movies: [newMovie, ...(prev.movies || [])] }));
+    }
   }
 
   // Perform search inside add modal
   async function performAddSearch() {
     setAddLoading(true);
     try {
-      const apiBase = process.env.REACT_APP_API_URL || '';
+      const apiBase = API_BASE;
       const apiBaseNoSlash = apiBase.replace(/\/$/, '');
       const params = new URLSearchParams();
       if (addSearchTerm) params.append('q', addSearchTerm);
@@ -341,26 +389,44 @@ function GroupPage() {
   function confirmAddMovie(movie) {
     // Persist to backend then add to UI
     (async () => {
-      const apiBase = process.env.REACT_APP_API_URL || '';
+      const apiBase = API_BASE;
       const apiBaseNoSlash = apiBase.replace(/\/$/, '');
       const token = localStorage.getItem('token');
       const headers = { 'Content-Type': 'application/json' };
       if (token) headers['Authorization'] = `Bearer ${token}`;
+      // Attach current user info so backend can persist adder info
+      let parsedUser = null;
+      try { parsedUser = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null; } catch (e) { parsedUser = null; }
+      const currentUserId = parsedUser && parsedUser.user_id ? Number(parsedUser.user_id) : null;
+      const currentUsername = parsedUser && (parsedUser.username || parsedUser.email) ? (parsedUser.username || parsedUser.email) : null;
+
       const payload = {
         group_id: Number(selectedGroup.group_id),
         tmdb_id: movie.id || movie.tmdb_id || movie.movie_id,
         movie_title: movie.title || movie.name || movie.movie_title,
         movie_image: movie.poster_path || movie.movie_image,
         movie_description: movie.overview || movie.movie_description || '',
-        added_reason: addReason || ''
+        added_reason: addReason || '',
+        added_by: currentUserId,
+        added_by_username: currentUsername,
+        added_by_is_member: currentUserId ? true : false
       };
       try {
         const res = await fetch(`${apiBaseNoSlash}/group_movies`, { method: 'POST', headers, body: JSON.stringify(payload) });
-        if (!res.ok) throw new Error('Failed to save movie');
+        if (!res.ok) {
+          const txt = await res.text().catch(() => '');
+          throw new Error(`HTTP ${res.status}: ${txt}`);
+        }
         const created = await res.json();
+        // Ensure created has adder info for immediate UI
+        if (currentUserId && !created.added_by) created.added_by = currentUserId;
+        if (currentUsername && !created.added_by_username) created.added_by_username = currentUsername;
+        if (currentUserId && !created.added_by_is_member) created.added_by_is_member = true;
         // update selectedGroup and groups
         setSelectedGroup(prev => ({ ...prev, movies: [created, ...(prev.movies || [])] }));
         setGroups(prev => prev.map(g => Number(g.group_id) === Number(selectedGroup.group_id) ? { ...g, movies: [created, ...(g.movies || [])] } : g));
+        // refresh persisted list to ensure server-side state
+        try { fetchGroupMovies(selectedGroup.group_id); } catch (e) {}
       } catch (e) {
         console.error('Failed to persist group movie', e);
         // fallback to client-side add
@@ -369,10 +435,15 @@ function GroupPage() {
           movie_title: movie.title || movie.name || movie.movie_title,
           movie_image: movie.poster_path || movie.movie_image,
           movie_description: movie.overview || movie.movie_description || '' ,
-          added_reason: addReason || ''
+          added_reason: addReason || '',
+          added_by: currentUserId,
+          added_by_username: currentUsername,
+          added_by_is_member: currentUserId ? true : false
         };
         setSelectedGroup(prev => ({ ...prev, movies: [fallback, ...(prev.movies || [])] }));
         setGroups(prev => prev.map(g => Number(g.group_id) === Number(selectedGroup.group_id) ? { ...g, movies: [fallback, ...(g.movies || [])] } : g));
+        // surface error to user for easier debugging
+        try { window.alert('Elokuvan tallennus epäonnistui: ' + (e.message || String(e))); } catch (ee) {}
       } finally {
         clearAddModal();
       }
@@ -381,7 +452,7 @@ function GroupPage() {
 
   async function fetchGroupMovies(group_id) {
     try {
-      const apiBase = process.env.REACT_APP_API_URL || '';
+      const apiBase = API_BASE;
       const apiBaseNoSlash = apiBase.replace(/\/$/, '');
       const res = await fetch(`${apiBaseNoSlash}/group_movies?group_id=${group_id}`);
       if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -390,6 +461,139 @@ function GroupPage() {
     } catch (e) {
       console.error('Failed to load group movies', e);
     }
+  }
+
+  // --- Group Chat ---
+  async function fetchGroupChatMessages(group_id) {
+    try {
+      const apiBase = API_BASE;
+      const apiBaseNoSlash = apiBase.replace(/\/$/, '');
+      const res = await fetch(`${apiBaseNoSlash}/group_messages`);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const rows = await res.json();
+      const list = Array.isArray(rows) ? rows.filter(r => Number(r.group_id) === Number(group_id)) : [];
+      // sort by created_at if present, else message_id
+      list.sort((a,b) => {
+        const ta = a.created_at ? new Date(a.created_at).getTime() : (a.message_id || 0);
+        const tb = b.created_at ? new Date(b.created_at).getTime() : (b.message_id || 0);
+        return ta - tb;
+      });
+      setChatMessages(list);
+    } catch (e) {
+      // fail silently; chat not critical
+    }
+  }
+
+  useEffect(() => {
+    if (!selectedGroup) return;
+    fetchGroupChatMessages(selectedGroup.group_id);
+    const id = setInterval(() => fetchGroupChatMessages(selectedGroup.group_id), 5000);
+    return () => clearInterval(id);
+  }, [selectedGroup?.group_id]);
+
+  // Auto-scroll chat to bottom when messages change
+  useEffect(() => {
+    const el = chatListRef.current;
+    if (!el) return;
+    try {
+      el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+    } catch {
+      el.scrollTop = el.scrollHeight;
+    }
+  }, [chatMessages.length, selectedGroup?.group_id]);
+
+  // Resolve user info for messages missing from cache
+  useEffect(() => {
+    const apiBase = API_BASE;
+    const apiBaseNoSlash = apiBase.replace(/\/$/, '');
+    const missing = [];
+    for (const m of chatMessages) {
+      const uid = Number(m.user_id);
+      if (!uid) continue;
+      if (!userCache[uid]) missing.push(uid);
+    }
+    if (missing.length === 0) return;
+    const uniq = Array.from(new Set(missing)).slice(0, 10); // cap batch
+    (async () => {
+      const entries = await Promise.all(uniq.map(async uid => {
+        try {
+          const r = await fetch(`${apiBaseNoSlash}/user/${uid}`);
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          const u = await r.json();
+          return [uid, { username: u.username || u.email || `user-${uid}`, avatar_url: u.avatar_url || u.profile_picture || '' }];
+        } catch {
+          return [uid, { username: `user-${uid}`, avatar_url: '' }];
+        }
+      }));
+      setUserCache(prev => ({ ...prev, ...Object.fromEntries(entries) }));
+    })();
+  }, [chatMessages]);
+
+  async function sendChatMessage() {
+    const text = chatText.trim();
+    if (!text) return;
+    const stored = localStorage.getItem('user');
+    let parsed;
+    try { parsed = stored ? JSON.parse(stored) : null; } catch { parsed = null; }
+    const uid = parsed && parsed.user_id ? Number(parsed.user_id) : null;
+    if (!uid) {
+      window.alert('Kirjaudu sisään kommentoidaksesi.');
+      return;
+    }
+    try {
+      const apiBase = API_BASE;
+      const apiBaseNoSlash = apiBase.replace(/\/$/, '');
+      const token = localStorage.getItem('token');
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const payload = { group_id: Number(selectedGroup.group_id), user_id: uid, message: text };
+      // optimistic UI
+      const optimistic = { message_id: `temp-${Date.now()}`, ...payload, created_at: new Date().toISOString() };
+      setChatMessages(prev => [...prev, optimistic]);
+      setChatText('');
+      const res = await fetch(`${apiBaseNoSlash}/group_messages`, { method: 'POST', headers, body: JSON.stringify(payload) });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      // refresh to get real IDs
+      fetchGroupChatMessages(selectedGroup.group_id);
+    } catch (e) {
+      // rollback optimistic add on failure
+      setChatMessages(prev => prev.filter(m => !String(m.message_id).startsWith('temp-')));
+      window.alert('Viestin lähetys epäonnistui.');
+    }
+  }
+
+  // Update carousel scroll button states
+  function updateScrollButtons() {
+    const el = carouselRef.current;
+    if (!el) { setCanScrollLeft(false); setCanScrollRight(false); return; }
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    setCanScrollLeft(scrollLeft > 0);
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 1);
+  }
+
+  useEffect(() => {
+    updateScrollButtons();
+  }, [selectedGroup?.movies?.length]);
+
+  useEffect(() => {
+    const el = carouselRef.current;
+    if (!el) return;
+    const onScroll = () => updateScrollButtons();
+    el.addEventListener('scroll', onScroll, { passive: true });
+    const onResize = () => updateScrollButtons();
+    window.addEventListener('resize', onResize);
+    updateScrollButtons();
+    return () => {
+      el.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onResize);
+    };
+  }, [carouselRef.current]);
+
+  function scrollByAmount(dir = 1) {
+    const el = carouselRef.current;
+    if (!el) return;
+    const amount = Math.max(200, Math.floor(el.clientWidth * 0.9));
+    el.scrollBy({ left: dir * amount, behavior: 'smooth' });
   }
 
   
@@ -452,7 +656,7 @@ function GroupPage() {
                                     if (!u.member_id) return;
                                     if (!window.confirm('Poistetaanko jäsen?')) return;
                                     try {
-                                      const apiBase = process.env.REACT_APP_API_URL || '';
+                                      const apiBase = API_BASE;
                                       const apiBaseNoSlash = apiBase.replace(/\/$/, '');
                                       const token = localStorage.getItem('token');
                                       const headers = {};
@@ -482,7 +686,7 @@ function GroupPage() {
                       const username = addMemberUsername && addMemberUsername.trim();
                       if (!username) return window.alert('Kirjoita käyttäjätunnus');
                       try {
-                        const apiBase = process.env.REACT_APP_API_URL || '';
+                        const apiBase = API_BASE;
                         const apiBaseNoSlash = apiBase.replace(/\/$/, '');
                         const token = localStorage.getItem('token');
                         const headers = { 'Content-Type': 'application/json' };
@@ -534,7 +738,18 @@ function GroupPage() {
                 </div>
               </div>
             ) : (selectedGroup.movies && selectedGroup.movies.length > 0 ? (
-              <div>
+              <div className="group-movies-carousel">
+                {canScrollLeft && (
+                  <button
+                    className="carousel-btn left"
+                    onClick={(e) => { e.stopPropagation(); scrollByAmount(-1); }}
+                    aria-label="Edellinen"
+                  >
+                    ‹
+                  </button>
+                )}
+                <div className="group-movies-viewport" ref={carouselRef}>
+                  <div className="group-movies-track">
                   {selectedGroup.movies.map((m, i) => {
                   const title = m.movie_title || m.title || m.name || '—';
                   const desc = m.movie_description || m.overview || '';
@@ -547,53 +762,120 @@ function GroupPage() {
                   const createdAt = m.created_at || m.createdAt || null;
                   let createdAtText = null;
                   try { if (createdAt) createdAtText = new Date(createdAt).toLocaleString(); } catch (e) { createdAtText = String(createdAt); }
+                  const canRemove = ((isCurrentUserAdmin || (currentUserId && m.added_by && Number(m.added_by) === Number(currentUserId))) && m.group_movie_id);
                   return (
-                    <div key={i} className={`group-movie-row ${isAdderAdmin ? 'admin' : ''}`}>
-                      <div className="group-movie-left">
-                        <div className="group-movie-title">{title}</div>
-                        {desc && <div className="group-movie-desc">{desc}</div>}
-                        <div className="group-movie-meta">Lisäsi: {isAdderAdmin ? <strong>{adder}</strong> : <span>{adder}</span>}</div>
-                        {createdAtText && <div className="group-movie-meta">Lisätty: <span style={{color:'#6b7280'}}>{createdAtText}</span></div>}
-                        {m.added_reason && <div className="group-movie-meta">Syy: {m.added_reason}</div>}
-                        {( (isCurrentUserAdmin || (currentUserId && m.added_by && Number(m.added_by) === Number(currentUserId))) && m.group_movie_id ) && (
-                          <div style={{marginTop:'0.5rem'}}>
-                            <button className="movie-delete-btn" onClick={() => handleDeleteGroupMovie(m.group_movie_id)}>Poista</button>
+                    <div
+                      key={i}
+                      className={`group-movie-card ${isAdderAdmin ? 'admin' : ''}`}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => {
+                        if (!movieId) return;
+                        try {
+                          if (selectedGroup && selectedGroup.group_id) {
+                            sessionStorage.setItem('returnToGroup', String(selectedGroup.group_id));
+                            sessionStorage.setItem('returnTo', `#groups?gid=${selectedGroup.group_id}`);
+                          }
+                        } catch (e) {}
+                        window.location.hash = `#movie/${movieId}`;
+                      }}
+                      onKeyDown={e => { if ((e.key === 'Enter' || e.key === ' ') && movieId) {
+                        try { if (selectedGroup && selectedGroup.group_id) { sessionStorage.setItem('returnToGroup', String(selectedGroup.group_id)); sessionStorage.setItem('returnTo', `#groups?gid=${selectedGroup.group_id}`); } } catch (ee) {}
+                        window.location.hash = `#movie/${movieId}`;
+                      }}}
+                    >
+                      {img ? (
+                        <img src={img} alt={title} onError={e => e.target.style.display = 'none'} />
+                      ) : (
+                        <div className="no-poster">Ei kuvaa</div>
+                      )}
+                      <div className="group-movie-popover" onClick={e => e.stopPropagation()}>
+                        <div className="popover-title">{title}</div>
+                        {desc && <div className="popover-desc">{desc.length > 220 ? `${desc.slice(0,220)}…` : desc}</div>}
+                        <div className="popover-meta">Lisäsi: {isAdderAdmin ? <strong>{adder}</strong> : <span>{adder}</span>}</div>
+                        {createdAtText && <div className="popover-meta">Lisätty: <span className="dim">{createdAtText}</span></div>}
+                        {m.added_reason && <div className="popover-meta">Syy: {m.added_reason}</div>}
+                        {canRemove && (
+                          <div className="popover-actions">
+                            <button
+                              className="movie-delete-btn"
+                              onClick={e => { e.stopPropagation(); handleDeleteGroupMovie(m.group_movie_id); }}
+                            >Poista</button>
                           </div>
-                        )}
-                      </div>
-                      <div className="group-movie-right">
-                        {img ? (
-                          <img
-                            src={img}
-                            alt={title}
-                            onError={e => e.target.style.display = 'none'}
-                            onClick={() => {
-                              if (!movieId) return;
-                              try {
-                                if (selectedGroup && selectedGroup.group_id) {
-                                  sessionStorage.setItem('returnToGroup', String(selectedGroup.group_id));
-                                }
-                              } catch (e) {}
-                              window.location.hash = `#movie/${movieId}`
-                            }}
-                            onKeyDown={e => { if ((e.key === 'Enter' || e.key === ' ') && movieId) {
-                              try { if (selectedGroup && selectedGroup.group_id) sessionStorage.setItem('returnToGroup', String(selectedGroup.group_id)); } catch (ee) {}
-                              window.location.hash = `#movie/${movieId}`
-                            }}}
-                            tabIndex={0}
-                            style={{ cursor: 'pointer' }}
-                          />
-                        ) : (
-                          <div className="no-poster" style={{height:120,background:'#f3f4f6',display:'flex',alignItems:'center',justifyContent:'center',color:'#6b7280'}}>Ei kuvaa</div>
                         )}
                       </div>
                     </div>
                   );
                 })}
+                  </div>
+                </div>
+                {canScrollRight && (
+                  <button
+                    className="carousel-btn right"
+                    onClick={(e) => { e.stopPropagation(); scrollByAmount(1); }}
+                    aria-label="Seuraava"
+                  >
+                    ›
+                  </button>
+                )}
               </div>
             ) : (
               <div className="group-page-empty">Ei elokuvia listalla.</div>
             ))}
+          </div>
+
+          {/* Group Chat */}
+          <div className="group-chat">
+            <div className="group-chat-header"><strong>Keskustelu</strong></div>
+            <div className="chat-messages" ref={chatListRef}>
+              {chatMessages.length === 0 ? (
+                <div className="chat-empty">Ei viestejä vielä.</div>
+              ) : (
+                chatMessages.map((msg) => {
+                  const uid = Number(msg.user_id);
+                  const userInfo = userCache[uid] || {};
+                  const name = userInfo.username || `user-${uid || '—'}`;
+                  const avatar = userInfo.avatar_url || '';
+                  let createdAtText = '';
+                  const ts = msg.created_at || msg.createdAt || null;
+                  try { if (ts) createdAtText = new Date(ts).toLocaleString(); } catch {}
+                  return (
+                    <div key={msg.message_id} className="chat-message">
+                      <div className="chat-avatar">
+                        {avatar ? (
+                          <img src={avatar} alt={name} onError={e => e.target.style.display='none'} />
+                        ) : (
+                          <div className="avatar-fallback">{String(name).slice(0,1).toUpperCase()}</div>
+                        )}
+                      </div>
+                      <div className="chat-bubble">
+                        <div className="chat-meta">
+                          <span className="chat-name">{name}</span>
+                          {createdAtText && <span className="chat-time">{createdAtText}</span>}
+                        </div>
+                        <div className="chat-text">{msg.message}</div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+            <div className="chat-input-row">
+              <textarea
+                className="chat-input"
+                rows={2}
+                placeholder="Kirjoita viesti. Enter lähettää, Shift+Enter rivinvaihto"
+                value={chatText}
+                onChange={e => setChatText(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && !e.shiftKey && !(e.nativeEvent && e.nativeEvent.isComposing)) {
+                    e.preventDefault();
+                    sendChatMessage();
+                  }
+                }}
+              />
+              <button className="small-btn" onClick={sendChatMessage}>Lähetä</button>
+            </div>
           </div>
 
           {/* Add Movie Modal */}

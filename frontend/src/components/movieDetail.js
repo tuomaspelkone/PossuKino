@@ -158,10 +158,10 @@ function MovieDetail({ movieId }) {
       <div className="movie-detail-container">
         <div className="error">{error}</div>
         <button onClick={() => {
-          const ret = sessionStorage.getItem('returnToGroup');
-          if (ret) {
-            // Do not remove here; GroupPage will consume and remove it after loading
-            window.location.hash = '#groups';
+          const route = sessionStorage.getItem('returnTo');
+          if (route) {
+            
+            window.location.hash = route;
           } else {
             window.location.hash = '#home';
           }
@@ -183,10 +183,10 @@ function MovieDetail({ movieId }) {
   return (
     <div className="movie-detail-container">
       <button className="back-button" onClick={() => {
-        const ret = sessionStorage.getItem('returnToGroup');
-        if (ret) {
-          // Do not remove here; GroupPage will consume and remove it after loading
-          window.location.hash = '#groups';
+        const route = sessionStorage.getItem('returnTo');
+        if (route) {
+
+          window.location.hash = route;
         } else {
           window.location.hash = '#home';
         }
