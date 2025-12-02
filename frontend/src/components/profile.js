@@ -256,6 +256,13 @@ function Profile() {
     }
   }
 
+  function handleShareFavorites(){
+    const shareUrl = `${window.location.origin}/shared-favorites/${user.user_id}`;
+    window.open(shareUrl,'_blank');
+  }
+
+
+
   if (loading) return <div className="profile-empty">Ladataan profiilia…</div>;
   if (error) return <div className="profile-empty">Virhe: {error}</div>;
 
@@ -290,7 +297,12 @@ function Profile() {
       </div>
 
       <div className="profile-favourites">
-        <p>Suosikit:</p>
+        <div className="favourites-header">
+          <p>Suosikit:</p>
+            <button className="btn share-favorites-btn" onClick={handleShareFavorites}>
+              Jaa suosikkilista
+            </button>
+        </div>
         {favorites.length === 0 ? (
           <p>Ei suosikkeja.</p>
         ) : (

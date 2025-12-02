@@ -62,6 +62,36 @@
   grid-column: 1 / -1;
   gap: 1rem;
 }
+
+.favourites-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 1rem;
+}
+
+.favourites-header p {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.share-favorites-btn {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.share-favorites-btn:hover {
+  background-color: #1d4ed8;
+}
+
 .profile-favourites p {
   color: #666;
   font-size: 1.1rem;
