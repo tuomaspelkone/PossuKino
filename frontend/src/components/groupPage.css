@@ -366,3 +366,155 @@
   background-color: #94a3b8;
   cursor: default;
 }
+
+/* Image-only grid for group movies with hover overlay */
+/* Horizontal carousel for group movies */
+.group-movies-carousel { position: relative; }
+.group-movies-viewport {
+  overflow-x: auto;
+  overflow-y: visible;
+  scroll-behavior: smooth;
+  padding: 0.25rem 0.25rem; /* small vertical padding to avoid clipping shadows */
+}
+.group-movies-track {
+  display: flex;
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+.group-movie-card {
+  position: relative;
+  border-radius: 8px;
+  overflow: visible; /* allow side popover to render outside */
+  background: #111827;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  width: 160px;
+  flex: 0 0 160px;
+}
+.group-movie-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  z-index: 60; /* ensure it stacks over neighbors when hovering */
+}
+.group-movie-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: 320px;
+  object-fit: cover;
+  border-radius: 8px; /* keep rounded corners without clipping popover */
+}
+.group-movie-card .no-poster {
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+/* Popover that appears next to the image on hover */
+.group-movie-popover {
+  position: absolute;
+  top: 0;
+  left: 100%; /* anchor to right edge of poster */
+  width: 0; /* prevent contributing to scrollWidth when hidden */
+  max-height: 85%;
+  overflow: hidden; /* hide content while collapsed */
+  background: #ffffff;
+  color: #111827;
+  border: 0;
+  border-radius: 8px;
+  padding: 0; /* no padding when hidden to avoid size */
+  box-shadow: none;
+  z-index: 50;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(10px, 4px); /* slight offset while hidden */
+  transition: opacity 0.16s ease, visibility 0.16s ease, transform 0.16s ease, width 0.16s ease, padding 0.16s ease;
+}
+.group-movie-card:hover .group-movie-popover,
+.group-movie-card:focus .group-movie-popover,
+.group-movie-card:focus-within .group-movie-popover {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(10px, 0);
+  left: 100%;
+  width: min(340px, 50vw);
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.18);
+  overflow: auto;
+}
+.popover-title { font-weight: 700; }
+.popover-desc { margin-top: 0.25rem; color: #4b5563; font-size: 0.92rem; }
+.popover-meta { margin-top: 0.2rem; color: #6b7280; font-size: 0.85rem; }
+.popover-meta .dim { color: #9ca3af; }
+.popover-actions { margin-top: 0.45rem; }
+
+/* If viewport is narrow, show popover below the image to avoid overflow */
+@media (max-width: 640px) {
+  .group-movie-card:hover .group-movie-popover,
+  .group-movie-card:focus .group-movie-popover,
+  .group-movie-card:focus-within .group-movie-popover {
+    left: 0;
+    top: calc(100% + 8px);
+    transform: translateY(0);
+    width: 92%;
+  }
+}
+
+/* Carousel buttons */
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #111827;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  cursor: pointer;
+  z-index: 70;
+}
+.carousel-btn:hover { background: #f9fafb; }
+.carousel-btn.left { left: -6px; }
+.carousel-btn.right { right: -6px; }
+
+/* Group Chat */
+.group-chat {
+  margin-top: 1rem;
+  background: #fff;
+  border: 1px solid #eef2f7;
+  border-radius: 8px;
+  padding: 1rem; /* slightly bigger */
+}
+.group-chat-header { margin-bottom: 0.5rem; color: #111827; }
+.chat-messages {
+  max-height: 420px; /* a bit taller */
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-right: 0.25rem;
+}
+.chat-empty { color: #6b7280; padding: 0.5rem 0; }
+.chat-message { display: flex; gap: 0.5rem; align-items: flex-start; }
+.chat-avatar { width: 36px; height: 36px; flex: 0 0 36px; }
+.chat-avatar img { width: 36px; height: 36px; border-radius: 999px; display: block; }
+.avatar-fallback { width: 36px; height: 36px; border-radius: 999px; background: #e5e7eb; color: #374151; display:flex; align-items:center; justify-content:center; font-weight:700; }
+.chat-bubble { background:#f9fafb; border:1px solid #eef2f7; border-radius: 8px; padding: 0.5rem 0.6rem; max-width: 100%; font-size: 0.95rem; }
+.chat-meta { display:flex; gap:0.5rem; align-items:center; margin-bottom: 0.2rem; }
+.chat-name { font-weight: 700; color:#111827; }
+.chat-time { color:#9ca3af; font-size: 0.8rem; }
+.chat-text { color:#374151; white-space: pre-wrap; word-break: break-word; }
+.chat-input-row { display:flex; gap:0.5rem; margin-top: 0.75rem; align-items: flex-end; }
+.chat-input { flex:1; border:1px solid #e5e7eb; border-radius:6px; padding:0.5rem; min-height: 42px; max-height: 140px; resize: vertical; }

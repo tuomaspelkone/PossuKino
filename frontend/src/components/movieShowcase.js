@@ -64,7 +64,7 @@ function MovieShowcase() {
           <div 
             key={movie.tmdb_id} 
             className="movie-card"
-            onClick={() => window.location.hash = `#movie/${movie.tmdb_id}`}
+            onClick={() => { try { sessionStorage.setItem('returnTo', '#home'); } catch(e){} window.location.hash = `#movie/${movie.tmdb_id}`; }}
             style={{ cursor: 'pointer' }}
           >
             <div className="movie-poster">

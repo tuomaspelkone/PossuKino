@@ -407,7 +407,7 @@ function Profile() {
             <div className="group-row" key={g.group_id}>
               <div className="group-name">{g.group_name}</div>
               <div className="group-actions">
-                <button className="btn" onClick={() => { try { sessionStorage.setItem('returnToGroup', String(g.group_id)); } catch(e){} window.location.hash = '#groups'; }}>Linkki ryhmään</button>
+                <button className="btn" onClick={() => { try { sessionStorage.setItem('returnToGroup', String(g.group_id)); } catch(e){} window.location.hash = `#groups?gid=${g.group_id}`; }}>Linkki ryhmään</button>
                 {g.group_admin ? (
                   <button className="btn" onClick={async () => {
                     if (!window.confirm('Haluatko varmasti poistaa ryhmän? Tätä ei voi perua.')) return;

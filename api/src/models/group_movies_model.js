@@ -20,9 +20,11 @@ export async function addOne({ group_id, tmdb_id, movie_title, movie_image, movi
        INSERT INTO group_movies (group_id, tmdb_id, movie_title, movie_image, movie_description, added_reason, added_by)
        VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *
      )
-     SELECT ins.*, u.username AS added_by_username
+     SELECT ins.*, u.username AS added_by_username, gmbr.group_admin AS added_by_is_admin,
+            (gmbr.user_id IS NOT NULL) AS added_by_is_member
      FROM ins
-     LEFT JOIN "user" u ON ins.added_by = u.user_id`,
+     LEFT JOIN "user" u ON ins.added_by = u.user_id
+     LEFT JOIN group_members gmbr ON gmbr.group_id = ins.group_id AND gmbr.user_id = ins.added_by`,
     [group_id, tmdb_id, movie_title, movie_image, movie_description, added_reason, added_by]
   );
   return res.rows[0];
