@@ -8,6 +8,7 @@ import Profile from "./components/profile";
 import ReactPaginate from 'react-paginate';
 import MovieDetail from "./components/movieDetail";
 import GroupPage from "./components/groupPage";
+import SharedFavorites from "./components/sharedFavorites";
 
 
 
@@ -32,15 +33,18 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div className="App">
-      <Navbar onSearchResults={(data) => {
-        // normalize incoming data from SearchBar
-        if (Array.isArray(data)) setSearchResultsObj({ results: data, page: 1, total_pages: 0 });
-        else setSearchResultsObj({ results: data.results || [], page: data.page || 1, total_pages: data.total_pages || 0 });
-      }} page={searchPage} onPageChange={setSearchPage} />
+      <Routes>
+        <Route path="/shared-favorites/:userId" element={<SharedFavorites />} />
+        <Route path="*" element={
+          <div className="App">
+            <Navbar onSearchResults={(data) => {
+              // normalize incoming data from SearchBar
+              if (Array.isArray(data)) setSearchResultsObj({ results: data, page: 1, total_pages: 0 });
+              else setSearchResultsObj({ results: data.results || [], page: data.page || 1, total_pages: data.total_pages || 0 });
+            }} page={searchPage} onPageChange={setSearchPage} />
 
-      {/* Pääsisältö */}
-      <main className="main-content">
+            {/* Pääsisältö */}
+            <main className="main-content">
         {isProfile ? (
           <Profile />
         ) : isGroups ? (
@@ -107,7 +111,9 @@ function App() {
           </>
         )}
       </main>
-      </div>
+          </div>
+        } />
+      </Routes>
     </BrowserRouter>
   );
 
