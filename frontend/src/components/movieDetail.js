@@ -23,6 +23,11 @@ function MovieDetail({ movieId }) {
 
   const apiBase = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
+  // Detect if the user navigated here from the shared favorites list.
+  // We set this via history.pushState({ fromFavorites: true, userId }) when navigating.
+  const cameFromFavorites = window.history && window.history.state && window.history.state.fromFavorites === true;
+  const favoritesUserId = window.history && window.history.state ? window.history.state.userId : null;
+
   async function handleAddFavorite() {
     if (isFavorite) return; // Estä turha lisäys jos jo suosikeissa
     try {
@@ -158,13 +163,31 @@ function MovieDetail({ movieId }) {
       <div className="movie-detail-container">
         <div className="error">{error}</div>
         <button onClick={() => {
-          const route = sessionStorage.getItem('returnTo');
-          if (route) {
-            
-            window.location.hash = route;
-          } else {
-            window.location.hash = '#home';
+          // Prefer history.state detection first
+          const fromFavorites = window.history && window.history.state && window.history.state.fromFavorites;
+          const favoritesUserIdLocal = window.history && window.history.state ? window.history.state.userId : null;
+          if (fromFavorites && favoritesUserIdLocal) {
+            window.location.href = `${window.location.origin}/shared-favorites/${favoritesUserIdLocal}`;
+            return;
           }
+
+          // Fallback to sessionStorage returnTo (supports pathname or hash)
+          try {
+            const route = sessionStorage.getItem('returnTo');
+            if (route) {
+              if (route.startsWith('/')) {
+                window.location.href = `${window.location.origin}${route}`;
+                return;
+              }
+              if (route.startsWith('#')) {
+                window.location.hash = route;
+                return;
+              }
+            }
+          } catch (e) {}
+
+          // Final fallback
+          window.history.back();
         }}>
           ← Takaisin
         </button>
@@ -183,13 +206,28 @@ function MovieDetail({ movieId }) {
   return (
     <div className="movie-detail-container">
       <button className="back-button" onClick={() => {
-        const route = sessionStorage.getItem('returnTo');
-        if (route) {
-
-          window.location.hash = route;
-        } else {
-          window.location.hash = '#home';
+        const fromFavorites = window.history && window.history.state && window.history.state.fromFavorites;
+        const favoritesUserIdLocal = window.history && window.history.state ? window.history.state.userId : null;
+        if (fromFavorites && favoritesUserIdLocal) {
+          window.location.href = `${window.location.origin}/shared-favorites/${favoritesUserIdLocal}`;
+          return;
         }
+
+        try {
+          const route = sessionStorage.getItem('returnTo');
+          if (route) {
+            if (route.startsWith('/')) {
+              window.location.href = `${window.location.origin}${route}`;
+              return;
+            }
+            if (route.startsWith('#')) {
+              window.location.hash = route;
+              return;
+            }
+          }
+        } catch (e) {}
+
+        window.history.back();
       }}>
         ← Takaisin
       </button>
