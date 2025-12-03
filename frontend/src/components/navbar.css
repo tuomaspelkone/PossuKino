@@ -38,12 +38,10 @@
   display: inline-block;
 }
 
-/* Logo images: default vs kauhu theme */
 .navbar-logo { display: inline-flex; align-items: center; height: 70px; }
 .navbar-logo .logo { height: 70px; display: none; }
 .navbar-logo .logo-default { display: block; }
 
-/* Theme-specific logo visibility */
 [data-theme="kauhu"] .navbar-logo .logo { display: none; }
 [data-theme="kauhu"] .navbar-logo .logo-kauhu { display: block; }
 
@@ -57,9 +55,8 @@
   position: relative;
 }
 
-/* Piilotetaan vanhat navbar-kohtaiset tyylit */
 .navbar-search .search-header {
-  display: block; /* Näytetään dropdownissa */
+  display: block;
 }
 
 .navbar-links {
@@ -71,13 +68,27 @@
 .navbar-links a {
   color: var(--color-navbar-text);
   text-decoration: none;
-  font-size: 1rem;
+  font-size: 1.5rem;
   transition: color 0.3s;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 600;
 }
 
 .navbar-links a:hover {
   color: var(--color-navbar-link-hover);
 }
+
+/* Font themes */
+.navbar-brand h1 { font-family: 'Playfair Display', Georgia, serif; }
+
+[data-theme="kauhu"] .navbar-links a { font-family: 'Oswald', 'Segoe UI', Roboto, sans-serif; font-weight: 600; }
+[data-theme="kauhu"] .navbar-brand h1 { font-family: 'Cinzel', Georgia, serif; }
+
+[data-theme="lapsi"] .navbar-links a { font-family: 'Fredoka', 'Segoe UI', Roboto, sans-serif; font-weight: 600; }
+[data-theme="lapsi"] .navbar-brand h1 { font-family: 'Baloo 2', Georgia, serif; }
+
+[data-theme="romantiikka"] .navbar-links a { font-family: 'DM Sans', 'Segoe UI', Roboto, sans-serif; font-weight: 600; }
+[data-theme="romantiikka"] .navbar-brand h1 { font-family: 'Playfair Display', Georgia, serif; }
 
 /* Responsiivisuus */
 @media (max-width: 768px) {

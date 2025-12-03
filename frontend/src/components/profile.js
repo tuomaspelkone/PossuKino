@@ -272,7 +272,7 @@ function Profile() {
     <>
       <div className="profile-empty">
         <div className="profile-icon">
-          <img src={selectedImageUrl || "/profile-placeholder.svg"} alt="Profiilikuva" width="60" height="60" />
+          <img src={selectedImageUrl || user?.profile_picture_url || "/profile-placeholder.svg"} alt="Profiilikuva" width="60" height="60" />
         </div>
         <div className="profile-info">
           <div>Käyttäjänimi: {user?.username || '—'}</div>
@@ -332,11 +332,12 @@ function Profile() {
               <div className="modal-body">
                 <div className="modal-image-row">
                   <div className="modal-image-preview-wrap">
-                    <img src={selectedImageUrl || '/profile-placeholder.svg'} alt="Esikatselu" className="modal-image-preview" />
+                    <img src={selectedImageUrl || user?.profile_picture_url || '/profile-placeholder.svg'} alt="Esikatselu" className="modal-image-preview" />
                   </div>
                   <div style={{display: 'flex', flexDirection: 'column', gap: '0.4rem'}}>
                     <label className="modal-label">Profiilikuva (valinnainen)</label>
                     <input type="file" accept="image/*" onChange={handleImageChange} />
+                    {/* Profile image preview via local object URL */}
                   </div>
                 </div>
                 <label className="modal-label">Nykyinen salasana</label>
@@ -383,6 +384,41 @@ function Profile() {
                     }
                   }}
                 >Tallenna salasana</button>
+
+                <button
+                  className="btn"
+                  onClick={async () => {
+                    try {
+                      if (!user) return;
+                      const apiBase = process.env.REACT_APP_API_URL || '';
+                      const apiBaseNoSlash = apiBase.replace(/\/$/, '');
+                      if (!selectedImageFile) throw new Error('Valitse kuva tiedostosta');
+                      const token = localStorage.getItem('token');
+                      const form = new FormData();
+                      form.append('file', selectedImageFile);
+                      const headers = {};
+                      if (token) headers['Authorization'] = `Bearer ${token}`;
+                      // Don't set Content-Type - let browser set it with proper boundary
+                      const res = await fetch(`${apiBaseNoSlash}/upload/user/${user.user_id}/profile_picture`, {
+                        method: 'POST',
+                        headers,
+                        body: form
+                      });
+                      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                      // Refresh user from API
+                      const resUser = await fetch(`${apiBaseNoSlash}/user/${user.user_id}`);
+                      const fresh = await resUser.json();
+                      setUser(fresh);
+                      localStorage.setItem('user', JSON.stringify(fresh));
+                      window.dispatchEvent(new Event('userChanged'));
+                      setShowModal(false);
+                      setSelectedImageFile(null);
+                      setSelectedImageUrl(null);
+                    } catch (err) {
+                      setError(err.message || 'Profiilikuvan tallennus epäonnistui');
+                    }
+                  }}
+                >Tallenna profiilikuva</button>
 
                 <button
                   className="btn"

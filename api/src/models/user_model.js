@@ -20,7 +20,7 @@ export async function addOne(user) {
 
 export async function updateOne(id,user) {
   console.log("update:"+id);
-  const result = await pool.query('UPDATE "user" SET username=$1, email=$2, password=$3, refresh_token=$4 WHERE user_id=$5', [user.username, user.email, user.password, user.refresh_token, id]);
+  const result = await pool.query('UPDATE "user" SET username=$1, email=$2, password=$3, refresh_token=$4, profile_picture_url=$5 WHERE user_id=$6', [user.username, user.email, user.password, user.refresh_token, user.profile_picture_url || null, id]);
   return result.rows;
 }
 
