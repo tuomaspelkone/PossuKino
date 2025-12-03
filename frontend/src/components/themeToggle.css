@@ -4,7 +4,7 @@
 
 .theme-toggle-btn {
   background: transparent;
-  border: 2px solid var(--color-navbar-ctrl-border);
+  border: none;
   color: var(--color-navbar-text);
   padding: 0.4rem 0.6rem;
   border-radius: 6px;
@@ -18,7 +18,6 @@
 
 .theme-toggle-btn:hover {
   background: var(--color-navbar-ctrl-hover-bg);
-  border-color: var(--color-navbar-ctrl-border);
 }
 
 .theme-icon {
