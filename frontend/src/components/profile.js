@@ -317,17 +317,27 @@ function Profile() {
           <p>Ei suosikkeja.</p>
         ) : (
           <div className="favs-list">
-            {favorites.map(f => (
-              <div className="fav-row" key={f.favorite_id}>
-                <div className="fav-info">
-                  <div className="fav-title">{f.movie.movie_title || f.movie.title || f.movie.name || '—'}</div>
-                  <div className="fav-year">{f.movie.movie_year || f.movie.year || ''}</div>
+            {favorites.map(f => {
+              const tmdbId = f.tmdb_id || (f.movie && (f.movie.id || f.movie.tmdb_id || f.movie.movie_id));
+              const openMovie = () => {
+                try { sessionStorage.setItem('returnTo', '#profile'); } catch (e) {}
+                if (tmdbId) {
+                  window.location.hash = `#movie/${tmdbId}`;
+                  try { window.history.replaceState({ fromProfile: true }, '', window.location.href); } catch (e) {}
+                }
+              };
+              return (
+                <div className="fav-row" key={f.favorite_id}>
+                  <div className="fav-info" role="button" tabIndex={0} onClick={openMovie} onKeyDown={(e) => { if (e.key === 'Enter') openMovie(); }}>
+                    <div className="fav-title">{f.movie.movie_title || f.movie.title || f.movie.name || '—'}</div>
+                    <div className="fav-year">{f.movie.movie_year || f.movie.year || ''}</div>
+                  </div>
+                  <button className="btn fav-remove-btn" onClick={() => handleRemoveFavorite(f.favorite_id)}>
+                    Poista
+                  </button>
                 </div>
-                <button className="btn fav-remove-btn" onClick={() => handleRemoveFavorite(f.favorite_id)}>
-                  Poista
-                </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
@@ -512,15 +522,25 @@ function Profile() {
           <p>Ei arvosteluja.</p>
         ) : (
           <div className="reviews-list">
-            {reviews.map(r => (
-              <div key={r.review_id} className="review-row">
-                <div className="review-title">{r.movie?.movie_title || r.movie?.title || r.movie?.name || '—'}</div>
-                <div className="review-body">
-                  <div className="review-stars">{renderStars(r.rating)}</div>
-                  <div className="review-text">{r.review_text}</div>
+            {reviews.map(r => {
+              const tmdbId = r.tmdb_id || r.movie && (r.movie.id || r.movie.tmdb_id || r.movie.movie_id || r.movie.movie_id);
+              const openMovie = () => {
+                try { sessionStorage.setItem('returnTo', '#profile'); } catch (e) {}
+                if (tmdbId) {
+                  window.location.hash = `#movie/${tmdbId}`;
+                  try { window.history.replaceState({ fromProfile: true }, '', window.location.href); } catch (e) {}
+                }
+              };
+              return (
+                <div key={r.review_id} className="review-row">
+                  <div className="review-title" role="button" tabIndex={0} onClick={openMovie} onKeyDown={(e) => { if (e.key === 'Enter') openMovie(); }}>{r.movie?.movie_title || r.movie?.title || r.movie?.name || '—'}</div>
+                  <div className="review-body">
+                    <div className="review-stars">{renderStars(r.rating)}</div>
+                    <div className="review-text">{r.review_text}</div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
