@@ -15,14 +15,28 @@ import reviews_router from "./routers/reviews_router.js";
 import user_router from "./routers/user_router.js";
 import tmdb_router from "./routers/tmdb_router.js";
 import group_movies_router from "./routers/group_movies_router.js";
+import upload_router from "./routers/upload_router.js";
+import path from "path";
+import fs from "fs";
 
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 3001;
 
 app.use(cors());
+
+// Static serving for uploaded files - before body parsers
+const uploadsDir = path.resolve(process.cwd(), 'uploads');
+try { if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true }); } catch {}
+app.use('/uploads', express.static(uploadsDir));
+
+// Upload router BEFORE json/urlencoded parsers to avoid conflicts with multipart
+app.use("/upload", upload_router);
+
+// Body parsers for JSON and URL-encoded data
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use("/cache", cache_router);
+
 
 app.get("/", async (req, res) => {
   res.send("Postgres API esimerkki");

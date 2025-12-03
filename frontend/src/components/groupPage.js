@@ -520,7 +520,7 @@ function GroupPage() {
           const r = await fetch(`${apiBaseNoSlash}/user/${uid}`);
           if (!r.ok) throw new Error('HTTP ' + r.status);
           const u = await r.json();
-          return [uid, { username: u.username || u.email || `user-${uid}`, avatar_url: u.avatar_url || u.profile_picture || '' }];
+          return [uid, { username: u.username || u.email || `user-${uid}`, avatar_url: u.profile_picture_url || '' }];
         } catch {
           return [uid, { username: `user-${uid}`, avatar_url: '' }];
         }
