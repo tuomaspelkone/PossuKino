@@ -39,7 +39,7 @@
   padding: 1rem;
 }
 .create-modal {
-  background: #fff;
+  background: #FFE6EE !important;
   border-radius: 10px;
   max-width: 480px;
   width: 100%;
@@ -157,7 +157,7 @@
 }
 .add-search { margin: 0.5rem 0; }
 .group-movies-list { margin-top: 0.5rem; display:flex; flex-direction:column; gap:0.5rem; }
-.group-movie { padding: 0.5rem; background:#fff; border-radius:6px; border:1px solid #eef2f7; }
+.group-movie { padding: 0.5rem; background: var(--group-bg, #fff); border-radius:6px; border:1px solid #eef2f7; }
 
 .add-search-results { margin-top: 1rem; }
 .movies-grid-inline { display:flex; gap:0.5rem; flex-wrap:wrap; }
@@ -178,7 +178,7 @@
   z-index:2000;
 }
 .add-modal {
-  background:#fff;
+  background: var(--group-bg, #fff);
   width: min(1100px, 96%);
   border-radius:10px;
   padding:1rem 1rem 1.5rem 1rem;
@@ -206,7 +206,7 @@
   display: flex;
   gap: 1rem;
   align-items: flex-start;
-  background: #fff;
+  background: var(--group-bg, #fff);
   border: 1px solid #eef2f7;
   border-radius: 8px;
   padding: 0.75rem;
@@ -255,7 +255,7 @@
   padding: 1rem;
 }
 .members-modal {
-  background: #fff;
+  background: var(--group-bg, #fff);
   border-radius: 8px;
   max-width: 420px;
   width: 100%;
@@ -286,7 +286,7 @@
 
 .group-page-empty {
   min-height: 200px;
-  background: #fff;
+  background: var(--group-bg, #fff);
   border-radius: 8px;
   border: 1px dashed #e5e7eb;
   display: flex;
@@ -492,7 +492,7 @@
 /* Group Chat */
 .group-chat {
   margin-top: 1rem;
-  background: #fff;
+  background: var(--group-bg, #fff);
   border: 1px solid #eef2f7;
   border-radius: 8px;
   padding: 1rem; /* slightly bigger */
@@ -518,3 +518,84 @@
 .chat-text { color:#374151; white-space: pre-wrap; word-break: break-word; }
 .chat-input-row { display:flex; gap:0.5rem; margin-top: 0.75rem; align-items: flex-end; }
 .chat-input { flex:1; border:1px solid #e5e7eb; border-radius:6px; padding:0.5rem; min-height: 42px; max-height: 140px; resize: vertical; }
+
+/* Uudet taustavärit teemoille */
+[data-theme="kauhu"] .group-movie,
+[data-theme="kauhu"] .group-movie-row,
+[data-theme="kauhu"] .create-modal,
+[data-theme="kauhu"] .add-modal {
+  background: #f9b7d4;
+}
+
+[data-theme="lapsi"] .group-movie,
+[data-theme="lapsi"] .group-movie-row,
+[data-theme="lapsi"] .create-modal,
+[data-theme="lapsi"] .add-modal {
+  background: #f9b7d4;
+}
+
+[data-theme="romantiikka"] .group-movie,
+[data-theme="romantiikka"] .group-movie-row,
+[data-theme="romantiikka"] .create-modal,
+[data-theme="romantiikka"] .add-modal {
+  background: #f9b7d4;
+}
+
+[data-theme="kauhu"] .members-list li {
+  color: #fff !important;
+}
+
+[data-theme="kauhu"] .group-title-row,
+[data-theme="kauhu"] .group-desc-row,
+[data-theme="kauhu"] .members-count {
+  color: #fff !important;
+}
+
+[data-theme="kauhu"] .group-detail-top .group-detail-left,
+[data-theme="kauhu"] .group-detail-middle,
+[data-theme="kauhu"] .group-members-row {
+  color: #fff !important;
+}
+
+[data-theme="kauhu"] .group-detail .group-movies-header {
+  color: #fff !important;
+}
+
+/* Kauhu-teeman tekstivärit (vain ryhmän sisällä, ei listausnäkymässä) */
+[data-theme="kauhu"] .group-detail .group-title-row,
+[data-theme="kauhu"] .group-detail .group-desc-row,
+[data-theme="kauhu"] .group-detail .group-desc,
+[data-theme="kauhu"] .group-detail .members-count,
+[data-theme="kauhu"] .group-detail .members-list li,
+[data-theme="kauhu"] .group-chat-header,
+[data-theme="kauhu"] .group-movies-header h3,
+[data-theme="kauhu"] .group-movies-header p,
+[data-theme="kauhu"] .group-movies-header span,
+[data-theme="kauhu"] .group-movies-header {
+  color: #fff !important;
+}
+
+/* Chattiboksin ja elokuvalistan tekstit tummiksi (näkyvät valkoisella laatikolla) */
+[data-theme="kauhu"] .chat-text {
+  color: #374151 !important;
+}
+
+[data-theme="kauhu"] .chat-name {
+  color: #111827 !important;
+}
+
+[data-theme="kauhu"] .chat-time {
+  color: #9ca3af !important;
+}
+
+[data-theme="kauhu"] .group-movie-title {
+  color: #111827 !important;
+}
+
+[data-theme="kauhu"] .group-movie-desc {
+  color: #4b5563 !important;
+}
+
+[data-theme="kauhu"] .group-movie-meta {
+  color: #6b7280 !important;
+}

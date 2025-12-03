@@ -20,11 +20,15 @@
   --color-navbar-ctrl-border: rgba(255,255,255,0.3);
   --color-navbar-ctrl-hover-bg: rgba(255,255,255,0.1);
   --color-navbar-link-hover: var(--color-primary-light);
+  
+  /* Ryhmäsivun laatikot */
+  --group-bg: #FFE6EE;
 }
 
 /* Kauhu teema */
 [data-theme="kauhu"] {
   /* Uusi paletti: #14092C, #381C55, #672F66, #AA4472, #C44D7E */
+  --group-bg: #FFE6EE;
   --color-primary: #AA4472;
   --color-primary-light: #C44D7E;
   --color-primary-lighter: #672F66; /* taustaväri - keskitumma sävy paletista */
@@ -56,6 +60,7 @@
   --color-text-medium: #bae1ff;
 
   /* Lapsi-teeman pinnat */
+  --group-bg: #FFE6EE;
   --color-navbar-bg: #bae1ff; /* vaalea sininen */
   --color-navbar-text: #ff69b4;
   --color-showcase-start: #ffdfba;
@@ -78,6 +83,7 @@
   --color-text-medium: #a35766;
 
   /* Romantiikka-teeman pinnat */
+  --group-bg: #FFE6EE;
   --color-navbar-bg: #ab3f60;
   --color-navbar-text: #ffffff;
   --color-showcase-start: #a35766;
