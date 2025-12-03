@@ -26,6 +26,8 @@ function MovieDetail({ movieId }) {
   // Detect if the user navigated here from the shared favorites list.
   // We set this via history.pushState({ fromFavorites: true, userId }) when navigating.
   const cameFromFavorites = window.history && window.history.state && window.history.state.fromFavorites === true;
+  // Detect if navigated here from the user's profile list
+  const cameFromProfile = window.history && window.history.state && window.history.state.fromProfile === true;
   const favoritesUserId = window.history && window.history.state ? window.history.state.userId : null;
 
   async function handleAddFavorite() {
@@ -163,13 +165,18 @@ function MovieDetail({ movieId }) {
       <div className="movie-detail-container">
         <div className="error">{error}</div>
         <button onClick={() => {
-          // Prefer history.state detection first
-          const fromFavorites = window.history && window.history.state && window.history.state.fromFavorites;
-          const favoritesUserIdLocal = window.history && window.history.state ? window.history.state.userId : null;
-          if (fromFavorites && favoritesUserIdLocal) {
-            window.location.href = `${window.location.origin}/shared-favorites/${favoritesUserIdLocal}`;
-            return;
-          }
+            // Prefer history.state detection first
+            const fromFavorites = window.history && window.history.state && window.history.state.fromFavorites;
+            const favoritesUserIdLocal = window.history && window.history.state ? window.history.state.userId : null;
+            const fromProfile = window.history && window.history.state && window.history.state.fromProfile;
+            if (fromFavorites && favoritesUserIdLocal) {
+              window.location.href = `${window.location.origin}/shared-favorites/${favoritesUserIdLocal}`;
+              return;
+            }
+            if (fromProfile) {
+              try { window.location.hash = '#profile'; } catch (e) { window.location.href = `${window.location.origin}/#profile`; }
+              return;
+            }
 
           // Fallback to sessionStorage returnTo (supports pathname or hash)
           try {
@@ -208,8 +215,13 @@ function MovieDetail({ movieId }) {
       <button className="back-button" onClick={() => {
         const fromFavorites = window.history && window.history.state && window.history.state.fromFavorites;
         const favoritesUserIdLocal = window.history && window.history.state ? window.history.state.userId : null;
+        const fromProfile = window.history && window.history.state && window.history.state.fromProfile;
         if (fromFavorites && favoritesUserIdLocal) {
           window.location.href = `${window.location.origin}/shared-favorites/${favoritesUserIdLocal}`;
+          return;
+        }
+        if (fromProfile) {
+          try { window.location.hash = '#profile'; } catch (e) { window.location.href = `${window.location.origin}/#profile`; }
           return;
         }
 
@@ -248,8 +260,9 @@ function MovieDetail({ movieId }) {
         {/* Elokuvan tiedot */}
         <div className="movie-info-section">
           <h1>{movie.movie_title || movie.title}</h1>
-          <div className="movie-action-buttons">
-            <button className="btn add-group-btn" onClick={async () => {
+          {!cameFromFavorites && (
+            <div className="movie-action-buttons">
+              <button className="btn add-group-btn" onClick={async () => {
               try {
                 const stored = localStorage.getItem('user');
                 if (!stored) { window.alert('Kirjaudu sisään lisätäksesi ryhmään.'); return; }
@@ -285,8 +298,9 @@ function MovieDetail({ movieId }) {
                 setGroupPickerError(err.message || 'Ryhmien haku epäonnistui');
                 setGroupPickerLoading(false);
               }
-            }}>Lisää ryhmään</button>
-          </div>
+              }}>Lisää ryhmään</button>
+            </div>
+          )}
           {/* Group picker modal */}
           {showGroupPicker && (
             <div className="group-picker-overlay" onClick={() => setShowGroupPicker(false)}>
@@ -477,15 +491,17 @@ function MovieDetail({ movieId }) {
         </div>
       </div>
       {/* Kelluva suosikkinappi sivun oikeassa alakulmassa */}
-      <button
-        className={`favorite-float-btn${isFavorite ? ' favorite-in-list' : ''}`}
-        onClick={handleAddFavorite}
-        disabled={favSuccess || isFavorite}
-        aria-disabled={favSuccess || isFavorite}
-        title={isFavorite ? 'Elokuva on jo suosikeissa' : 'Lisää elokuva suosikkeihin'}
-      >
-        {isFavorite ? '❤️ Suosikeissa' : '❤️ Lisää suosikiksi'}
-      </button>
+      {!cameFromFavorites && (
+        <button
+          className={`favorite-float-btn${isFavorite ? ' favorite-in-list' : ''}`}
+          onClick={handleAddFavorite}
+          disabled={favSuccess || isFavorite}
+          aria-disabled={favSuccess || isFavorite}
+          title={isFavorite ? 'Elokuva on jo suosikeissa' : 'Lisää elokuva suosikkeihin'}
+        >
+          {isFavorite ? '❤️ Suosikeissa' : '❤️ Lisää suosikiksi'}
+        </button>
+      )}
       {favSuccess && (
         <div className="favorite-success-toast" aria-live="polite">Lisäys onnistui</div>
       )}
