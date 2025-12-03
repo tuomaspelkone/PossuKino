@@ -20,6 +20,14 @@
     border-radius: 4px;
 }
 
+.fav-row {
+    cursor: pointer;
+}
+
+.fav-row:hover {
+    background-color: #eef2ff;
+}
+
 .fav-info {
     flex: 1;
 }
