@@ -75,30 +75,3 @@ export async function getUserByEmail(email) {
   const result = await pool.query('SELECT * FROM "user" WHERE email = $1', [email]);
   return result.rows.length > 0 ? result.rows[0] : null;
 }
-
-// Tallenna refresh token käyttäjälle
-export async function saveRefreshToken(user_id, refreshToken) {
-  const result = await pool.query(
-    'UPDATE "user" SET refresh_token = $1 WHERE user_id = $2 RETURNING user_id',
-    [refreshToken, user_id]
-  );
-  return result.rows[0];
-}
-
-// Hae käyttäjä refresh tokenin perusteella
-export async function getUserByRefreshToken(refreshToken) {
-  const result = await pool.query(
-    'SELECT user_id, email, username FROM "user" WHERE refresh_token = $1',
-    [refreshToken]
-  );
-  return result.rows.length > 0 ? result.rows[0] : null;
-}
-
-// Poista refresh token (logout)
-export async function removeRefreshToken(user_id) {
-  const result = await pool.query(
-    'UPDATE "user" SET refresh_token = NULL WHERE user_id = $1 RETURNING user_id',
-    [user_id]
-  );
-  return result.rows[0];
-}
