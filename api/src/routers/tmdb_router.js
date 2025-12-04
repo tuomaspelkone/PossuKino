@@ -3,6 +3,9 @@ import tmdbController from '../controllers/tmdb_controller.js';
 
 const router = express.Router();
 
+// GET /tmdb/genres - fetch TMDB genre list
+router.get('/genres', tmdbController.getGenres);
+
 // GET /tmdb/search?q=...&page=...
 router.get('/search', tmdbController.searchMovies);
 

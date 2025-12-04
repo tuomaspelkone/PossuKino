@@ -119,6 +119,182 @@
   pointer-events: none;
 }
 
+.search-results-showcase {
+  padding: 40px 20px;
+  background: linear-gradient(135deg, var(--color-showcase-start) 0%, var(--color-showcase-end) 100%);
+  color: white;
+  margin: 0;
+  position: relative;
+}
+
+/* Kauhu-teeman kurpitsat nurkissa */
+[data-theme="kauhu"] .search-results-showcase::before {
+  content: '🎃';
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 3.5rem;
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 10;
+}
+
+[data-theme="kauhu"] .search-results-showcase::after {
+  content: '🎃';
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 3.5rem;
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Lapsi-teeman ilmapallot ja karkit */
+[data-theme="lapsi"] .search-results-showcase::before {
+  content: '🎈🍭';
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 3rem;
+  opacity: 0.75;
+  pointer-events: none;
+  z-index: 10;
+}
+
+[data-theme="lapsi"] .search-results-showcase::after {
+  content: '🍬🎈';
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 3rem;
+  opacity: 0.75;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Romantiikka-teeman sydämet ja ruusut */
+[data-theme="romantiikka"] .search-results-showcase::before {
+  content: '💕🌹';
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 3rem;
+  opacity: 0.7;
+  pointer-events: none;
+  z-index: 10;
+}
+
+[data-theme="romantiikka"] .search-results-showcase::after {
+  content: '🌹💖';
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 3rem;
+  opacity: 0.7;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.search-results-showcase h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin: 0 0 40px 0;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Kauhu-teeman kamala hehku otsikossa */
+[data-theme="kauhu"] .search-results-showcase h2 {
+  text-shadow: 0 0 20px rgba(196, 77, 126, 0.6), 
+               0 0 40px rgba(170, 68, 114, 0.4),
+               2px 2px 8px rgba(0,0,0,0.8);
+}
+
+.search-results-showcase .movies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* Kauhu-teeman Scream-maskit taustalle */
+[data-theme="kauhu"] .search-results-showcase .movies-grid::before {
+  content: '😱';
+  position: absolute;
+  bottom: -40px;
+  left: 10%;
+  font-size: 5.5rem;
+  opacity: 0.4;
+  transform: rotate(-15deg);
+  pointer-events: none;
+  z-index: 10;
+}
+
+[data-theme="kauhu"] .search-results-showcase .movies-grid::after {
+  content: '😱';
+  position: absolute;
+  bottom: -40px;
+  right: 10%;
+  font-size: 5.5rem;
+  opacity: 0.4;
+  transform: rotate(15deg);
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Lapsi-teeman sateenkaari ja tähdet */
+[data-theme="lapsi"] .search-results-showcase .movies-grid::before {
+  content: '🌈';
+  position: absolute;
+  bottom: -30px;
+  left: 15%;
+  font-size: 4.5rem;
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 10;
+}
+
+[data-theme="lapsi"] .search-results-showcase .movies-grid::after {
+  content: '⭐✨';
+  position: absolute;
+  bottom: -30px;
+  right: 15%;
+  font-size: 3.5rem;
+  opacity: 0.65;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Romantiikka-teeman romanttinen tunnelma */
+[data-theme="romantiikka"] .search-results-showcase .movies-grid::before {
+  content: '💝';
+  position: absolute;
+  bottom: -30px;
+  left: 15%;
+  font-size: 4.5rem;
+  opacity: 0.55;
+  transform: rotate(-10deg);
+  pointer-events: none;
+  z-index: 10;
+}
+
+[data-theme="romantiikka"] .search-results-showcase .movies-grid::after {
+  content: '🌹💗';
+  position: absolute;
+  bottom: -30px;
+  right: 15%;
+  font-size: 3.5rem;
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.search-results-showcase .pagination-wrapper {
+  margin-top: 30px;
+}
+
 .search-results {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -309,9 +485,21 @@ li.selected{
   border-radius: 6px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   cursor: pointer;
+  color: black;
 }
 
 .pagination-wrapper li.selected {
   background: var(--color-primary);
   color: white;
+}
+
+/* Ryhmäikoni hakutuloksissa */
+.group-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 8px;
 }
