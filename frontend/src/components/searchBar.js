@@ -39,8 +39,9 @@ function SearchBar({ onSearchResults, page = 1, onPageChange }) {
 
   const fetchGenres = async () => {
     try {
-      const response = await fetch('http://localhost:3001/genres');
+      const response = await fetch('http://localhost:3001/tmdb/genres');
       const data = await response.json();
+      // TMDB returns [{id, name}, ...]
       setGenres(data);
     } catch (error) {
       console.error('Error fetching genres:', error);
@@ -61,18 +62,27 @@ function SearchBar({ onSearchResults, page = 1, onPageChange }) {
         // page is controlled by parent (App) via props; include it here
         params.append('page', page || 1);
       } else {
-        url = 'http://localhost:3001/groups/search';
+        url = 'http://localhost:3001/group/search';
         if (searchTerm) params.append('q', searchTerm);
       }
 
       const response = await fetch(`${url}?${params}`);
       const data = await response.json();
-      // TMDB proxy returns { results, page, total_pages }
-      const mapped = Array.isArray(data.results) ? data.results : [];
+      
+      // Handle different response formats
+      let mapped = [];
+      if (searchType === 'movies') {
+        // TMDB proxy returns { results, page, total_pages }
+        mapped = Array.isArray(data.results) ? data.results : [];
+      } else {
+        // Groups returns array directly
+        mapped = Array.isArray(data) ? data : [];
+      }
+      
       // Rajaa dropdownissa näytettävät tulokset ensimmäisiin 10:een
       setSearchResultsLocal(mapped.slice(0, 10));
       // Call parent with structured payload so App can paginate
-      onSearchResults && onSearchResults({ results: mapped, page: data.page, total_pages: data.total_pages });
+      onSearchResults && onSearchResults({ results: mapped, page: data.page || 1, total_pages: data.total_pages || 1 });
     } catch (error) {
       console.error('Search error:', error);
       onSearchResults([]);
@@ -102,19 +112,20 @@ function SearchBar({ onSearchResults, page = 1, onPageChange }) {
   };
 
   return (
-    <div className="search-bar">
-      {/* Hakuikoni - klikkaamalla avautuu dropdown */}
-      <button 
-        className="search-toggle-btn" 
-        onClick={() => setIsOpen(!isOpen)}
-        aria-label="Avaa haku"
-      >
-        🔍
-      </button>
+    <div className="search-bar-container">
+      <div className="search-bar">
+        {/* Hakuikoni - klikkaamalla avautuu dropdown */}
+        <button 
+          className="search-toggle-btn" 
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label="Avaa haku"
+        >
+          🔍
+        </button>
 
-      {/* Dropdown-sisältö */}
-      {isOpen && (
-        <div className="search-dropdown">
+        {/* Dropdown-sisältö */}
+        {isOpen && (
+          <div className="search-dropdown">
           <div className="search-header">
             <h3>Haku</h3>
             <button 
@@ -181,13 +192,13 @@ function SearchBar({ onSearchResults, page = 1, onPageChange }) {
                 {showGenreDropdown && (
                   <div className="genre-checkboxes">
                     {genres.map(genre => (
-                      <label key={genre.genre_id} className="checkbox-label">
+                      <label key={genre.id} className="checkbox-label">
                         <input
                           type="checkbox"
-                          checked={selectedGenres.includes(genre.genre_id)}
-                          onChange={() => handleGenreToggle(genre.genre_id)}
+                          checked={selectedGenres.includes(genre.id)}
+                          onChange={() => handleGenreToggle(genre.id)}
                         />
-                        {genre.genre_name}
+                        {genre.name}
                       </label>
                     ))}
                   </div>
@@ -220,26 +231,37 @@ function SearchBar({ onSearchResults, page = 1, onPageChange }) {
             </div>
           )}
           
-          {/* Hakutulokset dropdownissa kirjoitettaessa */}
-          {searchResultsLocal && searchResultsLocal.length > 0 && isOpen && (
-            <div className="search-results-dropdown-inline">
-              <ul>
-                {searchResultsLocal.map(item => (
-                  <li key={item.movie_id || item.tmdb_id || item.group_id}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsOpen(false);
-                      }}
-                    >
-                      {item.movie_title || item.group_name}
-                      {item.movie_year ? ` (${item.movie_year})` : ""}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          </div>
+        )}
+      </div>
+
+      {/* Hakutulokset dropdownin vieressä */}
+      {isOpen && searchResultsLocal && searchResultsLocal.length > 0 && (
+        <div className="search-results-panel">
+          <h4>Tulokset ({searchResultsLocal.length})</h4>
+          <ul>
+            {searchResultsLocal.map(item => (
+              <li key={item.movie_id || item.tmdb_id || item.group_id}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (item.tmdb_id || item.movie_id) {
+                      window.location.hash = `#movie/${item.tmdb_id || item.movie_id}`;
+                    }
+                    setIsOpen(false);
+                  }}
+                >
+                  <div className="result-item">
+                    <strong>{item.movie_title || item.group_name}</strong>
+                    {item.movie_year && <span className="year"> ({item.movie_year})</span>}
+                    {item.movie_description && (
+                      <p className="description">{item.movie_description.substring(0, 100)}...</p>
+                    )}
+                  </div>
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>

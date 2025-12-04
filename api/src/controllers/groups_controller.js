@@ -60,7 +60,9 @@ export async function updateGroup(req, res, next) {
 export async function searchGroups(req, res, next) {
   try {
     const { q } = req.query;
+    console.log('Group search query:', q);
     const groups = await search(q);
+    console.log('Found groups:', groups.length);
     res.json(groups);
   } catch (err) {
     next(err);

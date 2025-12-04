@@ -41,27 +41,39 @@ export const searchMovies = async (req, res) => {
   try {
     const q = req.query.q || '';
     const page = req.query.page || 1;
-    const genres = req.query.genres; // optional
+    const genres = req.query.genres; // comma-separated genre IDs
+    const certification = req.query.certification; // e.g., "PG-13"
+
+    console.log('Search params:', { q, page, genres, certification });
 
     let url = '';
     let options = getAuthOptions();
 
-    if (q) {
-      url = `${TMDB_BASE}/search/movie`;
-      // merge params if api_key mode
-      if (options.params) options.params = { ...options.params, query: q, page, include_adult: false, language: 'en-US' };
-      else options.params = { query: q, page, include_adult: false, language: 'en-US' };
-    } else if (genres) {
-      // use discover endpoint when filtering by genre(s)
+    // Always use discover when we have filters, even if there's a search term
+    if (genres || certification) {
       url = `${TMDB_BASE}/discover/movie`;
-      if (options.params) options.params = { ...options.params, with_genres: genres, page, language: 'en-US' };
-      else options.params = { with_genres: genres, page, language: 'en-US' };
+      const params = { page, language: 'en-US', sort_by: 'popularity.desc' };
+      if (genres) params.with_genres = genres;
+      if (certification) {
+        params.certification_country = 'US';
+        params['certification.lte'] = certification; // Use .lte to include and below
+      }
+      if (options.params) options.params = { ...options.params, ...params };
+      else options.params = params;
+    } else if (q) {
+      // Search by title only if no filters
+      url = `${TMDB_BASE}/search/movie`;
+      const params = { query: q, page, include_adult: false, language: 'en-US' };
+      if (options.params) options.params = { ...options.params, ...params };
+      else options.params = params;
     } else {
       // fallback to popular
       url = `${TMDB_BASE}/movie/popular`;
       if (options.params) options.params = { ...options.params, page, language: 'en-US' };
       else options.params = { page, language: 'en-US' };
     }
+
+    console.log('TMDB request:', url, options.params);
 
     const response = await axios.get(url, options);
     const data = response.data;
@@ -72,10 +84,23 @@ export const searchMovies = async (req, res) => {
       return mapped;
     }) : [];
 
+    console.log(`Found ${results.length} results`);
+
     res.json({ results, page: data.page, total_pages: data.total_pages });
   } catch (error) {
     console.error('TMDB search error:', error?.response?.data || error.message || error);
     res.status(500).json({ error: 'TMDB search failed' });
+  }
+};
+
+export const getGenres = async (req, res) => {
+  try {
+    const options = getAuthOptions();
+    const response = await axios.get(`${TMDB_BASE}/genre/movie/list`, options);
+    res.json(response.data.genres || []);
+  } catch (error) {
+    console.error('TMDB genres fetch error:', error?.response?.data || error.message || error);
+    res.status(500).json({ error: 'TMDB genres fetch failed' });
   }
 };
 
@@ -116,4 +141,4 @@ export const getMovieDetails = async (req, res) => {
   }
 };
 
-export default { searchMovies, getPopular, getMovieDetails };
+export default { searchMovies, getPopular, getMovieDetails, getGenres };

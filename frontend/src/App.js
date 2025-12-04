@@ -57,31 +57,48 @@ function App() {
             <MovieShowcase />
 
             {/* Hakutulokset TMDB:stä (jos olemassa) */}
-            {searchResultsObj && searchResultsObj.results && searchResultsObj.results.length > 0 ? (
-              <div className="search-results">
-                <h2>Hakutulokset</h2>
+            {searchResultsObj && searchResultsObj.results && searchResultsObj.results.length > 0 && (
+              <div className="search-results-showcase">
+                <h2>🔍 Hakutulokset</h2>
                 <div className="movies-grid">
-                  {searchResultsObj.results.map(result => (
-                    <div 
-                      key={result.movie_id || result.tmdb_id} 
-                      className="movie-card"
-                      onClick={() => { try { sessionStorage.setItem('returnTo', '#home'); } catch(e){} window.location.hash = `#movie/${result.tmdb_id || result.movie_id}`; }}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <div className="movie-poster">
-                        {result.movie_image ? (
-                          <img src={result.movie_image} alt={result.movie_title} onError={(e) => e.target.style.display = 'none'} />
-                        ) : (
-                          <div className="no-poster">Ei kuvaa</div>
-                        )}
+                  {searchResultsObj.results.map(result => {
+                    const isGroup = result.group_id !== undefined;
+                    const handleClick = () => {
+                      if (isGroup) {
+                        window.location.hash = `#groups?gid=${result.group_id}`;
+                      } else {
+                        try { sessionStorage.setItem('returnTo', '#home'); } catch(e){}
+                        window.location.hash = `#movie/${result.tmdb_id || result.movie_id}`;
+                      }
+                    };
+                    
+                    return (
+                      <div 
+                        key={result.movie_id || result.tmdb_id || result.group_id} 
+                        className="movie-card"
+                        onClick={handleClick}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <div className="movie-poster">
+                          {isGroup ? (
+                            <div className="group-icon">
+                              <span style={{ fontSize: '4rem' }}>👥</span>
+                            </div>
+                          ) : result.movie_image ? (
+                            <img src={result.movie_image} alt={result.movie_title} onError={(e) => e.target.style.display = 'none'} />
+                          ) : (
+                            <div className="no-poster">Ei kuvaa</div>
+                          )}
+                        </div>
+                        <div className="movie-info">
+                          <h3>{result.movie_title || result.group_name}</h3>
+                          {result.movie_certification && <p className="certification">📋 {result.movie_certification}</p>}
+                          {result.movie_description && <p className="description">{result.movie_description.substring(0, 100)}...</p>}
+                          {result.group_description && <p className="description">{result.group_description.substring(0, 100)}...</p>}
+                        </div>
                       </div>
-                      <div className="movie-info">
-                        <h3>{result.movie_title}</h3>
-                        {result.movie_certification && <p className="certification">📋 {result.movie_certification}</p>}
-                        {result.movie_description && <p className="description">{result.movie_description.substring(0, 100)}...</p>}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {searchResultsObj.total_pages > 1 && (
@@ -101,11 +118,6 @@ function App() {
                   />
                   </div>
                 )}
-              </div>
-            ) : (
-              <div className="empty-state">
-                <h2>Tervetuloa PossuKinoon!</h2>
-                <p> Käytä ylänurkan hakupalkkia löytääksesi elokuvia tai ryhmiä.</p>
               </div>
             )}
           </>
