@@ -24,7 +24,17 @@ function Profile() {
         setLoading(true);
 
         const resUser = await fetch(`${apiBase.replace(/\/$/, '')}/user/${userId}`);
-        if (!resUser.ok) throw new Error(`User HTTP ${resUser.status}`);
+        if (!resUser.ok) {
+          if (resUser.status === 404) {
+            // User not found - clear invalid localStorage data
+            localStorage.removeItem('user');
+            setUser(null);
+            setError('User not found. Please log in again.');
+            setLoading(false);
+            return;
+          }
+          throw new Error(`User HTTP ${resUser.status}`);
+        }
         const userData = await resUser.json();
         setUser(userData);
 
