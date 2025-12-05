@@ -7,6 +7,19 @@ services:
     ports:
       - "${PORT}:${PORT}"
 
+  api_test:
+    build: ./api
+    container_name: express_api_test
+    environment:
+      - DATABASE_URL=${TEST_DATABASE_URL}
+      - PORT=${TEST_PORT}
+      - DB_SSL=${DB_SSL}
+      - TMDB_API_KEY=${TMDB_API_KEY}
+    ports:
+      - "${TEST_PORT}:${TEST_PORT}"
+    depends_on:
+      - db_test
+
   db:
     image: postgres:16
     container_name: postgres_db
@@ -38,10 +51,14 @@ services:
   frontend:
     build: ./frontend
     container_name: react_frontend
-    env_file:
-      - .env
+    environment:
+      - REACT_APP_API_URL=http://api_test:${TEST_PORT}
+      - FRONTEND_PORT=${FRONTEND_PORT}
+      - WATCHPACK_POLLING=${WATCHPACK_POLLING}
     ports:
       - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+    depends_on:
+      - api_test
 
   pgadmin:
     image: dpage/pgadmin4
