@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from "./components/navbar";
 import './App.css';
@@ -18,6 +18,7 @@ function App() {
   const [searchResultsObj, setSearchResultsObj] = useState({ results: [], page: 1, total_pages: 0 });
   const [hash, setHash] = useState(window.location.hash || "");
   const [searchPage, setSearchPage] = useState(1);
+  const resultsRef = useRef(null);
 
   useEffect(() => {
     const onHashChange = () => setHash(window.location.hash || "");
@@ -41,7 +42,9 @@ function App() {
               // normalize incoming data from SearchBar
               if (Array.isArray(data)) setSearchResultsObj({ results: data, page: 1, total_pages: 0 });
               else setSearchResultsObj({ results: data.results || [], page: data.page || 1, total_pages: data.total_pages || 0 });
-            }} page={searchPage} onPageChange={setSearchPage} />
+            }} page={searchPage} onPageChange={setSearchPage} onScrollToResults={() => {
+              try { resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
+            }} />
 
             {/* Pääsisältö */}
             <main className="main-content">
@@ -58,7 +61,7 @@ function App() {
 
             {/* Hakutulokset TMDB:stä (jos olemassa) */}
             {searchResultsObj && searchResultsObj.results && searchResultsObj.results.length > 0 && (
-              <div className="search-results-showcase">
+              <div className="search-results-showcase" ref={resultsRef}>
                 <h2>🔍 Hakutulokset</h2>
                 <div className="movies-grid">
                   {searchResultsObj.results.map(result => {
