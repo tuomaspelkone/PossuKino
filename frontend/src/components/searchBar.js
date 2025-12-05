@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './searchBar.css';
 
-function SearchBar({ onSearchResults, page = 1, onPageChange }) {
+function SearchBar({ onSearchResults, page = 1, onPageChange, onScrollToResults }) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchType, setSearchType] = useState('movies'); // 'movies' tai 'groups'
@@ -93,6 +93,9 @@ function SearchBar({ onSearchResults, page = 1, onPageChange }) {
 
   const handleSearchClick = async () => {
     await performSearch();
+    if (onScrollToResults) {
+      try { onScrollToResults(); } catch (e) {}
+    }
     setIsOpen(false);
   };
 

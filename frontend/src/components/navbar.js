@@ -4,7 +4,7 @@ import LoginButton from './loginButton';
 import ThemeToggle from './themeToggle';
 import './navbar.css';
 
-function Navbar({ onSearchResults, page, onPageChange }) {
+function Navbar({ onSearchResults, page, onPageChange, onScrollToResults }) {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -43,7 +43,7 @@ function Navbar({ onSearchResults, page, onPageChange }) {
         <div className="navbar-links">
           {/* Navigation links */}
           {/* Place search toggle before Elokuvat */}
-          <SearchBar onSearchResults={onSearchResults} page={page} onPageChange={onPageChange} />
+          <SearchBar onSearchResults={onSearchResults} page={page} onPageChange={onPageChange} onScrollToResults={onScrollToResults} />
           <a href="#movies">Elokuvat</a>
           <a href="#groups">Ryhmät</a>
           {user ? (
