@@ -14,7 +14,8 @@ CREATE TABLE "user" (
     username VARCHAR(255),
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    refresh_token TEXT
+    refresh_token TEXT,
+    profile_picture_url TEXT
 );
 
 -- Movies table: only stores tmdb_id as PRIMARY KEY
