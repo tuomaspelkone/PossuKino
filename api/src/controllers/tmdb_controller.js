@@ -2,6 +2,7 @@ import axios from 'axios';
 import pool from '../database.js';
 
 const TMDB_BASE = 'https://api.themoviedb.org/3';
+const CERT_ORDER = ['G', 'PG', 'PG-13', 'R', 'NC-17'];
 
 function getAuthOptions() {
   const token = process.env.TMDB_TOKEN;
@@ -20,6 +21,30 @@ const mapMovie = (m) => ({
   movie_year: m.release_date ? m.release_date.split('-')[0] : '',
   movie_image: m.poster_path ? `https://image.tmdb.org/t/p/w342${m.poster_path}` : null,
 });
+
+const isCertAllowed = (movieCert, targetCert) => {
+  if (!movieCert) return false;
+  const movieIdx = CERT_ORDER.indexOf(movieCert);
+  const targetIdx = CERT_ORDER.indexOf(targetCert);
+  if (movieIdx === -1 || targetIdx === -1) return false;
+  return movieIdx <= targetIdx; // .lte semantics
+};
+
+const getMovieCertification = async (tmdbId, options, cache) => {
+  if (cache.has(tmdbId)) return cache.get(tmdbId);
+  try {
+    const resp = await axios.get(`${TMDB_BASE}/movie/${tmdbId}/release_dates`, options);
+    const results = Array.isArray(resp.data?.results) ? resp.data.results : [];
+    const us = results.find(r => r.iso_3166_1 === 'US');
+    const cert = us?.release_dates?.find(rd => rd.certification)?.certification || '';
+    cache.set(tmdbId, cert);
+    return cert;
+  } catch (err) {
+    console.error('Certification fetch failed', tmdbId, err?.response?.data || err.message || err);
+    cache.set(tmdbId, '');
+    return '';
+  }
+};
 
 // Only insert tmdb_id to database (minimal local storage)
 const upsertMovieId = async (tmdb_id) => {
@@ -48,9 +73,18 @@ export const searchMovies = async (req, res) => {
 
     let url = '';
     let options = getAuthOptions();
+    const genreSet = genres ? new Set(genres.split(',').map(Number)) : null;
 
-    // Always use discover when we have filters, even if there's a search term
-    if (genres || certification) {
+    // If user typed a query, always use the search endpoint so the text matters.
+    // When genres are also selected, filter results on our side so only movies containing
+    // at least one of the selected genres are returned.
+    if (q) {
+      url = `${TMDB_BASE}/search/movie`;
+      const params = { query: q, page, include_adult: false, language: 'en-US' };
+      if (options.params) options.params = { ...options.params, ...params };
+      else options.params = params;
+    } else if (genres || certification) {
+      // No text search, but filters present -> use discover
       url = `${TMDB_BASE}/discover/movie`;
       const params = { page, language: 'en-US', sort_by: 'popularity.desc' };
       if (genres) params.with_genres = genres;
@@ -58,12 +92,6 @@ export const searchMovies = async (req, res) => {
         params.certification_country = 'US';
         params['certification.lte'] = certification; // Use .lte to include and below
       }
-      if (options.params) options.params = { ...options.params, ...params };
-      else options.params = params;
-    } else if (q) {
-      // Search by title only if no filters
-      url = `${TMDB_BASE}/search/movie`;
-      const params = { query: q, page, include_adult: false, language: 'en-US' };
       if (options.params) options.params = { ...options.params, ...params };
       else options.params = params;
     } else {
@@ -77,16 +105,37 @@ export const searchMovies = async (req, res) => {
 
     const response = await axios.get(url, options);
     const data = response.data;
-    const results = Array.isArray(data.results) ? data.results.map(m => {
+
+    // If we searched by text and filters exist, filter client-side by genres and certification.
+    let filtered = Array.isArray(data.results) ? data.results : [];
+    const certCache = new Map();
+    if (q) {
+      if (genreSet) {
+        filtered = filtered.filter(m => Array.isArray(m.genre_ids) && m.genre_ids.some(id => genreSet.has(id)));
+      }
+      if (certification) {
+        // Fetch certification per movie (US) and filter with .lte semantics
+        const withCerts = await Promise.all(filtered.map(async (m) => {
+          const cert = await getMovieCertification(m.id, getAuthOptions(), certCache);
+          return { movie: m, cert };
+        }));
+        filtered = withCerts
+          .filter(({ cert }) => isCertAllowed(cert, certification))
+          .map(({ movie }) => movie);
+      }
+    }
+
+    const results = filtered.map(m => {
       const mapped = mapMovie(m);
       // Insert only tmdb_id in background (no other data stored)
       upsertMovieId(m.id).catch(err => console.error('Upsert failed:', err));
       return mapped;
-    }) : [];
+    });
 
     console.log(`Found ${results.length} results`);
 
-    res.json({ results, page: data.page, total_pages: data.total_pages });
+    const effectiveTotalPages = (q && (genreSet || certification)) ? 1 : data.total_pages;
+    res.json({ results, page: data.page, total_pages: effectiveTotalPages });
   } catch (error) {
     console.error('TMDB search error:', error?.response?.data || error.message || error);
     res.status(500).json({ error: 'TMDB search failed' });
