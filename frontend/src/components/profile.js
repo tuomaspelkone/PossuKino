@@ -281,9 +281,13 @@ function Profile() {
   return (
     <>
       <div className="profile-empty">
-        <div className="profile-icon">
-          <img src={selectedImageUrl || user?.profile_picture_url || "/profile-placeholder.svg"} alt="Profiilikuva" width="60" height="60" />
-        </div>
+          <div className="profile-icon">
+            {selectedImageUrl || user?.profile_picture_url ? (
+              <img src={selectedImageUrl || user?.profile_picture_url} alt="Profiilikuva" width="60" height="60" />
+            ) : (
+              <div className="avatar-fallback profile-avatar-fallback">{String(user?.username || user?.email || '').slice(0,1).toUpperCase()}</div>
+            )}
+          </div>
         <div className="profile-info">
           <div>Käyttäjänimi: {user?.username || '—'}</div>
           <div>Sähköposti: {user?.email || '—'}</div>
@@ -352,7 +356,11 @@ function Profile() {
               <div className="modal-body">
                 <div className="modal-image-row">
                   <div className="modal-image-preview-wrap">
-                    <img src={selectedImageUrl || user?.profile_picture_url || '/profile-placeholder.svg'} alt="Esikatselu" className="modal-image-preview" />
+                    {selectedImageUrl || user?.profile_picture_url ? (
+                      <img src={selectedImageUrl || user?.profile_picture_url} alt="Esikatselu" className="modal-image-preview" />
+                    ) : (
+                      <div className="avatar-fallback profile-avatar-fallback">{String(user?.username || user?.email || '').slice(0,1).toUpperCase()}</div>
+                    )}
                   </div>
                   <div style={{display: 'flex', flexDirection: 'column', gap: '0.4rem'}}>
                     <label className="modal-label">Profiilikuva (valinnainen)</label>

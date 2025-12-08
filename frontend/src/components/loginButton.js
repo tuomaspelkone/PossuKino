@@ -16,7 +16,9 @@ function LoginButton() {
     setSuccess('');
 
     try {
-      const response = await fetch('http://localhost:3001/user/login', {
+      const apiBase = process.env.REACT_APP_API_URL || '';
+      const apiBaseNoSlash = apiBase.replace(/\/$/, '');
+      const response = await fetch(`${apiBaseNoSlash}/user/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -61,7 +63,9 @@ function LoginButton() {
     }
 
     try {
-      const response = await fetch('http://localhost:3001/user/register', {
+      const apiBase = process.env.REACT_APP_API_URL || '';
+      const apiBaseNoSlash = apiBase.replace(/\/$/, '');
+      const response = await fetch(`${apiBaseNoSlash}/user/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
