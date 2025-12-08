@@ -70,6 +70,10 @@ const ensureTableSql = `CREATE TABLE IF NOT EXISTS group_movies (
 );`;
 db.query(ensureTableSql).catch(err => console.error('Failed to ensure group_movies table', err));
 
+// Ensure profile_picture_url exists on user table
+const ensureUserProfileColumn = 'ALTER TABLE "user" ADD COLUMN IF NOT EXISTS profile_picture_url TEXT';
+db.query(ensureUserProfileColumn).catch(err => console.error('Failed to ensure profile_picture_url column', err));
+
 app.listen(port, () => {
   console.log(`Server is listening port ${port}`);
 });
