@@ -34,11 +34,17 @@ export async function addGroupMovie(req, res) {
       return res.status(403).json({ error: 'Only group members may add movies' });
     }
 
+    // basic validation to avoid DB errors
+    if (!tmdb_id) return res.status(400).json({ error: 'tmdb_id required' });
+    if (!movie_title) return res.status(400).json({ error: 'movie_title required' });
+
     const created = await model.addOne({ group_id, tmdb_id, movie_title, movie_image, movie_description, added_reason, added_by });
     return res.status(201).json(created);
   } catch (err) {
     console.error('addGroupMovie error', err);
-    return res.status(500).json({ error: 'server error' });
+    const status = err.status || 500;
+    const message = err.message || 'server error';
+    return res.status(status).json({ error: message });
   }
 }
 

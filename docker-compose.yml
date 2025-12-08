@@ -52,13 +52,13 @@ services:
     build: ./frontend
     container_name: react_frontend
     environment:
-      - REACT_APP_API_URL=http://localhost:${TEST_PORT}
+      - REACT_APP_API_URL=http://localhost:${PORT}
       - FRONTEND_PORT=${FRONTEND_PORT}
       - WATCHPACK_POLLING=${WATCHPACK_POLLING}
     ports:
       - "${FRONTEND_PORT}:${FRONTEND_PORT}"
     depends_on:
-      - api_test
+      - api
 
   pgadmin:
     image: dpage/pgadmin4

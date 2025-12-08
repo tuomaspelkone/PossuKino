@@ -172,18 +172,30 @@
   inset: 0;
   background: rgba(0,0,0,0.6);
   display:flex;
-  align-items:flex-start;
-  justify-content:center;
-  padding:2rem;
-  z-index:2000;
+  /* center the modal but keep it below the sticky navbar */
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index:3000;
 }
 .add-modal {
   background: var(--group-bg, #fff);
   width: min(1100px, 96%);
   border-radius:10px;
   padding:1rem 1rem 1.5rem 1rem;
-  max-height: 90vh;
+  /* ensure modal never overlaps the navbar: leave room for navbar height (70px) */
+  max-height: calc(100vh - 90px);
+  margin-top: calc(70px / 2);
   overflow:auto;
+}
+
+/* On narrow screens, keep the modal closer to top but still below navbar */
+@media (max-width: 640px) {
+  .add-modal {
+    max-height: calc(100vh - 80px);
+    margin-top: calc(70px * 0.3);
+    width: 96%;
+  }
 }
 .add-row { margin-bottom:0.75rem; }
 .add-row-1 .add-search-input { width:100%; padding:0.6rem; border:1px solid #e5e7eb; border-radius:6px; }

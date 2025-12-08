@@ -515,8 +515,25 @@ function GroupPage() {
     if (missing.length === 0) return;
     const uniq = Array.from(new Set(missing)).slice(0, 10); // cap batch
     (async () => {
+      // fetch current group members to determine if message authors are still members
+      let memberSet = new Set();
+      try {
+        const rmem = await fetch(`${apiBaseNoSlash}/group_members`);
+        if (rmem.ok) {
+          const allMembers = await rmem.json();
+          const groupMembers = Array.isArray(allMembers) ? allMembers.filter(mm => Number(mm.group_id) === Number(selectedGroup?.group_id)) : [];
+          groupMembers.forEach(m => { if (m && m.user_id) memberSet.add(Number(m.user_id)); });
+        }
+      } catch (e) {
+        // ignore and continue — default to fetching user info
+      }
+
       const entries = await Promise.all(uniq.map(async uid => {
         try {
+          if (selectedGroup && !memberSet.has(uid)) {
+            // user is not a current member — show placeholder name and default avatar
+            return [uid, { username: 'poistunut jäsen', avatar_url: '/profile-placeholder.svg' }];
+          }
           const r = await fetch(`${apiBaseNoSlash}/user/${uid}`);
           if (!r.ok) throw new Error('HTTP ' + r.status);
           const u = await r.json();
@@ -538,6 +555,11 @@ function GroupPage() {
     const uid = parsed && parsed.user_id ? Number(parsed.user_id) : null;
     if (!uid) {
       window.alert('Kirjaudu sisään kommentoidaksesi.');
+      return;
+    }
+    // prevent non-members from sending messages
+    if (!selectedGroup || !selectedGroup.joined) {
+      window.alert('Et ole ryhmän jäsen. Et voi lähettää viestejä.');
       return;
     }
     try {
