@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 
-import bookRouter from "./routers/book_router.js";
 import cache_router from "./routers/cache_router.js";
 import favorites_router from "./routers/favorites_router.js";
 import genres_router from "./routers/genres_router.js";
@@ -18,11 +17,16 @@ import group_movies_router from "./routers/group_movies_router.js";
 import upload_router from "./routers/upload_router.js";
 import path from "path";
 import fs from "fs";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./swagger.js";
 
 const app = express();
 const port = process.env.PORT || 3001;
 
 app.use(cors());
+
+// Swagger UI
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Static serving for uploaded files - before body parsers
 const uploadsDir = path.resolve(process.cwd(), 'uploads');
@@ -42,7 +46,6 @@ app.get("/", async (req, res) => {
   res.send("Postgres API esimerkki");
 });
 
-app.use("/book", bookRouter);
 app.use("/user", user_router);
 app.use("/favorites", favorites_router);
 app.use("/genres", genres_router);
