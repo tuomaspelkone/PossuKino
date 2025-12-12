@@ -6,6 +6,9 @@ services:
       - .env
     ports:
       - "${PORT}:${PORT}"
+    depends_on:
+      db:
+        condition: service_healthy
 
   api_test:
     build: ./api
@@ -18,7 +21,8 @@ services:
     ports:
       - "${TEST_PORT}:${TEST_PORT}"
     depends_on:
-      - db_test
+      db_test:
+        condition: service_healthy
 
   db:
     image: postgres:16
@@ -33,6 +37,11 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./kino_v2.sql:/docker-entrypoint-initdb.d/kino.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U netuser -d netdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   db_test:
     image: postgres:16
@@ -47,12 +56,17 @@ services:
     volumes:
       - pgdata_test:/var/lib/postgresql/data
       - ./kino_v2.sql:/docker-entrypoint-initdb.d/kino.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U netuser -d netdb_test"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   frontend:
     build: ./frontend
     container_name: react_frontend
     environment:
-      - REACT_APP_API_URL=http://localhost:${PORT}
+      - REACT_APP_API_URL=http://195.148.22.146:${PORT}
       - FRONTEND_PORT=${FRONTEND_PORT}
       - WATCHPACK_POLLING=${WATCHPACK_POLLING}
     ports:
