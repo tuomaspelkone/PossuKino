@@ -12,6 +12,52 @@
   overflow: hidden;
 }
 
+@media (max-width: 1024px) {
+  .profile-empty,
+  .profile-favourites,
+  .profile-groups,
+  .profile-reviews {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.5rem 1.25rem;
+  }
+
+  .profile-empty {
+    gap: 1.25rem;
+  }
+
+  .favourites-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .profile-groups .group-row {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 720px) {
+  .profile-empty,
+  .profile-favourites,
+  .profile-groups,
+  .profile-reviews {
+    padding: 1.2rem 1rem;
+  }
+
+  .profile-empty .btn,
+  .profile-groups .btn,
+  .share-favorites-btn {
+    width: 100%;
+    margin-left: 0;
+    text-align: center;
+  }
+
+  .profile-icon {
+    margin-right: 0;
+  }
+}
+
 /* Kauhu-teeman dekoraatiot profiiliosioissa */
 [data-theme="kauhu"] .profile-empty::before,
 [data-theme="kauhu"] .profile-favourites::before,
