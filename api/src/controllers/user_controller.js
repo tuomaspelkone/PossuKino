@@ -178,3 +178,12 @@ export async function changePassword(req, res, next) {
     next(err);
   }
 }
+
+export async function logout(req, res, next) {
+  try {
+    console.log('LOGOUT called', { method: req.method, headers: req.headers });
+    res.status(200).json({ message: "Kirjautuminen ulos onnistui" });
+  } catch (err) {
+    next(err);
+  }
+}
