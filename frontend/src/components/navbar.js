@@ -40,12 +40,12 @@ function Navbar({ onSearchResults, page, onPageChange, onScrollToResults }) {
           </a>
         </div>
 
-        <div className="navbar-search-wrapper">
-          <SearchBar onSearchResults={onSearchResults} page={page} onPageChange={onPageChange} onScrollToResults={onScrollToResults} />
-        </div>
-
         <div className="navbar-theme-wrapper">
           <ThemeToggle />
+        </div>
+
+        <div className="navbar-search-wrapper">
+          <SearchBar onSearchResults={onSearchResults} page={page} onPageChange={onPageChange} onScrollToResults={onScrollToResults} />
         </div>
 
         <div className="navbar-links">
