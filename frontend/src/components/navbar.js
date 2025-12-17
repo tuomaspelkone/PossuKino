@@ -40,9 +40,13 @@ function Navbar({ onSearchResults, page, onPageChange, onScrollToResults }) {
           </a>
         </div>
 
-        <SearchBar onSearchResults={onSearchResults} page={page} onPageChange={onPageChange} onScrollToResults={onScrollToResults} />
-        
-        <ThemeToggle />
+        <div className="navbar-search-wrapper">
+          <SearchBar onSearchResults={onSearchResults} page={page} onPageChange={onPageChange} onScrollToResults={onScrollToResults} />
+        </div>
+
+        <div className="navbar-theme-wrapper">
+          <ThemeToggle />
+        </div>
 
         <div className="navbar-links">
           <a href="#movies">Elokuvat</a>
