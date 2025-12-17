@@ -40,10 +40,11 @@ function Navbar({ onSearchResults, page, onPageChange, onScrollToResults }) {
           </a>
         </div>
 
+        <SearchBar onSearchResults={onSearchResults} page={page} onPageChange={onPageChange} onScrollToResults={onScrollToResults} />
+        
+        <ThemeToggle />
+
         <div className="navbar-links">
-          {/* Navigation links */}
-          {/* Place search toggle before Elokuvat */}
-          <SearchBar onSearchResults={onSearchResults} page={page} onPageChange={onPageChange} onScrollToResults={onScrollToResults} />
           <a href="#movies">Elokuvat</a>
           <a href="#groups">Ryhmät</a>
           {user ? (
@@ -51,7 +52,6 @@ function Navbar({ onSearchResults, page, onPageChange, onScrollToResults }) {
           ) : (
             <LoginButton />
           )}
-          <ThemeToggle />
         </div>
       </div>
     </nav>
