@@ -6,7 +6,7 @@ In this readme, I will explain to you how our project works.
 Main branch is for localhost, tupe branch is what we use to run the website. The website is ran using a virtual machine.
 
 
-<h2>Features/h2>
+<h2>Features</h2>
 <ol>
 Registeration, login, logout, deleting registeration, search with genre and age restriciton filters, "now playing", group page, deleting and adding users to groups, custom group pages, rating movies, browsing reviews, favourites list, sharing of favourites list, four themes, group chat, profile page, changing profile picture.
 </ol>
