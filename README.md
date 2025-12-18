@@ -3,7 +3,7 @@
 In this readme, I will explain to you how our project works.
 
 <h2>General</h2>
-Main branch is for localhost, tupe branch is what we use to run the website. The website is ran using a virtual machine.
+Main branch is for localhost, tupe branch is what we use to run the website. The website is ran using a virtual machine. Here is a link to the page: http://195.148.22.146:3000/
 
 
 <h2>Features</h2>
@@ -29,7 +29,3 @@ docker exec react_frontend npm test
 You can find documentation from PossuKino/documents/. There is also a Swagger API documentation at either localhost/3001/api-docs (if you are running the containers) or http://195.148.22.146:3001/api-docs when the website is running.
 </ol>
 
-  <li>Lisää Environment Variablesiin REACT_APP_API_URL ja kopioi siihen backendisi URL (katso ettei loppuun tule kauttaviivaa)</li>
-</ul>
- </li>
-</ol>
