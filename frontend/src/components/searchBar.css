@@ -427,43 +427,55 @@
 
 @media (max-width: 1024px) {
   .search-dropdown {
+    position: fixed;
+    bottom: auto;
     min-width: unset;
     width: calc(100vw - 2rem);
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
-    max-width: calc(100vw - 2rem);
+    left: 1rem;
+    right: 1rem;
+    transform: none;
+    max-width: unset;
   }
 
   .search-results-panel {
+    position: fixed;
     min-width: unset;
     width: calc(100vw - 2rem);
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
-    max-width: calc(100vw - 2rem);
+    left: 1rem;
+    right: 1rem;
+    transform: none;
+    max-width: unset;
+    top: auto;
   }
 }
 
 /* Responsiivisuus */
 @media (max-width: 768px) {
   .search-dropdown {
+    position: fixed;
+    bottom: auto;
     min-width: unset;
     width: calc(100vw - 2rem);
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
-    max-width: calc(100vw - 2rem);
+    left: 1rem;
+    right: 1rem;
+    transform: none;
+    max-width: unset;
     padding: 1.25rem;
+    max-height: 70vh;
+    overflow-y: auto;
   }
 
   .search-results-panel {
+    position: fixed;
     min-width: unset;
     width: calc(100vw - 2rem);
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
-    max-width: calc(100vw - 2rem);
+    left: 1rem;
+    right: 1rem;
+    transform: none;
+    max-width: unset;
+    top: auto;
+    max-height: 60vh;
+    overflow-y: auto;
   }
   
   .genre-checkboxes {
@@ -473,22 +485,28 @@
 
 @media (max-width: 640px) {
   .search-dropdown {
+    position: fixed;
+    bottom: auto;
     min-width: unset;
     width: calc(100vw - 2rem);
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
+    left: 1rem;
+    right: 1rem;
+    transform: none;
     padding: 1.25rem;
     max-height: 70vh;
+    overflow-y: auto;
   }
 
   .search-results-panel {
+    position: fixed;
     min-width: unset;
     width: calc(100vw - 2rem);
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
+    left: 1rem;
+    right: 1rem;
+    transform: none;
+    top: auto;
     max-height: 60vh;
+    overflow-y: auto;
   }
 
   .search-type-toggle {
