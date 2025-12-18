@@ -16,6 +16,7 @@ Registeration, login, logout, deleting registeration, search with genre and age 
 <ol>
 Login, logout, registeration, deleting registeration, browsing reviews.
 
+
 You can run the test locally using
 <pre>
 docker exec react_frontend npm test
