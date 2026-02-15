@@ -30,20 +30,27 @@ function Navbar({ onSearchResults, page, onPageChange, onScrollToResults }) {
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        <div className="navbar-brand">
-          <a href="#home" className="navbar-logo" aria-label="Etusivu">
-            {/* Show different logo per theme */}
-            <img src="/images/possupohja.png" alt="PossuKino" className="logo logo-default" />
-            <img src="/images/possuzorro.png" alt="" className="logo logo-kauhu" aria-hidden="true" />
-            <img src="/images/possulapsi.png" alt="" className="logo logo-lapsi" aria-hidden="true" />
-            <img src="/images/possurakkaus.png" alt="" className="logo logo-romantiikka" aria-hidden="true" />
-          </a>
+        <div className="navbar-top-left">
+          <div className="navbar-brand">
+            <a href="#home" className="navbar-logo" aria-label="Etusivu">
+              {/* Show different logo per theme */}
+              <img src="/images/possupohja.png" alt="PossuKino" className="logo logo-default" />
+              <img src="/images/possuzorro.png" alt="" className="logo logo-kauhu" aria-hidden="true" />
+              <img src="/images/possulapsi.png" alt="" className="logo logo-lapsi" aria-hidden="true" />
+              <img src="/images/possurakkaus.png" alt="" className="logo logo-romantiikka" aria-hidden="true" />
+            </a>
+          </div>
+
+          <div className="navbar-theme-wrapper">
+            <ThemeToggle />
+          </div>
+
+          <div className="navbar-search-wrapper">
+            <SearchBar onSearchResults={onSearchResults} page={page} onPageChange={onPageChange} onScrollToResults={onScrollToResults} />
+          </div>
         </div>
 
         <div className="navbar-links">
-          {/* Navigation links */}
-          {/* Place search toggle before Elokuvat */}
-          <SearchBar onSearchResults={onSearchResults} page={page} onPageChange={onPageChange} onScrollToResults={onScrollToResults} />
           <a href="#movies">Elokuvat</a>
           <a href="#groups">Ryhmät</a>
           {user ? (
@@ -51,7 +58,6 @@ function Navbar({ onSearchResults, page, onPageChange, onScrollToResults }) {
           ) : (
             <LoginButton />
           )}
-          <ThemeToggle />
         </div>
       </div>
     </nav>

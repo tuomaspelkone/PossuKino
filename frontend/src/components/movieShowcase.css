@@ -263,3 +263,47 @@
   color: var(--color-primary);
   background: var(--color-primary-lighter);
 }
+
+@media (max-width: 1024px) {
+  .movie-showcase {
+    padding: 32px 16px;
+  }
+
+  .movie-showcase h2 {
+    font-size: 2.1rem;
+    margin-bottom: 32px;
+  }
+
+  .movies-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+  }
+
+  .movie-poster {
+    height: 220px;
+  }
+}
+
+@media (max-width: 640px) {
+  .movie-showcase {
+    padding: 24px 14px;
+  }
+
+  .movie-showcase h2 {
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+  }
+
+  .movies-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+  }
+
+  .movie-poster {
+    height: 200px;
+  }
+
+  .movie-card h3 {
+    font-size: 0.9rem;
+  }
+}

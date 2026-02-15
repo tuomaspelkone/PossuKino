@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './searchBar.css';
 
+// Use API base from env so it works outside localhost
+const apiBase = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+
 function SearchBar({ onSearchResults, page = 1, onPageChange, onScrollToResults }) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -39,7 +42,7 @@ function SearchBar({ onSearchResults, page = 1, onPageChange, onScrollToResults 
 
   const fetchGenres = async () => {
     try {
-      const response = await fetch('http://localhost:3001/tmdb/genres');
+      const response = await fetch(`${apiBase}/tmdb/genres`);
       const data = await response.json();
       // TMDB returns [{id, name}, ...]
       setGenres(data);
@@ -55,14 +58,14 @@ function SearchBar({ onSearchResults, page = 1, onPageChange, onScrollToResults 
       const params = new URLSearchParams();
 
       if (searchType === 'movies') {
-        url = 'http://localhost:3001/tmdb/search';
+        url = `${apiBase}/tmdb/search`;
         if (searchTerm) params.append('q', searchTerm);
         if (selectedGenres.length > 0) params.append('genres', selectedGenres.join(','));
         if (selectedCertification) params.append('certification', selectedCertification);
         // page is controlled by parent (App) via props; include it here
         params.append('page', page || 1);
       } else {
-        url = 'http://localhost:3001/group/search';
+        url = `${apiBase}/group/search`;
         if (searchTerm) params.append('q', searchTerm);
       }
 

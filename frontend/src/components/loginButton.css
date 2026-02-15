@@ -147,7 +147,10 @@
 
 @media (max-width: 768px) {
   .login-dropdown {
-    right: -1rem;
-    min-width: 280px;
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(360px, 90vw);
+    min-width: 260px;
   }
 }

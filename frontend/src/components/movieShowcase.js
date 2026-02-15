@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import "./movieShowcase.css";
 
+// Use API base from env so it works outside localhost
+const apiBase = process.env.REACT_APP_API_URL || "http://localhost:3001";
+
 function MovieShowcase() {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,7 +17,7 @@ function MovieShowcase() {
     try {
       setLoading(true);
       // Kutsu TMDB API:ta suoraan täydellä elokuvadatalla
-      const response = await fetch("http://localhost:3001/tmdb/popular");
+      const response = await fetch(`${apiBase}/tmdb/popular`);
       
       if (!response.ok) {
         throw new Error(`HTTP-virhe: ${response.status}`);
